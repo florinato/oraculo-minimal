@@ -38,8 +38,14 @@ export async function POST(req: Request) {
       },
     });
 
-  } catch (error: any) {
-    console.error(">>> [PROXY] Error Crítico:", error.message);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error) {
+    // TypeScript prefiere que tratemos el error como 'unknown' o 'Error'
+    const errorMessage = error instanceof Error ? error.message : "Error desconocido";
+    console.error(">>> [PROXY] Error Crítico:", errorMessage);
+    
+    return NextResponse.json(
+      { error: errorMessage }, 
+      { status: 500 }
+    );
   }
 }

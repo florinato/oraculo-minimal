@@ -61,7 +61,8 @@ function ReadingContent() {
           }
         }
       } catch (err) {
-        setText(t.reading.error);
+        const message = err instanceof Error ? err.message : "Error de conexión";
+        setText(t.reading.error + " " + message);
       } finally {
         setLoading(false);
       }
