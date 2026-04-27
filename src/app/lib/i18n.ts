@@ -1,20 +1,20 @@
 import es from "@/locals/es.json";
 
-// 1. Definimos los idiomas que la App realmente soporta
-const SUPPORTED_LANGS: Record<string, any> = {
+// Creamos un tipo basado en tu archivo de español
+export type TranslationSchema = typeof es;
+
+// Definimos que este objeto acepta cualquier código de idioma (string) pero el contenido sigue el molde
+const SUPPORTED_LANGS: Record<string, TranslationSchema> = {
   es: es,
-  // El día que tengas en.json, solo añades: en: en
 };
 
 const DEFAULT_LANG = "es";
 
 export function getI18n(langCode?: string | null) {
-  // Si no nos pasan código, intentamos detectar del navegador
   const code = langCode || (typeof window !== "undefined" ? navigator.language.split("-")[0] : DEFAULT_LANG);
   
-  // Retornamos el idioma solicitado si existe, si no, el por defecto
-  return {
-    t: SUPPORTED_LANGS[code] || SUPPORTED_LANGS[DEFAULT_LANG],
-    currentLang: SUPPORTED_LANGS[code] ? code : DEFAULT_LANG
-  };
+  // Si el idioma no está soportado, devolvemos el español
+  const t = SUPPORTED_LANGS[code] || SUPPORTED_LANGS[DEFAULT_LANG];
+  
+  return { t, currentLang: SUPPORTED_LANGS[code] ? code : DEFAULT_LANG };
 }
