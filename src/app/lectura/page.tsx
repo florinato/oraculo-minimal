@@ -116,8 +116,8 @@ function ReadingContent() {
     <div className="relative min-h-screen w-full bg-black text-amber-50 overflow-y-auto overflow-x-hidden scroll-smooth">
       
       {/* CAPA 1: FONDO FIJO (La foto de la mesa) */}
-      <div className="fixed inset-0 h-screen w-full flex justify-center items-center z-0 pointer-events-none">
-        <img src="/mesa_lectura.jpg" className="w-[1200px] h-[800px] object-contain" alt="Mesa" />
+      <div className="fixed inset-0 h-screen w-full overflow-hidden z-0 pointer-events-none">
+        <img src="/mesa_lectura.jpg" className="w-[1200px] h-[800px] object-cover" alt="Mesa" />
       </div>
 
       {/* CAPA 2: LAS CARTAS (Lienzo 3D independiente) */}
