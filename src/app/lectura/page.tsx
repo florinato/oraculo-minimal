@@ -6,13 +6,20 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { getI18n } from "../lib/i18n";
 
+type TarotCard = {
+  position: number;
+  name: string;
+  imageId: string;
+  is_reversed: boolean;
+};
+
 function ReadingContent() {
   const searchParams = useSearchParams();
   const question = searchParams.get("q") || "";
   const [text, setText] = useState("");
-  const [cards, setCards] = useState<any[]>([]);
+  const [cards, setCards] = useState<TarotCard[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedCard, setSelectedCard] = useState<any | null>(null);
+  const [selectedCard, setSelectedCard] = useState<TarotCard | null>(null);
   const hasStarted = useRef(false);
   
   const langParam = searchParams.get("lang");
@@ -56,13 +63,15 @@ function ReadingContent() {
               try {
                 const data = JSON.parse(line.replace('data: ', '').trim());
                 if (data.text) setText(prev => prev + data.text);
-              } catch (e) {}
+              } catch {
+                // Error de parseo ignorado
+              }
             }
           }
         }
       } catch (err) {
-        const message = err instanceof Error ? err.message : "Error de conexión";
-        setText(t.reading.error + " " + message);
+        const msg = err instanceof Error ? err.message : "Error";
+        setText(t.reading.error + " " + msg);
       } finally {
         setLoading(false);
       }
@@ -138,7 +147,7 @@ function ReadingContent() {
 }
 
 // CardImg: Ahora su tamaño depende de VH para ser siempre proporcional a la mesa
-function CardImg({ card, label, onClick }: { card: any, label: string, onClick: () => void }) {
+function CardImg({ card, label, onClick }: { card: TarotCard, label: string, onClick: () => void }) {
   return (
     <div className="flex flex-col items-center cursor-pointer group pointer-events-auto" onClick={onClick}>
       <span className="text-[1vh] text-amber-700 uppercase tracking-widest mb-1 font-bold bg-black/40 px-1 rounded-sm">
