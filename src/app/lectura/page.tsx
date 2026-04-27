@@ -117,7 +117,7 @@ function ReadingContent() {
       
       {/* CAPA 1: FONDO FIJO (La foto de la mesa) */}
       <div className="fixed inset-0 h-screen w-full flex justify-center items-center z-0 pointer-events-none">
-        <img src="/mesa_lectura.jpg" className="h-full w-auto object-contain" alt="Mesa" />
+        <img src="/mesa_lectura.jpg" className="w-[1200px] h-[800px] object-contain" alt="Mesa" />
       </div>
 
       {/* CAPA 2: LAS CARTAS (Lienzo 3D independiente) */}
