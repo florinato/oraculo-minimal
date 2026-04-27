@@ -1,0 +1,46 @@
+{
+  "home": {
+    "title": "Oráculo de Morvan",
+    "placeholder": "¿Qué deseas consultar?...",
+    "button": "Consultar Destino",
+    "footer_left": "◆ Privado",
+    "footer_right": "Gratuito ◆"
+  },
+  "reading": {
+    "loading": "Morvan está interpretando los astros...",
+    "error": "El Oráculo guarda silencio... las energías no fluyen.",
+    "new_reading": "Nueva Consulta",
+    "labels": {
+      "mente": "Mente",
+      "pasado": "Pasado",
+      "presente": "Presente",
+      "futuro": "Futuro",
+      "raices": "Raíces"
+    }
+  },
+
+  "cards": {
+    "00-thefool": { "name": "El Loco", "info": "Salto al vacío. Nuevos comienzos sin miedo ni equipaje." },
+    "01-themagician": { "name": "El Mago", "info": "Poder absoluto. Tienes todas las herramientas para manifestar tu realidad." },
+    "02-thehighpriestess": { "name": "La Sacerdotisa", "info": "Intuición pura. Guarda silencio y escucha tu voz interior." },
+    "03-theempress": { "name": "La Emperatriz", "info": "Abundancia. La naturaleza florece y tus proyectos dan fruto." },
+    "04-theemperor": { "name": "El Emperador", "info": "Control y estructura. Es momento de poner orden y autoridad." },
+    "05-thehierophant": { "name": "El Hierofante", "info": "Sabiduría ancestral. Busca el consejo en la tradición y lo sagrado." },
+    "06-thelovers": { "name": "Los Enamorados", "info": "Encrucijada. Elige con el corazón, no con la mente." },
+    "07-thechariot": { "name": "El Carro", "info": "Victoria. Avanza con determinación hacia tu meta sin dudar." },
+    "08-strength": { "name": "La Fuerza", "info": "Coraje interno. Domina tus sombras con compasión y paciencia." },
+    "09-thehermit": { "name": "El Ermitaño", "info": "Retiro. Aléjate del ruido para encontrar la luz en tu interior." },
+    "10-wheeloffortune": { "name": "Rueda de la Fortuna", "info": "Cambio de ciclo. El destino gira; lo que baja, subirá." },
+    "11-justice": { "name": "La Justicia", "info": "Equilibrio. Cosechas exactamente lo que has sembrado." },
+    "12-thehangedman": { "name": "El Colgado", "info": "Pausa. Suelta el control y mira el mundo desde otra perspectiva." },
+    "13-death": { "name": "La Muerte", "info": "Transformación. Corta con lo viejo para dejar espacio a lo nuevo." },
+    "14-temperance": { "name": "La Templanza", "info": "Alquimia. Mezcla tus energías con calma para encontrar la paz." },
+    "15-thedevil": { "name": "El Diablo", "info": "Cadenas. Identifica tus apegos y libérate de tus propias sombras." },
+    "16-thetower": { "name": "La Torre", "info": "Ruptura. Los falsos cimientos caen para liberarte de tu prisión." },
+    "17-thestar": { "name": "La Estrella", "info": "Esperanza. La tormenta ha pasado; confía en el guía del destino." },
+    "18-themoon": { "name": "La Luna", "info": "Misterio. Navega por tus sueños y miedos sin perder el rumbo." },
+    "19-thesun": { "name": "El Sol", "info": "Éxito total. La luz lo ilumina todo; celebra tu propia vitalidad." },
+    "20-judgement": { "name": "El Juicio", "info": "Renacer. Perdona el pasado y responde al llamado de tu alma." },
+    "21-theworld": { "name": "El Mundo", "info": "Plenitud. Has completado el viaje; el universo está en armonía." }
+    }
+}
