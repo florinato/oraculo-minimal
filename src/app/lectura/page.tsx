@@ -196,12 +196,12 @@ function CardImg({ card, label, onClick }: CardImgProps) {
         {label}
       </span>
       {/* Mantenemos el tamaño, pero quitamos el overflow-hidden si fuera necesario */}
-      <div className="h-[12vh] aspect-[2/3.2] shadow-2xl rounded-sm border border-white/10 bg-amber-900/10 transition-all duration-300 group-hover:scale-110 group-active:scale-95" style={{ backfaceVisibility: 'hidden', transform: 'translateZ(0)' }}>
+      <div className="h-[12vh] aspect-[2/3.2] shadow-2xl rounded-sm border border-white/10 bg-amber-900/10 transition-all duration-300 group-hover:scale-110 group-active:scale-95" style={{ backfaceVisibility: 'hidden', willChange: 'transform' }}>
         <img 
           src={getCardImageUrl(card.imageId)} 
-          className="w-full h-full object-contain" // <--- CAMBIO CLAVE: contain en lugar de cover
+          className="w-full h-full object-contain" 
           alt={card.name} 
-          style={{ backfaceVisibility: 'hidden', WebkitFontSmoothing: 'antialiased' }}
+          style={{ backfaceVisibility: 'hidden', WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
         />
       </div>
     </div>
