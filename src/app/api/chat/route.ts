@@ -4,19 +4,32 @@ export async function POST(req: Request) {
   const backendBaseUrl = process.env.NEXT_PUBLIC_CHAT_API_URL; 
   const authToken = process.env.FRONTEND_API_SECRET;
 
+  console.log("[v0] === CHAT API DEBUG ===");
+  console.log("[v0] Backend URL:", backendBaseUrl);
+  console.log("[v0] Auth Token presente:", !!authToken);
+  console.log("[v0] NODE_ENV:", process.env.NODE_ENV);
+
   try {
     const body = await req.json();
+    console.log("[v0] Body recibido:", JSON.stringify(body).substring(0, 200));
+
+    if (!backendBaseUrl) {
+      console.error("[v0] ERROR CRÍTICO: NEXT_PUBLIC_CHAT_API_URL no está configurada");
+      return NextResponse.json(
+        { error: "Backend URL not configured (NEXT_PUBLIC_CHAT_API_URL)" },
+        { status: 500 }
+      );
+    }
 
     // 1. RUTA EXACTA según tu test_api.py: /api/interpretar
     const targetUrl = `${backendBaseUrl?.replace(/\/$/, '')}/api/interpretar`;
-
-    console.log(">>> [PROXY] Llamando a:", targetUrl);
+    console.log("[v0] URL destino:", targetUrl);
 
     const response = await fetch(targetUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-Custom-Auth-Token': authToken?.trim() || "" // "mi_token_super_secreto_123"
+        'X-Custom-Auth-Token': authToken?.trim() || ""
       },
       body: JSON.stringify({
         ...body,
@@ -24,10 +37,16 @@ export async function POST(req: Request) {
       })
     });
 
+    console.log("[v0] Respuesta status:", response.status);
+    console.log("[v0] Respuesta headers:", {
+      contentType: response.headers.get('content-type'),
+      isStream: response.headers.get('content-type')?.includes('event-stream')
+    });
+
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(">>> [PROXY] Error Backend:", response.status, errorText);
-      return NextResponse.json({ error: "Error en Backend", status: response.status }, { status: response.status });
+      console.error("[v0] Error Backend:", response.status, errorText);
+      return NextResponse.json({ error: "Error en Backend", status: response.status, details: errorText }, { status: response.status });
     }
 
     return new Response(response.body, {
@@ -40,7 +59,9 @@ export async function POST(req: Request) {
 
   } catch (error) {
     const message = error instanceof Error ? error.message : "Error desconocido";
-    console.error(">>> [PROXY] Error:", message);
-    return NextResponse.json({ error: message }, { status: 500 });
+    const stack = error instanceof Error ? error.stack : "";
+    console.error("[v0] Error en Chat API:", message);
+    console.error("[v0] Stack:", stack);
+    return NextResponse.json({ error: message, type: "exception" }, { status: 500 });
   }
 }

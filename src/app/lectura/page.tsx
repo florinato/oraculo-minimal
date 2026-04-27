@@ -36,6 +36,12 @@ function ReadingContent() {
     
     const startInference = async () => {
       try {
+        console.log("[v0] Iniciando lectura con:", {
+          question,
+          currentLang,
+          cardsCount: selectedCards.length
+        });
+
         const response = await fetch('/api/chat', { 
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -48,17 +54,32 @@ function ReadingContent() {
           })
         });
 
-        if (!response.ok) throw new Error("API Error");
+        console.log("[v0] Respuesta /api/chat:", response.status, response.statusText);
+
+        if (!response.ok) {
+          const errorData = await response.text();
+          console.error("[v0] Error en API:", errorData);
+          throw new Error("API Error: " + response.status);
+        }
 
         const reader = response.body?.getReader();
         const decoder = new TextDecoder();
-        if (!reader) return;
+        if (!reader) {
+          console.error("[v0] No hay body en respuesta");
+          return;
+        }
 
+        console.log("[v0] Leyendo stream...");
         let buffer = "";
+        let chunkCount = 0;
         while (true) {
           const { done, value } = await reader.read();
-          if (done) break;
+          if (done) {
+            console.log("[v0] Stream completado. Chunks:", chunkCount);
+            break;
+          }
 
+          chunkCount++;
           buffer += decoder.decode(value, { stream: true });
           const lines = buffer.split("\n");
           buffer = lines.pop() || "";
@@ -68,13 +89,19 @@ function ReadingContent() {
             if (cleanLine.startsWith('data: ')) {
               try {
                 const data = JSON.parse(cleanLine.slice(6));
-                if (data.text) setText(prev => prev + data.text);
-              } catch { }
+                if (data.text) {
+                  console.log("[v0] Chunk recibido:", data.text.substring(0, 50));
+                  setText(prev => prev + data.text);
+                }
+              } catch (e) {
+                console.log("[v0] Error parseando JSON:", cleanLine.substring(0, 100));
+              }
             }
           }
         }
       } catch (err) {
-        const msg = err instanceof Error ? err.message : "";
+        const msg = err instanceof Error ? err.message : String(err);
+        console.error("[v0] Error en startInference:", msg);
         setText(t.reading.error + " " + msg);
       } finally {
         setLoading(false);
