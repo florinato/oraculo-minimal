@@ -36,6 +36,12 @@ function ReadingContent() {
     
     const startInference = async () => {
       try {
+        console.log("[v0] Iniciando lectura con:", {
+          question,
+          currentLang,
+          cardsCount: selectedCards.length
+        });
+
         const response = await fetch('/api/chat', { 
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -48,17 +54,32 @@ function ReadingContent() {
           })
         });
 
-        if (!response.ok) throw new Error("API Error");
+        console.log("[v0] Respuesta /api/chat:", response.status, response.statusText);
+
+        if (!response.ok) {
+          const errorData = await response.text();
+          console.error("[v0] Error en API:", errorData);
+          throw new Error("API Error: " + response.status);
+        }
 
         const reader = response.body?.getReader();
         const decoder = new TextDecoder();
-        if (!reader) return;
+        if (!reader) {
+          console.error("[v0] No hay body en respuesta");
+          return;
+        }
 
+        console.log("[v0] Leyendo stream...");
         let buffer = "";
+        let chunkCount = 0;
         while (true) {
           const { done, value } = await reader.read();
-          if (done) break;
+          if (done) {
+            console.log("[v0] Stream completado. Chunks:", chunkCount);
+            break;
+          }
 
+          chunkCount++;
           buffer += decoder.decode(value, { stream: true });
           const lines = buffer.split("\n");
           buffer = lines.pop() || "";
@@ -68,13 +89,19 @@ function ReadingContent() {
             if (cleanLine.startsWith('data: ')) {
               try {
                 const data = JSON.parse(cleanLine.slice(6));
-                if (data.text) setText(prev => prev + data.text);
-              } catch { }
+                if (data.text) {
+                  console.log("[v0] Chunk recibido:", data.text.substring(0, 50));
+                  setText(prev => prev + data.text);
+                }
+              } catch (e) {
+                console.log("[v0] Error parseando JSON:", cleanLine.substring(0, 100));
+              }
             }
           }
         }
       } catch (err) {
-        const msg = err instanceof Error ? err.message : "";
+        const msg = err instanceof Error ? err.message : String(err);
+        console.error("[v0] Error en startInference:", msg);
         setText(t.reading.error + " " + msg);
       } finally {
         setLoading(false);
@@ -89,8 +116,8 @@ function ReadingContent() {
     <div className="relative min-h-screen w-full bg-black text-amber-50 overflow-y-auto overflow-x-hidden scroll-smooth">
       
       {/* CAPA 1: FONDO FIJO (La foto de la mesa) */}
-      <div className="fixed inset-0 h-screen w-full flex justify-center items-center z-0 pointer-events-none">
-        <img src="/mesa_lectura.jpg" className="h-full w-auto object-contain" alt="Mesa" />
+      <div className="fixed inset-0 h-screen w-full overflow-hidden z-0 pointer-events-none flex justify-center items-center">
+        <img src="/mesa_lectura.jpg" className="w-[1200px] h-[800px] object-cover flex-shrink-0" alt="Mesa" />
       </div>
 
       {/* CAPA 2: LAS CARTAS (Lienzo 3D independiente) */}
@@ -117,7 +144,7 @@ function ReadingContent() {
         {/* Espaciador para que el texto empiece abajo */}
         <div className="h-[88vh] w-full" />
 
-        <div className="w-full max-w-2xl bg-black/90 p-8 rounded-t-[40px] border-t border-amber-900/40 shadow-[0_-20px_50px_rgba(0,0,0,1)] min-h-[60vh] pointer-events-auto">
+        <div className="w-full max-w-2xl bg-black p-8 rounded-t-[40px] border-t border-amber-900/40 min-h-[60vh] pointer-events-auto">
           <div className="prose prose-invert prose-amber max-w-none font-serif text-lg leading-relaxed mb-12">
             <ReactMarkdown components={{ strong: ({...props}) => <span className="text-amber-500 font-bold" {...props} /> }}>
               {text}
@@ -169,11 +196,12 @@ function CardImg({ card, label, onClick }: CardImgProps) {
         {label}
       </span>
       {/* Mantenemos el tamaño, pero quitamos el overflow-hidden si fuera necesario */}
-      <div className="h-[12vh] aspect-[2/3.2] shadow-2xl rounded-sm border border-white/10 bg-amber-900/10 transition-all duration-300 group-hover:scale-110 group-active:scale-95">
+      <div className="h-[12vh] aspect-[2/3.2] shadow-2xl rounded-sm border border-white/10 bg-amber-900/10 transition-all duration-300 group-hover:scale-110 group-active:scale-95" style={{ backfaceVisibility: 'hidden', willChange: 'transform' }}>
         <img 
           src={getCardImageUrl(card.imageId)} 
-          className="w-full h-full object-contain" // <--- CAMBIO CLAVE: contain en lugar de cover
+          className="w-full h-full object-contain" 
           alt={card.name} 
+          style={{ backfaceVisibility: 'hidden', WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
         />
       </div>
     </div>

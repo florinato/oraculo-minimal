@@ -15,8 +15,13 @@ const cardTranslations = es.cards as Record<string, { name: string; info: string
 const cardIds = Object.keys(cardTranslations);
 
 export function getCardImageUrl(cardId: string | undefined): string {
-  if (!cardId) return "";
-  return `${ASSETS_URL}/media/card/${cardId}?token=${IMG_TOKEN}`;
+  if (!cardId) {
+    console.log("[v0] getCardImageUrl: cardId es undefined");
+    return "";
+  }
+  const url = `${ASSETS_URL}/media/card/${cardId}?token=${IMG_TOKEN}`;
+  console.log("[v0] getCardImageUrl:", { cardId, assetsUrl: ASSETS_URL, hasToken: !!IMG_TOKEN, url });
+  return url;
 }
 
 export function drawFiveCards(): TarotCard[] {
