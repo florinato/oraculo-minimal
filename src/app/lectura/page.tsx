@@ -28,11 +28,26 @@ function ReadingContent() {
 
   const { t, currentLang } = getI18n(langParam);
 
-  // Función para parsear tags del stream [C1], [C2], etc.
+  // Función para parsear tags del stream [C1]...[/C1]
   const parseTagContent = (fullText: string, tagName: string): string => {
-    const regex = new RegExp(`\\[${tagName}\\](.*?)(?=\\[|$)`, 's');
+    const regex = new RegExp(`\\[${tagName}\\](.*?)\\[/${tagName}\\]`, 's');
     const match = fullText.match(regex);
     return match ? match[1].trim() : "";
+  };
+
+  // Extraer todas las secciones del stream
+  const extractSections = () => {
+    const sections: { [key: string]: string } = {};
+    
+    // Extraer cartas [C1]...[/C1], [C2]...[/C2], etc.
+    for (let i = 1; i <= cards.length; i++) {
+      sections[`C${i}`] = parseTagContent(text, `C${i}`);
+    }
+    
+    // Extraer resumen
+    sections.RESUMEN = parseTagContent(text, 'RESUMEN');
+    
+    return sections;
   };
 
   useEffect(() => {
@@ -196,10 +211,53 @@ function ReadingContent() {
 
         <div className="w-full max-w-2xl bg-black p-8 rounded-t-[40px] border-t border-amber-900/40 min-h-[60vh] pointer-events-auto">
           <div className="prose prose-invert prose-amber max-w-none font-serif text-lg leading-relaxed mb-12">
-            <ReactMarkdown components={{ strong: ({...props}) => <span className="text-amber-500 font-bold" {...props} /> }}>
-              {text}
-            </ReactMarkdown>
-            {loading && <div className="mt-4 animate-pulse text-amber-700 italic">{t.reading.loading}</div>}
+            {!loading && text.length > 0 ? (
+              (() => {
+                const sections = extractSections();
+                return (
+                  <div className="space-y-6">
+                    {/* Interpretaciones de cada carta */}
+                    {cards.map((_, i) => {
+                      const sectionKey = `C${i + 1}`;
+                      const content = sections[sectionKey];
+                      if (!content) return null;
+                      return (
+                        <div key={sectionKey} className="pb-4 border-b border-amber-900/30">
+                          <p className="text-amber-400 font-bold text-sm uppercase mb-2">Carta {i + 1}</p>
+                          <ReactMarkdown components={{ strong: ({...props}) => <span className="text-amber-500 font-bold" {...props} /> }}>
+                            {content}
+                          </ReactMarkdown>
+                        </div>
+                      );
+                    })}
+                    
+                    {/* Resumen final */}
+                    {sections.RESUMEN && (
+                      <div className="pt-6 border-t-2 border-amber-600/50">
+                        <p className="text-amber-500 font-bold text-sm uppercase mb-3">Resumen</p>
+                        <ReactMarkdown components={{ strong: ({...props}) => <span className="text-amber-400 font-bold" {...props} /> }}>
+                          {sections.RESUMEN}
+                        </ReactMarkdown>
+                      </div>
+                    )}
+                    
+                    {/* Texto que no esté entre etiquetas */}
+                    {(() => {
+                      const textWithoutTags = text.replace(/\[C\d\].*?\[\/C\d\]/gs, '').replace(/\[RESUMEN\].*?\[\/RESUMEN\]/gs, '').trim();
+                      return textWithoutTags ? (
+                        <div className="pt-4 italic text-amber-200/80">
+                          <ReactMarkdown components={{ strong: ({...props}) => <span className="text-amber-400 font-bold" {...props} /> }}>
+                            {textWithoutTags}
+                          </ReactMarkdown>
+                        </div>
+                      ) : null;
+                    })()}
+                  </div>
+                );
+              })()
+            ) : (
+              <div className="animate-pulse text-amber-700 italic">{t.reading.loading}</div>
+            )}
           </div>
           
           {!loading && text.length > 50 && (
