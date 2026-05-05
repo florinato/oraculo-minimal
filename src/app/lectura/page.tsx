@@ -231,10 +231,10 @@ function ReadingContent() {
                       );
                     })}
                     
-                    {/* Resumen final */}
+                    {/* Síntesis final */}
                     {sections.RESUMEN && (
                       <div className="pt-6 border-t-2 border-amber-600/50">
-                        <p className="text-amber-500 font-bold text-sm uppercase mb-3">Resumen</p>
+                        <p className="text-amber-500 font-bold text-sm uppercase mb-3">Síntesis</p>
                         <ReactMarkdown components={{ strong: ({...props}) => <span className="text-amber-400 font-bold" {...props} /> }}>
                           {sections.RESUMEN}
                         </ReactMarkdown>
