@@ -50,6 +50,19 @@ function ReadingContent() {
     return sections;
   };
 
+  // Función para limpiar todas las etiquetas del texto
+  const cleanText = (fullText: string): string => {
+    let cleaned = fullText;
+    
+    // Remover todas las etiquetas [Cn]...[/Cn]
+    cleaned = cleaned.replace(/\[C\d+\](.*?)\[\/C\d+\]/gs, '');
+    
+    // Remover etiqueta [RESUMEN]...[/RESUMEN]
+    cleaned = cleaned.replace(/\[RESUMEN\](.*?)\[\/RESUMEN\]/gs, '');
+    
+    return cleaned.trim();
+  };
+
   useEffect(() => {
     if (hasStarted.current) return;
     hasStarted.current = true;
@@ -243,7 +256,7 @@ function ReadingContent() {
                     
                     {/* Texto que no esté entre etiquetas */}
                     {(() => {
-                      const textWithoutTags = text.replace(/\[C\d\].*?\[\/C\d\]/gs, '').replace(/\[RESUMEN\].*?\[\/RESUMEN\]/gs, '').trim();
+                      const textWithoutTags = cleanText(text);
                       return textWithoutTags ? (
                         <div className="pt-4 italic text-amber-200/80">
                           <ReactMarkdown components={{ strong: ({...props}) => <span className="text-amber-400 font-bold" {...props} /> }}>
