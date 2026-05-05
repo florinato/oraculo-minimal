@@ -22,8 +22,8 @@ export async function POST(req: Request) {
       );
     }
 
-    // 1. RUTA EXACTA según tu test_api.py: /api/interpretar
-    const targetUrl = `${backendBaseUrl?.replace(/\/$/, '')}/api/interpretar`;
+    // Nuevo endpoint para la API v2.0 de Pi App
+    const targetUrl = `${backendBaseUrl?.replace(/\/$/, '')}/api/pi/interpretar`;
     console.log("[v0] URL destino:", targetUrl);
 
     const response = await fetch(targetUrl, {

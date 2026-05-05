@@ -1,10 +1,25 @@
 {
   "home": {
     "title": "Oráculo de Morvan",
+    "select_format": "Elige una tirada",
     "placeholder": "¿Qué deseas consultar?...",
     "button": "Consultar Destino",
     "footer_left": "◆ Privado",
     "footer_right": "Gratuito ◆"
+  },
+  "formats": {
+    "pi_simple_5": {
+      "name": "La Encrucijada del Umbral",
+      "description": "5 cartas que revelan tu estado mental, raíces, pasado, presente y futuro."
+    },
+    "pi_rapida_3": {
+      "name": "Línea Temporal",
+      "description": "3 cartas en línea: Pasado, Presente, Futuro. Perfecto para consultas rápidas."
+    },
+    "pi_sino_1": {
+      "name": "El Oráculo Directo",
+      "description": "1 sola carta que responde directamente a tu pregunta. Máxima claridad."
+    }
   },
   "reading": {
     "loading": "Morvan está interpretando los astros...",

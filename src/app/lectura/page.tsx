@@ -18,6 +18,7 @@ function ReadingContent() {
   const searchParams = useSearchParams();
   const question = searchParams.get("q") || "";
   const langParam = searchParams.get("lang");
+  const formatParam = searchParams.get("format") || "pi_simple_5";
   
   const [text, setText] = useState("");
   const [cards, setCards] = useState<TarotCard[]>([]);
@@ -27,11 +28,26 @@ function ReadingContent() {
 
   const { t, currentLang } = getI18n(langParam);
 
+  // Función para parsear tags del stream [C1], [C2], etc.
+  const parseTagContent = (fullText: string, tagName: string): string => {
+    const regex = new RegExp(`\\[${tagName}\\](.*?)(?=\\[|$)`, 's');
+    const match = fullText.match(regex);
+    return match ? match[1].trim() : "";
+  };
+
   useEffect(() => {
     if (hasStarted.current) return;
     hasStarted.current = true;
 
-    const selectedCards = drawFiveCards();
+    // Generar cartas según el formato
+    let selectedCards: TarotCard[] = [];
+    if (formatParam === "pi_rapida_3") {
+      selectedCards = drawFiveCards().slice(0, 3); // Pasado, Presente, Futuro
+    } else if (formatParam === "pi_sino_1") {
+      selectedCards = drawFiveCards().slice(0, 1); // Solo 1 carta
+    } else {
+      selectedCards = drawFiveCards(); // 5 cartas (default)
+    }
     setCards(selectedCards);
     
     const startInference = async () => {
@@ -39,6 +55,7 @@ function ReadingContent() {
         console.log("[v0] Iniciando lectura con:", {
           question,
           currentLang,
+          format: formatParam,
           cardsCount: selectedCards.length
         });
 
@@ -47,7 +64,7 @@ function ReadingContent() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             personality_prompt: "morvan",
-            format_id: "simple_5",
+            format_id: formatParam,
             user_question: question,
             cards: selectedCards,
             language: currentLang
@@ -108,9 +125,55 @@ function ReadingContent() {
       }
     };
     startInference();
-  }, [question, t.reading.error, currentLang]);
+  }, [question, t.reading.error, currentLang, formatParam]);
 
   if (cards.length === 0) return <div className="min-h-screen bg-black flex items-center justify-center text-amber-500 italic">Invocando el umbral...</div>;
+
+  // Configurar layout según el número de cartas
+  const renderCards = () => {
+    if (cards.length === 1) {
+      // Oráculo Directo: 1 carta centrada
+      return (
+        <div className="grid grid-cols-1 place-items-center pointer-events-auto">
+          <CardImg card={cards[0]} label="El Veredicto" onClick={() => setSelectedCard(cards[0])} />
+        </div>
+      );
+    } else if (cards.length === 3) {
+      // Línea Temporal: 3 cartas horizontales
+      return (
+        <div 
+          className="grid grid-cols-3 pointer-events-auto" 
+          style={{ 
+            transform: 'rotateX(45deg) translateY(8vh)', 
+            transformStyle: 'preserve-3d',
+            gap: '3vh' 
+          }}
+        >
+          <CardImg card={cards[0]} label={t.reading.labels.pasado} onClick={() => setSelectedCard(cards[0])} />
+          <CardImg card={cards[1]} label={t.reading.labels.presente} onClick={() => setSelectedCard(cards[1])} />
+          <CardImg card={cards[2]} label={t.reading.labels.futuro} onClick={() => setSelectedCard(cards[2])} />
+        </div>
+      );
+    } else {
+      // La Encrucijada: 5 cartas en cruz
+      return (
+        <div 
+          className="grid grid-cols-3 grid-rows-3 pointer-events-auto" 
+          style={{ 
+            transform: 'rotateX(45deg) translateY(12vh)', 
+            transformStyle: 'preserve-3d',
+            gap: '2.5vh' 
+          }}
+        >
+          <div className="col-start-2 row-start-1"><CardImg card={cards[2]} label={t.reading.labels.mente} onClick={() => setSelectedCard(cards[2])} /></div>
+          <div className="col-start-1 row-start-2"><CardImg card={cards[0]} label={t.reading.labels.pasado} onClick={() => setSelectedCard(cards[0])} /></div>
+          <div className="col-start-2 row-start-2"><CardImg card={cards[4]} label={t.reading.labels.presente} onClick={() => setSelectedCard(cards[4])} /></div>
+          <div className="col-start-3 row-start-2"><CardImg card={cards[1]} label={t.reading.labels.futuro} onClick={() => setSelectedCard(cards[1])} /></div>
+          <div className="col-start-2 row-start-3"><CardImg card={cards[3]} label={t.reading.labels.raices} onClick={() => setSelectedCard(cards[3])} /></div>
+        </div>
+      );
+    }
+  };
 
   return (
     <div className="relative min-h-screen w-full bg-black text-amber-50 overflow-y-auto overflow-x-hidden scroll-smooth">
@@ -123,20 +186,7 @@ function ReadingContent() {
       {/* CAPA 2: LAS CARTAS (Lienzo 3D independiente) */}
       {/* Al ser fixed inset-0 y no tener overflow, las cartas tienen espacio infinito para inclinarse */}
       <div className="fixed inset-0 h-screen w-full flex justify-center items-center z-10 pointer-events-none" style={{ perspective: '120vh' }}>
-          <div 
-            className="grid grid-cols-3 grid-rows-3 pointer-events-auto" 
-            style={{ 
-              transform: 'rotateX(45deg) translateY(12vh)', 
-              transformStyle: 'preserve-3d',
-              gap: '2.5vh' 
-            }}
-          >
-            <div className="col-start-2 row-start-1"><CardImg card={cards[2]} label={t.reading.labels.mente} onClick={() => setSelectedCard(cards[2])} /></div>
-            <div className="col-start-1 row-start-2"><CardImg card={cards[0]} label={t.reading.labels.pasado} onClick={() => setSelectedCard(cards[0])} /></div>
-            <div className="col-start-2 row-start-2"><CardImg card={cards[4]} label={t.reading.labels.presente} onClick={() => setSelectedCard(cards[4])} /></div>
-            <div className="col-start-3 row-start-2"><CardImg card={cards[1]} label={t.reading.labels.futuro} onClick={() => setSelectedCard(cards[1])} /></div>
-            <div className="col-start-2 row-start-3"><CardImg card={cards[3]} label={t.reading.labels.raices} onClick={() => setSelectedCard(cards[3])} /></div>
-          </div>
+          {renderCards()}
       </div>
 
       {/* CAPA 3: SCROLL DE TEXTO (Encima de todo) */}
