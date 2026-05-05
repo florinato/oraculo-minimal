@@ -28,26 +28,28 @@ function ReadingContent() {
 
   const { t, currentLang } = getI18n(langParam);
 
-  // Función para parsear tags del stream [C1]...[/C1]
-  const parseTagContent = (fullText: string, tagName: string): string => {
-    const regex = new RegExp(`\\[${tagName}\\](.*?)\\[/${tagName}\\]`, 's');
-    const match = fullText.match(regex);
-    return match ? match[1].trim() : "";
-  };
-
-  // Extraer todas las secciones del stream
-  const extractSections = () => {
+  // Parsear etiquetas con regex en tiempo real
+  const parseSections = (fullText: string) => {
+    const regex = /\[(C1|C2|C3|C4|C5|RESUMEN)\]([\s\S]*?)(?=\[(?:C1|C2|C3|C4|C5|RESUMEN)\]|$)/g;
     const sections: { [key: string]: string } = {};
-    
-    // Extraer cartas [C1]...[/C1], [C2]...[/C2], etc.
-    for (let i = 1; i <= cards.length; i++) {
-      sections[`C${i}`] = parseTagContent(text, `C${i}`);
+    let introduction = "";
+    let lastIndex = 0;
+
+    let match;
+    while ((match = regex.exec(fullText)) !== null) {
+      const tag = match[1];
+      const content = match[2].trim();
+      sections[tag] = content;
+      lastIndex = match.index + match[0].length;
     }
-    
-    // Extraer resumen
-    sections.RESUMEN = parseTagContent(text, 'RESUMEN');
-    
-    return sections;
+
+    // Extraer introducción (texto antes de la primera etiqueta)
+    const firstTagIndex = fullText.search(/\[(C1|C2|C3|C4|C5|RESUMEN)\]/);
+    if (firstTagIndex > 0) {
+      introduction = fullText.substring(0, firstTagIndex).trim();
+    }
+
+    return { sections, introduction };
   };
 
   useEffect(() => {
@@ -211,11 +213,20 @@ function ReadingContent() {
 
         <div className="w-full max-w-2xl bg-black p-8 rounded-t-[40px] border-t border-amber-900/40 min-h-[60vh] pointer-events-auto">
           <div className="prose prose-invert prose-amber max-w-none font-serif text-lg leading-relaxed mb-12">
-            {!loading && text.length > 0 ? (
+            {text.length > 0 || loading ? (
               (() => {
-                const sections = extractSections();
+                const { sections, introduction } = parseSections(text);
                 return (
                   <div className="space-y-6">
+                    {/* Introducción del Oráculo */}
+                    {introduction && (
+                      <div className="italic text-amber-200/80 pb-4 border-b border-amber-900/30">
+                        <ReactMarkdown components={{ strong: ({...props}) => <span className="text-amber-400 font-bold" {...props} /> }}>
+                          {introduction}
+                        </ReactMarkdown>
+                      </div>
+                    )}
+
                     {/* Interpretaciones de cada carta */}
                     {cards.map((_, i) => {
                       const sectionKey = `C${i + 1}`;
@@ -240,18 +251,13 @@ function ReadingContent() {
                         </ReactMarkdown>
                       </div>
                     )}
-                    
-                    {/* Texto que no esté entre etiquetas */}
-                    {(() => {
-                      const textWithoutTags = text.replace(/\[C\d\].*?\[\/C\d\]/gs, '').replace(/\[RESUMEN\].*?\[\/RESUMEN\]/gs, '').trim();
-                      return textWithoutTags ? (
-                        <div className="pt-4 italic text-amber-200/80">
-                          <ReactMarkdown components={{ strong: ({...props}) => <span className="text-amber-400 font-bold" {...props} /> }}>
-                            {textWithoutTags}
-                          </ReactMarkdown>
-                        </div>
-                      ) : null;
-                    })()}
+
+                    {/* Indicador de carga si aún está llegando */}
+                    {loading && (
+                      <div className="pt-4 text-center">
+                        <div className="inline-block animate-pulse text-amber-700 text-sm">Morvan continúa escribiendo...</div>
+                      </div>
+                    )}
                   </div>
                 );
               })()
