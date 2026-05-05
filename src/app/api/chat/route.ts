@@ -5,6 +5,7 @@ export async function POST(req: Request) {
   const authToken = process.env.FRONTEND_API_SECRET;
 
   console.log("[v0] === CHAT API DEBUG ===");
+  console.log("[v0] All env vars:", Object.keys(process.env).filter(k => k.includes('CHAT') || k.includes('API') || k.includes('FRONTEND') || k.includes('ASSETS')));
   console.log("[v0] Backend URL:", backendBaseUrl);
   console.log("[v0] Auth Token presente:", !!authToken);
   console.log("[v0] NODE_ENV:", process.env.NODE_ENV);
