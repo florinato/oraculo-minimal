@@ -135,7 +135,7 @@ function ReadingContent() {
       // Oráculo Directo: 1 carta centrada
       return (
         <div className="grid grid-cols-1 place-items-center pointer-events-auto">
-          <CardImg card={cards[0]} label="El Veredicto" onClick={() => setSelectedCard(cards[0])} />
+          <CardImg card={cards[0]} label={t.reading.labels.veredicto} onClick={() => setSelectedCard(cards[0])} />
         </div>
       );
     } else if (cards.length === 3) {
