@@ -10,7 +10,7 @@ code
 JSON
 {
   "personality_prompt": "aislinn",   // morvan, aislinn, sybil
-  "format_id": "pi_simple_5",       // pi_simple_5, pi_rapida_3, pi_sino_3, pi_sino_1
+  "format_id": "pi_simple_5",       // pi_simple_5, pi_rapida_3, pi_sino_1
   "knowledge_base_id": "none",
   "user_question": "Will I find a romantic connection this summer?", 
   "language": "Answer the whole response strictly in ENGLISH.",
@@ -33,11 +33,7 @@ B. pi_rapida_3 (Línea Temporal)
 Ideal para consultas rápidas. Disposición horizontal.
 Etiquetas: [C1] a [C3] y [RESUMEN].
 Posiciones: 1: Pasado, 2: Presente, 3: Futuro.
-C. pi_sino_3 (La Balanza del Destino)
-Para preguntas de Sí o No con matices.
-Etiquetas: [C1] a [C3] y [RESUMEN].
-Posiciones: 1: Viento a Favor (Pros), 2: El Muro (Contras), 3: El Veredicto (Final).
-Regla: El [RESUMEN] comienza siempre con SÍ, NO o PROBABLEMENTE.
+
 D. pi_sino_1 (El Oráculo Directo)
 Respuesta instantánea de una sola carta.
 Etiquetas: [C1] y [RESUMEN].

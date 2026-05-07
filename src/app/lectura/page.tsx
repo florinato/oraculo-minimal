@@ -18,6 +18,7 @@ function ReadingContent() {
   const searchParams = useSearchParams();
   const question = searchParams.get("q") || "";
   const langParam = searchParams.get("lang");
+  const formatParam = searchParams.get("format") || "pi_simple_5";
   
   const [text, setText] = useState("");
   const [cards, setCards] = useState<TarotCard[]>([]);
@@ -27,11 +28,43 @@ function ReadingContent() {
 
   const { t, currentLang } = getI18n(langParam);
 
+  // Parsear etiquetas con regex en tiempo real
+  const parseSections = (fullText: string) => {
+    const regex = /\[(C1|C2|C3|C4|C5|RESUMEN)\]([\s\S]*?)(?=\[(?:C1|C2|C3|C4|C5|RESUMEN)\]|$)/g;
+    const sections: { [key: string]: string } = {};
+    let introduction = "";
+    let lastIndex = 0;
+
+    let match;
+    while ((match = regex.exec(fullText)) !== null) {
+      const tag = match[1];
+      const content = match[2].trim();
+      sections[tag] = content;
+      lastIndex = match.index + match[0].length;
+    }
+
+    // Extraer introducción (texto antes de la primera etiqueta)
+    const firstTagIndex = fullText.search(/\[(C1|C2|C3|C4|C5|RESUMEN)\]/);
+    if (firstTagIndex > 0) {
+      introduction = fullText.substring(0, firstTagIndex).trim();
+    }
+
+    return { sections, introduction };
+  };
+
   useEffect(() => {
     if (hasStarted.current) return;
     hasStarted.current = true;
 
-    const selectedCards = drawFiveCards();
+    // Generar cartas según el formato
+    let selectedCards: TarotCard[] = [];
+    if (formatParam === "pi_rapida_3") {
+      selectedCards = drawFiveCards().slice(0, 3); // Pasado, Presente, Futuro
+    } else if (formatParam === "pi_sino_1") {
+      selectedCards = drawFiveCards().slice(0, 1); // Solo 1 carta
+    } else {
+      selectedCards = drawFiveCards(); // 5 cartas (default)
+    }
     setCards(selectedCards);
     
     const startInference = async () => {
@@ -39,6 +72,7 @@ function ReadingContent() {
         console.log("[v0] Iniciando lectura con:", {
           question,
           currentLang,
+          format: formatParam,
           cardsCount: selectedCards.length
         });
 
@@ -47,7 +81,7 @@ function ReadingContent() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             personality_prompt: "morvan",
-            format_id: "simple_5",
+            format_id: formatParam,
             user_question: question,
             cards: selectedCards,
             language: currentLang
@@ -108,9 +142,55 @@ function ReadingContent() {
       }
     };
     startInference();
-  }, [question, t.reading.error, currentLang]);
+  }, [question, t.reading.error, currentLang, formatParam]);
 
   if (cards.length === 0) return <div className="min-h-screen bg-black flex items-center justify-center text-amber-500 italic">Invocando el umbral...</div>;
+
+  // Configurar layout según el número de cartas
+  const renderCards = () => {
+    if (cards.length === 1) {
+      // Oráculo Directo: 1 carta centrada
+      return (
+        <div className="grid grid-cols-1 place-items-center pointer-events-auto">
+          <CardImg card={cards[0]} label={t.reading.labels.veredicto} onClick={() => setSelectedCard(cards[0])} />
+        </div>
+      );
+    } else if (cards.length === 3) {
+      // Línea Temporal: 3 cartas horizontales
+      return (
+        <div 
+          className="grid grid-cols-3 pointer-events-auto" 
+          style={{ 
+            transform: 'rotateX(45deg) translateY(8vh)', 
+            transformStyle: 'preserve-3d',
+            gap: '3vh' 
+          }}
+        >
+          <CardImg card={cards[0]} label={t.reading.labels.pasado} onClick={() => setSelectedCard(cards[0])} />
+          <CardImg card={cards[1]} label={t.reading.labels.presente} onClick={() => setSelectedCard(cards[1])} />
+          <CardImg card={cards[2]} label={t.reading.labels.futuro} onClick={() => setSelectedCard(cards[2])} />
+        </div>
+      );
+    } else {
+      // La Encrucijada: 5 cartas en cruz
+      return (
+        <div 
+          className="grid grid-cols-3 grid-rows-3 pointer-events-auto" 
+          style={{ 
+            transform: 'rotateX(45deg) translateY(12vh)', 
+            transformStyle: 'preserve-3d',
+            gap: '2.5vh' 
+          }}
+        >
+          <div className="col-start-2 row-start-1"><CardImg card={cards[2]} label={t.reading.labels.mente} onClick={() => setSelectedCard(cards[2])} /></div>
+          <div className="col-start-1 row-start-2"><CardImg card={cards[0]} label={t.reading.labels.pasado} onClick={() => setSelectedCard(cards[0])} /></div>
+          <div className="col-start-2 row-start-2"><CardImg card={cards[4]} label={t.reading.labels.presente} onClick={() => setSelectedCard(cards[4])} /></div>
+          <div className="col-start-3 row-start-2"><CardImg card={cards[1]} label={t.reading.labels.futuro} onClick={() => setSelectedCard(cards[1])} /></div>
+          <div className="col-start-2 row-start-3"><CardImg card={cards[3]} label={t.reading.labels.raices} onClick={() => setSelectedCard(cards[3])} /></div>
+        </div>
+      );
+    }
+  };
 
   return (
     <div className="relative min-h-screen w-full bg-black text-amber-50 overflow-y-auto overflow-x-hidden scroll-smooth">
@@ -123,20 +203,7 @@ function ReadingContent() {
       {/* CAPA 2: LAS CARTAS (Lienzo 3D independiente) */}
       {/* Al ser fixed inset-0 y no tener overflow, las cartas tienen espacio infinito para inclinarse */}
       <div className="fixed inset-0 h-screen w-full flex justify-center items-center z-10 pointer-events-none" style={{ perspective: '120vh' }}>
-          <div 
-            className="grid grid-cols-3 grid-rows-3 pointer-events-auto" 
-            style={{ 
-              transform: 'rotateX(45deg) translateY(12vh)', 
-              transformStyle: 'preserve-3d',
-              gap: '2.5vh' 
-            }}
-          >
-            <div className="col-start-2 row-start-1"><CardImg card={cards[2]} label={t.reading.labels.mente} onClick={() => setSelectedCard(cards[2])} /></div>
-            <div className="col-start-1 row-start-2"><CardImg card={cards[0]} label={t.reading.labels.pasado} onClick={() => setSelectedCard(cards[0])} /></div>
-            <div className="col-start-2 row-start-2"><CardImg card={cards[4]} label={t.reading.labels.presente} onClick={() => setSelectedCard(cards[4])} /></div>
-            <div className="col-start-3 row-start-2"><CardImg card={cards[1]} label={t.reading.labels.futuro} onClick={() => setSelectedCard(cards[1])} /></div>
-            <div className="col-start-2 row-start-3"><CardImg card={cards[3]} label={t.reading.labels.raices} onClick={() => setSelectedCard(cards[3])} /></div>
-          </div>
+          {renderCards()}
       </div>
 
       {/* CAPA 3: SCROLL DE TEXTO (Encima de todo) */}
@@ -146,10 +213,57 @@ function ReadingContent() {
 
         <div className="w-full max-w-2xl bg-black p-8 rounded-t-[40px] border-t border-amber-900/40 min-h-[60vh] pointer-events-auto">
           <div className="prose prose-invert prose-amber max-w-none font-serif text-lg leading-relaxed mb-12">
-            <ReactMarkdown components={{ strong: ({...props}) => <span className="text-amber-500 font-bold" {...props} /> }}>
-              {text}
-            </ReactMarkdown>
-            {loading && <div className="mt-4 animate-pulse text-amber-700 italic">{t.reading.loading}</div>}
+            {text.length > 0 || loading ? (
+              (() => {
+                const { sections, introduction } = parseSections(text);
+                return (
+                  <div className="space-y-6">
+                    {/* Introducción del Oráculo */}
+                    {introduction && (
+                      <div className="italic text-amber-200/80 pb-4 border-b border-amber-900/30">
+                        <ReactMarkdown components={{ strong: ({...props}) => <span className="text-amber-400 font-bold" {...props} /> }}>
+                          {introduction}
+                        </ReactMarkdown>
+                      </div>
+                    )}
+
+                    {/* Interpretaciones de cada carta */}
+                    {cards.map((_, i) => {
+                      const sectionKey = `C${i + 1}`;
+                      const content = sections[sectionKey];
+                      if (!content) return null;
+                      return (
+                        <div key={sectionKey} className="pb-4 border-b border-amber-900/30">
+                          <p className="text-amber-400 font-bold text-sm uppercase mb-2">Carta {i + 1}</p>
+                          <ReactMarkdown components={{ strong: ({...props}) => <span className="text-amber-500 font-bold" {...props} /> }}>
+                            {content}
+                          </ReactMarkdown>
+                        </div>
+                      );
+                    })}
+                    
+                    {/* Síntesis final */}
+                    {sections.RESUMEN && (
+                      <div className="pt-6 border-t-2 border-amber-600/50">
+                        <p className="text-amber-500 font-bold text-sm uppercase mb-3">Síntesis</p>
+                        <ReactMarkdown components={{ strong: ({...props}) => <span className="text-amber-400 font-bold" {...props} /> }}>
+                          {sections.RESUMEN}
+                        </ReactMarkdown>
+                      </div>
+                    )}
+
+                    {/* Indicador de carga si aún está llegando */}
+                    {loading && (
+                      <div className="pt-4 text-center">
+                        <div className="inline-block animate-pulse text-amber-700 text-sm">Morvan continúa escribiendo...</div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()
+            ) : (
+              <div className="animate-pulse text-amber-700 italic">{t.reading.loading}</div>
+            )}
           </div>
           
           {!loading && text.length > 50 && (

@@ -1,19 +1,24 @@
 "use client"
-import { getI18n } from "@/app/lib/i18n"; // Traemos al gestor
+import { getI18n } from "@/app/lib/i18n";
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 
 export default function Home() {
+  const [selectedFormat, setSelectedFormat] = useState<string>("")
   const [question, setQuestion] = useState("")
   const router = useRouter()
   
-  // Obtenemos los textos y el código de idioma detectado automáticamente
   const { t, currentLang } = getI18n();
 
+  const formats = [
+    { id: "pi_simple_5", name: "La Encrucijada del Umbral", desc: "5 cartas que revelan tu estado mental, raíces, pasado, presente y futuro." },
+    { id: "pi_rapida_3", name: "Línea Temporal", desc: "3 cartas en línea: Pasado, Presente, Futuro. Perfecto para consultas rápidas." },
+    { id: "pi_sino_1", name: "El Oráculo Directo", desc: "1 sola carta que responde directamente a tu pregunta. Máxima claridad." }
+  ]
+
   const handleStart = () => {
-    if (question.trim().length > 5) {
-      // Pasamos a la lectura la pregunta y el idioma que el gestor decidió
-      router.push(`/lectura?q=${encodeURIComponent(question)}&lang=${currentLang}`)
+    if (question.trim().length > 5 && selectedFormat) {
+      router.push(`/lectura?q=${encodeURIComponent(question)}&lang=${currentLang}&format=${selectedFormat}`)
     }
   }
 
@@ -24,29 +29,58 @@ export default function Home() {
         <div className="absolute inset-0 bg-linear-to-t from-black via-black/20 to-transparent" />
       </div>
 
-      <div className="relative z-10 w-full max-w-lg p-4 pb-8 space-y-4">
+      <div className="relative z-10 w-full max-w-lg p-4 pb-8 space-y-6">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-amber-500 uppercase tracking-widest">
             {t.home.title}
           </h1>
         </div>
 
-        <div className="relative">
-          <textarea
-            className="w-full h-32 p-5 bg-black/80 border border-amber-900/50 rounded-3xl text-amber-100 placeholder:text-amber-800/60 focus:outline-none focus:border-amber-500 transition-all text-lg shadow-2xl backdrop-blur-md resize-none"
-            placeholder={t.home.placeholder}
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-          />
+        {/* SELECTOR DE TIRADA */}
+        <div className="space-y-3">
+          <label className="block text-amber-400 text-sm font-semibold uppercase tracking-wide">
+            {t.home.select_format}
+          </label>
+          <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto">
+            {formats.map((format) => (
+              <button
+                key={format.id}
+                onClick={() => setSelectedFormat(format.id)}
+                className={`p-3 rounded-xl text-left transition-all border-2 ${
+                  selectedFormat === format.id
+                    ? "border-amber-500 bg-amber-900/40 shadow-lg shadow-amber-900/50"
+                    : "border-amber-900/30 bg-black/60 hover:border-amber-700 hover:bg-amber-900/20"
+                }`}
+              >
+                <div className="font-bold text-amber-300 text-sm">{format.name}</div>
+                <div className="text-amber-100/70 text-xs mt-1">{format.desc}</div>
+              </button>
+            ))}
+          </div>
         </div>
 
-        <button
-          onClick={handleStart}
-          disabled={question.trim().length <= 5}
-          className="w-full py-4 bg-amber-800 hover:bg-amber-700 disabled:opacity-10 text-white font-bold rounded-2xl text-lg border-b-4 border-amber-950 active:border-b-0 transition-all"
-        >
-          {t.home.button}
-        </button>
+        {/* TEXTAREA CON PREGUNTA */}
+        {selectedFormat && (
+          <div className="relative animate-in fade-in duration-300">
+            <textarea
+              className="w-full h-32 p-5 bg-black/80 border border-amber-900/50 rounded-3xl text-amber-100 placeholder:text-amber-800/60 focus:outline-none focus:border-amber-500 transition-all text-lg shadow-2xl backdrop-blur-md resize-none"
+              placeholder={t.home.placeholder}
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+            />
+          </div>
+        )}
+
+        {/* BOTÓN CONSULTAR */}
+        {selectedFormat && (
+          <button
+            onClick={handleStart}
+            disabled={question.trim().length <= 5}
+            className="w-full py-4 bg-amber-800 hover:bg-amber-700 disabled:opacity-30 text-white font-bold rounded-2xl text-lg border-b-4 border-amber-950 active:border-b-0 transition-all animate-in fade-in duration-300"
+          >
+            {t.home.button}
+          </button>
+        )}
 
         <div className="flex justify-between px-3 text-[9px] text-white/30 uppercase tracking-[0.3em]">
           <span>{t.home.footer_left}</span>
