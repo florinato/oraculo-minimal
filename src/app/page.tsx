@@ -36,27 +36,34 @@ export default function Home() {
           </h1>
         </div>
 
-        {/* SELECTOR DE TIRADA */}
-        <div className="space-y-3">
+        {/* SELECTOR DE TIRADA - DROPDOWN */}
+        <div className="space-y-2">
           <label className="block text-amber-400 text-sm font-semibold uppercase tracking-wide">
             {t.home.select_format}
           </label>
-          <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto">
+          <select
+            value={selectedFormat}
+            onChange={(e) => setSelectedFormat(e.target.value)}
+            className="w-full p-3 bg-black/80 border border-amber-900/50 rounded-xl text-amber-100 focus:outline-none focus:border-amber-500 transition-all text-base cursor-pointer appearance-none"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23D97706' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'right 12px center',
+              paddingRight: '36px'
+            }}
+          >
+            <option value="">Selecciona una tirada...</option>
             {formats.map((format) => (
-              <button
-                key={format.id}
-                onClick={() => setSelectedFormat(format.id)}
-                className={`p-3 rounded-xl text-left transition-all border-2 ${
-                  selectedFormat === format.id
-                    ? "border-amber-500 bg-amber-900/40 shadow-lg shadow-amber-900/50"
-                    : "border-amber-900/30 bg-black/60 hover:border-amber-700 hover:bg-amber-900/20"
-                }`}
-              >
-                <div className="font-bold text-amber-300 text-sm">{format.name}</div>
-                <div className="text-amber-100/70 text-xs mt-1">{format.desc}</div>
-              </button>
+              <option key={format.id} value={format.id}>
+                {format.name}
+              </option>
             ))}
-          </div>
+          </select>
+          {selectedFormat && (
+            <p className="text-amber-200/70 text-xs italic">
+              {formats.find(f => f.id === selectedFormat)?.desc}
+            </p>
+          )}
         </div>
 
         {/* TEXTAREA CON PREGUNTA */}
