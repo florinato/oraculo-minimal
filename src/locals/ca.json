@@ -1,0 +1,68 @@
+{
+  "home": {
+    "title": "Oracle de Morvan",
+    "select_format": "Tirada",
+    "select_default": "Selecciona el tipus de consulta...",
+    "placeholder": "Què desitges consultar?...",
+    "button": "Consultar Destí",
+    "footer_left": "◆ Privat",
+    "footer_right": "Gratuït ◆"
+  },
+  "formats": {
+    "pi_simple_5": {
+      "name": "Tirada de 5",
+      "description": "5 cartes que revelen ment, arrels, passat, present i futur."
+    },
+    "pi_rapida_3": {
+      "name": "Ràpida",
+      "description": "3 cartes en línia: Passat, Present, Futur."
+    },
+    "pi_sino_1": {
+      "name": "Sí o No",
+      "description": "1 sola carta per a una resposta directa."
+    }
+  },
+  "reading": {
+    "loading_initial": "Invocant el llindar...",
+    "loading_stream": "Morvan continua escrivint...",
+    "error": "L'Oracle guarda silenci... les energies no flueixen.",
+    "new_reading": "Nova Consulta",
+    "card_prefix": "Carta",
+    "synthesis": "Síntesi",
+    "labels": {
+      "mente": "Ment",
+      "pasado": "Passat",
+      "presente": "Present",
+      "futuro": "Futur",
+      "raices": "Arrels",
+      "veredicto": "El Veredicte"
+    }
+  },
+  "card_detail": {
+    "close_hint": "Toca a fora per tancar"
+  },
+  "cards": {
+    "00-thefool": { "name": "El Boig", "info": "Salt al buit. Nous començaments sense por ni equipatge." },
+    "01-themagician": { "name": "El Mag", "info": "Poder absolut. Tens totes les eines per manifestar la teva realitat." },
+    "02-thehighpriestess": { "name": "La Sacerdotessa", "info": "Intuïció pura. Guarda silenci i escolta la teva veu interior." },
+    "03-theempress": { "name": "L'Emperadriu", "info": "Abundància. La natura floreix i els teus projectes donen fruit." },
+    "04-theemperor": { "name": "L'Emperador", "info": "Control i estructura. És moment de posar ordre i autoritat." },
+    "05-thehierophant": { "name": "El Hierofanta", "info": "Saviesa ancestral. Busca el consell en la tradició i allò sagrat." },
+    "06-thelovers": { "name": "Els Enamorats", "info": "Cruïlla. Tria amb el cor, no amb la ment." },
+    "07-thechariot": { "name": "El Carro", "info": "Victòria. Avança amb determinació cap a la teva meta sense dubtar." },
+    "08-strength": { "name": "La Força", "info": "Coratge intern. Domina les teves ombres amb compassió i paciència." },
+    "09-thehermit": { "name": "L'Ermità", "info": "Retir. Allunya't del soroll per trobar la llum al teu interior." },
+    "10-wheeloffortune": { "name": "Roda de la Fortuna", "info": "Canvi de cicle. El destí gira; el que baixa, pujarà." },
+    "11-justice": { "name": "La Justícia", "info": "Equilibri. Reculls exactament allò que has sembrat." },
+    "12-thehangedman": { "name": "El Penjat", "info": "Pausa. Deixa anar el control i mira el món des d'una altra perspectiva." },
+    "13-death": { "name": "La Mort", "info": "Transformació. Talla amb el passat per deixar espai a la novetat." },
+    "14-temperance": { "name": "La Temprança", "info": "Alquímia. Barreja les teves energies amb calma per trobar la pau." },
+    "15-thedevil": { "name": "El Diable", "info": "Cadenes. Identifica les teves lligadures i allibera't de les teves pròpies ombres." },
+    "16-thetower": { "name": "La Torre", "info": "Ruptura. Els falsos fonaments cauen per alliberar-te de la teva presó." },
+    "17-thestar": { "name": "L'Estrella", "info": "Esperança. La tempesta ha passat; confia en la guia del destí." },
+    "18-themoon": { "name": "La Lluna", "info": "Misteri. Navega pels teus somnis i pors sense perdre el rumb." },
+    "19-thesun": { "name": "El Sol", "info": "Èxit total. La llum ho il·lumina tot; celebra la teva pròpia vitalitat." },
+    "20-judgement": { "name": "El Judici", "info": "Reneix. Perdona el passat i respon a la crida de la teva ànima." },
+    "21-theworld": { "name": "El Món", "info": "Plenitud. Has completat el viatge; l'univers està en harmonia." }
+  }
+}

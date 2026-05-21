@@ -26,7 +26,7 @@ function ReadingContent() {
   const [selectedCard, setSelectedCard] = useState<TarotCard | null>(null);
   const hasStarted = useRef(false);
 
-  const { t, currentLang } = getI18n(langParam);
+ const { t, currentLang, aiInstruction } = getI18n(langParam);
 
   // Parsear etiquetas con regex en tiempo real
   const parseSections = (fullText: string) => {
@@ -84,7 +84,7 @@ function ReadingContent() {
             format_id: formatParam,
             user_question: question,
             cards: selectedCards,
-            language: currentLang
+            language: aiInstruction 
           })
         });
 
@@ -197,7 +197,7 @@ function ReadingContent() {
       
       {/* CAPA 1: FONDO FIJO (La foto de la mesa) */}
       <div className="fixed inset-0 h-screen w-full overflow-hidden z-0 pointer-events-none flex justify-center items-center">
-        <img src="/mesa_lectura.jpg" className="w-[1200px] h-[800px] object-cover flex-shrink-0" alt="Mesa" />
+        <img src="/portada.jpg" className="w-300 h-200 object-cover shrink-0" alt="Mesa" />
       </div>
 
       {/* CAPA 2: LAS CARTAS (Lienzo 3D independiente) */}
@@ -255,14 +255,14 @@ function ReadingContent() {
                     {/* Indicador de carga si aún está llegando */}
                     {loading && (
                       <div className="pt-4 text-center">
-                        <div className="inline-block animate-pulse text-amber-700 text-sm">Morvan continúa escribiendo...</div>
+<div className="inline-block animate-pulse text-amber-700 text-sm">{t.reading.loading_stream}</div>
                       </div>
                     )}
                   </div>
                 );
               })()
             ) : (
-              <div className="animate-pulse text-amber-700 italic">{t.reading.loading}</div>
+<div className="animate-pulse text-amber-700 italic">{t.reading.loading_initial}</div>
             )}
           </div>
           

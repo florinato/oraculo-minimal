@@ -1,0 +1,68 @@
+{
+  "home": {
+    "title": "Oracle de Morvan",
+    "select_format": "Tirage",
+    "select_default": "Sélectionnez le type de consultation...",
+    "placeholder": "Que souhaitez-vous consulter ?...",
+    "button": "Consulter le Destin",
+    "footer_left": "◆ Privé",
+    "footer_right": "Gratuit ◆"
+  },
+  "formats": {
+    "pi_simple_5": {
+      "name": "Tirage de 5",
+      "description": "5 cartes révélant l'esprit, les racines, le passé, le présent et le futur."
+    },
+    "pi_rapida_3": {
+      "name": "Rapide",
+      "description": "3 cartes en ligne : Passé, Présent, Futur."
+    },
+    "pi_sino_1": {
+      "name": "Oui ou Non",
+      "description": "1 seule carte pour une réponse directe."
+    }
+  },
+  "reading": {
+    "loading_initial": "Invocation du seuil...",
+    "loading_stream": "Morvan continue d'écrire...",
+    "error": "L'Oracle garde le silence... les énergies ne circulent pas.",
+    "new_reading": "Nouvelle Consultation",
+    "card_prefix": "Carte",
+    "synthesis": "Synthèse",
+    "labels": {
+      "mente": "Esprit",
+      "pasado": "Passé",
+      "presente": "Présent",
+      "futuro": "Futur",
+      "raices": "Racines",
+      "veredicto": "Le Verdict"
+    }
+  },
+  "card_detail": {
+    "close_hint": "Touchez à l'extérieur pour fermer"
+  },
+  "cards": {
+    "00-thefool": { "name": "Le Fou", "info": "Saut dans le vide. Nouveaux départs sans peur ni bagage." },
+    "01-themagician": { "name": "Le Magicien", "info": "Pouvoir absolu. Vous avez tous les outils pour manifester votre réalité." },
+    "02-thehighpriestess": { "name": "La Grande Prêtresse", "info": "Intuition pure. Gardez le silence et écoutez votre voix intérieure." },
+    "03-theempress": { "name": "L'Impératrice", "info": "Abondance. La nature fleurit et vos projets portent leurs fruits." },
+    "04-theemperor": { "name": "L'Empereur", "info": "Contrôle et structure. Il est temps d'établir l'ordre et l'autorité." },
+    "05-thehierophant": { "name": "Le Hiérophante", "info": "Sagesse ancestrale. Cherchez conseil dans la tradition et le sacré." },
+    "06-thelovers": { "name": "Les Amoureux", "info": "Croisée des chemins. Choisissez avec votre cœur, pas avec votre esprit." },
+    "07-thechariot": { "name": "Le Chariot", "info": "Victoire. Avancez avec détermination vers votre but sans hésiter." },
+    "08-strength": { "name": "La Force", "info": "Courage intérieur. Domptez vos ombres avec compassion et patience." },
+    "09-thehermit": { "name": "L'Ermite", "info": "Retraite. Éloignez-vous du bruit pour trouver la lumière en vous." },
+    "10-wheeloffortune": { "name": "La Roue de la Fortune", "info": "Changement de cycle. Le destin tourne ; ce qui descend, montera." },
+    "11-justice": { "name": "La Justice", "info": "Équilibre. Vous récoltez exactement ce que vous avez semé." },
+    "12-thehangedman": { "name": "Le Pendu", "info": "Pause. Lâchez prise et regardez le monde sous une autre perspective." },
+    "13-death": { "name": "La Mort", "info": "Transformation. Coupez les ponts avec le passé pour faire place à la nouveauté." },
+    "14-temperance": { "name": "La Tempérance", "info": "Alchimie. Mélangez vos énergies avec calme pour trouver la paix." },
+    "15-thedevil": { "name": "Le Diable", "info": "Chaînes. Identifiez vos attachements et libérez-vous de vos propres ombres." },
+    "16-thetower": { "name": "La Tour", "info": "Rupture. Les fausses fondations s'effondrent pour vous libérer de votre prison." },
+    "17-thestar": { "name": "L'Étoile", "info": "Espoir. La tempête est passée ; ayez confiance en votre destin." },
+    "18-themoon": { "name": "La Lune", "info": "Mystère. Naviguez à travers vos rêves et vos peurs sans perdre le cap." },
+    "19-thesun": { "name": "Le Soleil", "info": "Succès total. La lumière illumine tout ; célébrez votre propre vitalité." },
+    "20-judgement": { "name": "Le Jugement", "info": "Renaissance. Pardonnez le passé et répondez à l'appel de votre âme." },
+    "21-theworld": { "name": "Le Monde", "info": "Plénitude. Vous avez terminé le voyage ; l'univers est en harmonie." }
+  }
+}

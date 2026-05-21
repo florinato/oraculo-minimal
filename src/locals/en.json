@@ -1,0 +1,68 @@
+{
+  "home": {
+    "title": "Morvan's Oracle",
+    "select_format": "Spread",
+    "select_default": "Select a reading type...",
+    "placeholder": "What do you wish to ask?...",
+    "button": "Consult Destiny",
+    "footer_left": "◆ Private",
+    "footer_right": "Free ◆"
+  },
+  "formats": {
+    "pi_simple_5": {
+      "name": "5-Card Spread",
+      "description": "5 cards revealing mind, roots, past, present, and future."
+    },
+    "pi_rapida_3": {
+      "name": "Quick Reading",
+      "description": "3 cards in a row: Past, Present, Future."
+    },
+    "pi_sino_1": {
+      "name": "Yes or No",
+      "description": "1 single card for a direct answer."
+    }
+  },
+  "reading": {
+    "loading_initial": "Invoking the threshold...",
+    "loading_stream": "Morvan continues writing...",
+    "error": "The Oracle is silent... energies are not flowing.",
+    "new_reading": "New Consultation",
+    "card_prefix": "Card",
+    "synthesis": "Synthesis",
+    "labels": {
+      "mente": "Mind",
+      "pasado": "Past",
+      "presente": "Present",
+      "futuro": "Future",
+      "raices": "Roots",
+      "veredicto": "The Verdict"
+    }
+  },
+  "card_detail": {
+    "close_hint": "Tap outside to close"
+  },
+  "cards": {
+    "00-thefool": { "name": "The Fool", "info": "Leap into the void. New beginnings with no fear or baggage." },
+    "01-themagician": { "name": "The Magician", "info": "Absolute power. You have all the tools to manifest your reality." },
+    "02-thehighpriestess": { "name": "The High Priestess", "info": "Pure intuition. Keep silent and listen to your inner voice." },
+    "03-theempress": { "name": "The Empress", "info": "Abundance. Nature blooms and your projects bear fruit." },
+    "04-theemperor": { "name": "The Emperor", "info": "Control and structure. It is time to establish order and authority." },
+    "05-thehierophant": { "name": "The Hierophant", "info": "Ancestral wisdom. Seek counsel in tradition and the sacred." },
+    "06-thelovers": { "name": "The Lovers", "info": "Crossroads. Choose with your heart, not your mind." },
+    "07-thechariot": { "name": "The Chariot", "info": "Victory. Advance with determination towards your goal without hesitation." },
+    "08-strength": { "name": "Strength", "info": "Inner courage. Tame your shadows with compassion and patience." },
+    "09-thehermit": { "name": "The Hermit", "info": "Retreat. Step away from the noise to find the light within." },
+    "10-wheeloffortune": { "name": "Wheel of Fortune", "info": "Cycle change. Destiny turns; what goes down, must come up." },
+    "11-justice": { "name": "Justice", "info": "Balance. You reap exactly what you have sown." },
+    "12-thehangedman": { "name": "The Hanged Man", "info": "Pause. Release control and look at the world from another perspective." },
+    "13-death": { "name": "Death", "info": "Transformation. Cut ties with the old to make room for the new." },
+    "14-temperance": { "name": "Temperance", "info": "Alchemy. Mix your energies calmly to find peace." },
+    "15-thedevil": { "name": "The Devil", "info": "Chains. Identify your attachments and break free from your own shadows." },
+    "16-thetower": { "name": "The Tower", "info": "Rupture. False foundations crumble to free you from your prison." },
+    "17-thestar": { "name": "The Star", "info": "Hope. The storm has passed; trust in destiny's guide." },
+    "18-themoon": { "name": "The Moon", "info": "Mystery. Navigate your dreams and fears without losing your way." },
+    "19-thesun": { "name": "The Sun", "info": "Total success. Light illuminates everything; celebrate your own vitality." },
+    "20-judgement": { "name": "Judgement", "info": "Rebirth. Forgive the past and answer the call of your soul." },
+    "21-theworld": { "name": "The World", "info": "Fulfillment. You have completed the journey; the universe is in harmony." }
+  }
+}

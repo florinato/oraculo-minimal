@@ -1,7 +1,8 @@
 {
   "home": {
     "title": "Oráculo de Morvan",
-    "select_format": "Elige una tirada",
+    "select_format": "Tirada",
+    "select_default": "Selecciona el tipo de consulta...",
     "placeholder": "¿Qué deseas consultar?...",
     "button": "Consultar Destino",
     "footer_left": "◆ Privado",
@@ -9,22 +10,25 @@
   },
   "formats": {
     "pi_simple_5": {
-      "name": "La Encrucijada del Umbral",
-      "description": "5 cartas que revelan tu estado mental, raíces, pasado, presente y futuro."
+      "name": "Tirada de 5",
+      "description": "5 cartas que revelan mente, raíces, pasado, presente y futuro."
     },
     "pi_rapida_3": {
-      "name": "Línea Temporal",
-      "description": "3 cartas en línea: Pasado, Presente, Futuro. Perfecto para consultas rápidas."
+      "name": "Rápida",
+      "description": "3 cartas en línea: Pasado, Presente, Futuro."
     },
     "pi_sino_1": {
-      "name": "El Oráculo Directo",
-      "description": "1 sola carta que responde directamente a tu pregunta. Máxima claridad."
+      "name": "Sí o No",
+      "description": "1 sola carta para una respuesta directa."
     }
   },
   "reading": {
-    "loading": "Morvan está interpretando los astros...",
+    "loading_initial": "Invocando el umbral...",
+    "loading_stream": "Morvan continúa escribiendo...",
     "error": "El Oráculo guarda silencio... las energías no fluyen.",
     "new_reading": "Nueva Consulta",
+    "card_prefix": "Carta",
+    "synthesis": "Síntesis",
     "labels": {
       "mente": "Mente",
       "pasado": "Pasado",
@@ -34,7 +38,9 @@
       "veredicto": "El Veredicto"
     }
   },
-
+  "card_detail": {
+    "close_hint": "Toca fuera para cerrar"
+  },
   "cards": {
     "00-thefool": { "name": "El Loco", "info": "Salto al vacío. Nuevos comienzos sin miedo ni equipaje." },
     "01-themagician": { "name": "El Mago", "info": "Poder absoluto. Tienes todas las herramientas para manifestar tu realidad." },
@@ -58,5 +64,5 @@
     "19-thesun": { "name": "El Sol", "info": "Éxito total. La luz lo ilumina todo; celebra tu propia vitalidad." },
     "20-judgement": { "name": "El Juicio", "info": "Renacer. Perdona el pasado y responde al llamado de tu alma." },
     "21-theworld": { "name": "El Mundo", "info": "Plenitud. Has completado el viaje; el universo está en armonía." }
-    }
+  }
 }
