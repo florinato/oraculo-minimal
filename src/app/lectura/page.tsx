@@ -191,9 +191,9 @@ function ReadingContent() {
   return (
     <div className="relative min-h-screen w-full bg-black text-amber-50 overflow-y-auto overflow-x-hidden scroll-smooth">
       
-      {/* CAPA 1: FONDO FIJO (La foto de la mesa) */}
+      {/* CAPA 1: FONDO FIJO (La foto de portada) */}
       <div className="fixed inset-0 h-screen w-full overflow-hidden z-0 pointer-events-none flex justify-center items-center">
-        <img src="/portada.jpg" className="w-300 h-200 object-cover shrink-0" alt="Mesa" />
+        <img src="/portada.jpg" className="w-full h-full object-cover" alt="Portada" />
       </div>
 
       {/* CAPA 2: LAS CARTAS (Lienzo 3D independiente) */}
