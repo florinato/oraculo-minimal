@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 export default function Home() {
   const router = useRouter()
-  const [selectedFormat, setSelectedFormat] = useState<string>("")
+  const [selectedFormat, setSelectedFormat] = useState<string>("pi_simple_5")
   const [question, setQuestion] = useState("")
   const [lang, setLang] = useState<string>("es") 
 
@@ -83,7 +83,6 @@ export default function Home() {
               backgroundPosition: 'right 12px center',
             }}
           >
-            <option value="" className="text-gray-500">{t.home.select_default}</option>
             {formatOptions.map((format) => (
               <option key={format.id} value={format.id} className="bg-black">
                 {format.name}
