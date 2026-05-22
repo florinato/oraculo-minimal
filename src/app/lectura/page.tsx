@@ -161,8 +161,6 @@ function ReadingContent() {
         <div 
           className="grid grid-cols-3 pointer-events-auto" 
           style={{ 
-            transform: 'rotateX(45deg) translateY(8vh)', 
-            transformStyle: 'preserve-3d',
             gap: '3vh' 
           }}
         >
@@ -177,8 +175,6 @@ function ReadingContent() {
         <div 
           className="grid grid-cols-3 grid-rows-3 pointer-events-auto" 
           style={{ 
-            transform: 'rotateX(45deg) translateY(12vh)', 
-            transformStyle: 'preserve-3d',
             gap: '2.5vh' 
           }}
         >
