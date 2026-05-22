@@ -30,7 +30,7 @@ export default function Home() {
   }
 
   return (
-    <main className="relative min-h-screen flex flex-col justify-between items-center bg-black text-white font-sans overflow-hidden">
+    <main className="relative min-h-screen flex flex-col justify-end items-center bg-black text-white font-sans overflow-hidden">
       
       {/* FONDO */}
       <div className="absolute inset-0 z-0">
@@ -61,14 +61,14 @@ export default function Home() {
       </div>
 
       {/* TÍTULO ARRIBA */}
-      <div className="relative z-10 w-full pt-12 text-center">
+      <div className="absolute top-12 left-0 right-0 z-10 text-center">
         <h1 className="text-3xl font-bold text-amber-500 uppercase tracking-widest drop-shadow-md">
           {t.home.title}
         </h1>
       </div>
 
-      {/* CONTROLES EN MEDIO/ABAJO */}
-      <div className="relative z-10 w-full max-w-lg p-4 pb-8 space-y-6 flex-1 flex flex-col justify-center">
+      {/* CONTROLES ABAJO */}
+      <div className="relative z-10 w-full max-w-lg p-4 pb-8 space-y-6">
         <div className="space-y-2">
           <label className="block text-amber-500/80 text-xs font-bold uppercase tracking-widest">
             {t.home.select_format}
