@@ -309,8 +309,7 @@ function CardImg({ card, label, onClick }: CardImgProps) {
       <span className="text-[1vh] text-amber-700 uppercase tracking-widest mb-1 font-bold bg-black/50 px-2 rounded-sm backdrop-blur-sm">
         {label}
       </span>
-      {/* Mantenemos el tamaño, pero quitamos el overflow-hidden si fuera necesario */}
-      <div className="h-[12vh] aspect-[2/3.2] shadow-2xl rounded-sm border border-white/10 bg-amber-900/10 transition-all duration-300 group-hover:scale-110 group-active:scale-95" style={{ backfaceVisibility: 'hidden', willChange: 'transform' }}>
+      <div className="h-[12vh] aspect-[2/3.2] shadow-2xl rounded-sm border border-white/10 bg-amber-900/10 transition-all duration-300 group-hover:scale-110 group-active:scale-95 animate-pulse" style={{ backfaceVisibility: 'hidden', willChange: 'transform', boxShadow: '0 0 20px rgba(217, 119, 6, 0.4), 0 0 40px rgba(217, 119, 6, 0.2)' }}>
         <img 
           src={getCardImageUrl(card.imageId)} 
           className="w-full h-full object-contain" 
