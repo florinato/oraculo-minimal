@@ -135,17 +135,21 @@ function ReadingContent() {
                 const data = JSON.parse(cleanLine.slice(6));
                 if (data.text) {
                   console.log("[v0] Chunk recibido:", data.text.substring(0, 50));
-                  setText(prev => prev + data.text);
-                  
-                  // Parsear en tiempo real
-                  const combined = text + data.text;
-                  const regex = /\[(C1|C2|C3|C4|C5|RESUMEN)\]([\s\S]*?)(?=\[(?:C1|C2|C3|C4|C5|RESUMEN)\]|$)/g;
-                  const sections: { [key: string]: string } = {};
-                  let match;
-                  while ((match = regex.exec(combined)) !== null) {
-                    sections[match[1]] = match[2].trim();
-                  }
-                  setStreamSections(sections);
+                  setText(prev => {
+                    const combined = prev + data.text;
+                    
+                    // Parsear en tiempo real
+                    const regex = /\[(C1|C2|C3|C4|C5|RESUMEN)\]([\s\S]*?)(?=\[(?:C1|C2|C3|C4|C5|RESUMEN)\]|$)/g;
+                    const sections: { [key: string]: string } = {};
+                    let match;
+                    while ((match = regex.exec(combined)) !== null) {
+                      sections[match[1]] = match[2].trim();
+                    }
+                    console.log("[v0] Secciones parseadas:", Object.keys(sections));
+                    setStreamSections(sections);
+                    
+                    return combined;
+                  });
                 }
               } catch (e) {
                 console.log("[v0] Error parseando JSON:", cleanLine.substring(0, 100));
