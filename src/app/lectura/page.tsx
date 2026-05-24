@@ -212,39 +212,6 @@ function ReadingContent() {
     }
   };
 
-  // Renderizar baraja boca abajo para seleccionar cartas
-  const renderDeck = () => {
-    const remainingCards = cards.length - liftedCards.size;
-    return (
-      <div className="absolute inset-0 h-screen w-full flex justify-center items-center z-50 pointer-events-auto">
-        <div className="flex flex-col items-center gap-8">
-          {/* Pila de cartas boca abajo */}
-          <div className="relative w-48 h-64">
-            {Array.from({ length: Math.min(5, remainingCards) }).map((_, i) => (
-              <div
-                key={i}
-                className="absolute h-[12vh] aspect-[2/3.2] bg-gradient-to-br from-amber-900 to-amber-950 rounded-sm border-2 border-amber-700 shadow-2xl cursor-pointer hover:scale-105 transition-transform"
-                style={{
-                  width: '120px',
-                  height: '180px',
-                  transform: `translateX(${i * 8}px) translateY(${i * 8}px) rotateZ(${i * 2}deg)`,
-                  zIndex: i
-                }}
-              >
-                <div className="w-full h-full flex items-center justify-center text-amber-500 font-bold text-2xl">
-                  ✦
-                </div>
-              </div>
-            ))}
-          </div>
-          <p className="text-amber-300 text-lg font-serif italic">
-            Selecciona tus cartas ({remainingCards} restantes)
-          </p>
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div className="relative min-h-screen w-full bg-black text-amber-50 overflow-y-auto overflow-x-hidden scroll-smooth">
       
