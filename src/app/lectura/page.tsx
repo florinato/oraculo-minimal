@@ -212,39 +212,6 @@ function ReadingContent() {
     }
   };
 
-  // Renderizar baraja boca abajo para seleccionar cartas
-  const renderDeck = () => {
-    const remainingCards = cards.length - liftedCards.size;
-    return (
-      <div className="absolute inset-0 h-screen w-full flex justify-center items-center z-50 pointer-events-auto">
-        <div className="flex flex-col items-center gap-8">
-          {/* Pila de cartas boca abajo */}
-          <div className="relative w-48 h-64">
-            {Array.from({ length: Math.min(5, remainingCards) }).map((_, i) => (
-              <div
-                key={i}
-                className="absolute h-[12vh] aspect-[2/3.2] bg-gradient-to-br from-amber-900 to-amber-950 rounded-sm border-2 border-amber-700 shadow-2xl cursor-pointer hover:scale-105 transition-transform"
-                style={{
-                  width: '120px',
-                  height: '180px',
-                  transform: `translateX(${i * 8}px) translateY(${i * 8}px) rotateZ(${i * 2}deg)`,
-                  zIndex: i
-                }}
-              >
-                <div className="w-full h-full flex items-center justify-center text-amber-500 font-bold text-2xl">
-                  ✦
-                </div>
-              </div>
-            ))}
-          </div>
-          <p className="text-amber-300 text-lg font-serif italic">
-            Selecciona tus cartas ({remainingCards} restantes)
-          </p>
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div className="relative min-h-screen w-full bg-black text-amber-50 overflow-y-auto overflow-x-hidden scroll-smooth">
       
@@ -290,6 +257,7 @@ function ReadingContent() {
                         setRevealedCards(newRevealed);
                         setSelectedCard(cards[0]);
                       }}
+                      onReviewCard={() => setSelectedCard(cards[0])}
                     />
                   </div>
                 </div>
@@ -308,6 +276,7 @@ function ReadingContent() {
                           setRevealedCards(newRevealed);
                           setSelectedCard(cards[i]);
                         }}
+                        onReviewCard={() => setSelectedCard(cards[i])}
                       />
                     </div>
                   ))}
@@ -315,19 +284,19 @@ function ReadingContent() {
               ) : (
                 <div className="grid grid-cols-3 grid-rows-3 pointer-events-auto" style={{ gap: '2.5vh' }}>
                   <div className="col-start-2 row-start-1 transition-all duration-500 opacity-100 scale-100">
-                    <CardImgFaceDown card={cards[2]} index={2} isRevealed={revealedCards.has(2)} canReveal={revealedCards.size === 2} onReveal={() => { const n = new Set(revealedCards); n.add(2); setRevealedCards(n); setSelectedCard(cards[2]); }} />
+                    <CardImgFaceDown card={cards[2]} index={2} isRevealed={revealedCards.has(2)} canReveal={revealedCards.size === 2} onReveal={() => { const n = new Set(revealedCards); n.add(2); setRevealedCards(n); setSelectedCard(cards[2]); }} onReviewCard={() => setSelectedCard(cards[2])} />
                   </div>
                   <div className="col-start-1 row-start-2 transition-all duration-500 opacity-100 scale-100">
-                    <CardImgFaceDown card={cards[0]} index={0} isRevealed={revealedCards.has(0)} canReveal={revealedCards.size === 0} onReveal={() => { const n = new Set(revealedCards); n.add(0); setRevealedCards(n); setSelectedCard(cards[0]); }} />
+                    <CardImgFaceDown card={cards[0]} index={0} isRevealed={revealedCards.has(0)} canReveal={revealedCards.size === 0} onReveal={() => { const n = new Set(revealedCards); n.add(0); setRevealedCards(n); setSelectedCard(cards[0]); }} onReviewCard={() => setSelectedCard(cards[0])} />
                   </div>
                   <div className="col-start-2 row-start-2 transition-all duration-500 opacity-100 scale-100">
-                    <CardImgFaceDown card={cards[4]} index={4} isRevealed={revealedCards.has(4)} canReveal={revealedCards.size === 4} onReveal={() => { const n = new Set(revealedCards); n.add(4); setRevealedCards(n); setSelectedCard(cards[4]); }} />
+                    <CardImgFaceDown card={cards[4]} index={4} isRevealed={revealedCards.has(4)} canReveal={revealedCards.size === 4} onReveal={() => { const n = new Set(revealedCards); n.add(4); setRevealedCards(n); setSelectedCard(cards[4]); }} onReviewCard={() => setSelectedCard(cards[4])} />
                   </div>
                   <div className="col-start-3 row-start-2 transition-all duration-500 opacity-100 scale-100">
-                    <CardImgFaceDown card={cards[1]} index={1} isRevealed={revealedCards.has(1)} canReveal={revealedCards.size === 1} onReveal={() => { const n = new Set(revealedCards); n.add(1); setRevealedCards(n); setSelectedCard(cards[1]); }} />
+                    <CardImgFaceDown card={cards[1]} index={1} isRevealed={revealedCards.has(1)} canReveal={revealedCards.size === 1} onReveal={() => { const n = new Set(revealedCards); n.add(1); setRevealedCards(n); setSelectedCard(cards[1]); }} onReviewCard={() => setSelectedCard(cards[1])} />
                   </div>
                   <div className="col-start-2 row-start-3 transition-all duration-500 opacity-100 scale-100">
-                    <CardImgFaceDown card={cards[3]} index={3} isRevealed={revealedCards.has(3)} canReveal={revealedCards.size === 3} onReveal={() => { const n = new Set(revealedCards); n.add(3); setRevealedCards(n); setSelectedCard(cards[3]); }} />
+                    <CardImgFaceDown card={cards[3]} index={3} isRevealed={revealedCards.has(3)} canReveal={revealedCards.size === 3} onReveal={() => { const n = new Set(revealedCards); n.add(3); setRevealedCards(n); setSelectedCard(cards[3]); }} onReviewCard={() => setSelectedCard(cards[3])} />
                   </div>
                 </div>
               )}
@@ -457,20 +426,25 @@ interface CardImgFaceDownProps {
   isRevealed: boolean;
   canReveal: boolean;
   onReveal: () => void;
+  onReviewCard?: () => void;
 }
 
-function CardImgFaceDown({ card, index, isRevealed, canReveal, onReveal }: CardImgFaceDownProps) {
+function CardImgFaceDown({ card, index, isRevealed, canReveal, onReveal, onReviewCard }: CardImgFaceDownProps) {
   return (
     <div 
       className="flex flex-col items-center cursor-pointer group pointer-events-auto" 
       onClick={(e) => {
         e.stopPropagation();
-        if (canReveal && !isRevealed) onReveal();
+        if (canReveal && !isRevealed) {
+          onReveal();
+        } else if (isRevealed && onReviewCard) {
+          onReviewCard();
+        }
       }}
     >
       <div className={`h-[12vh] aspect-[2/3.2] shadow-2xl rounded-sm border-2 transition-all duration-500 ${
         isRevealed 
-          ? 'border-amber-500 bg-gradient-to-br from-amber-900 to-amber-950' 
+          ? 'border-amber-500 bg-gradient-to-br from-amber-900 to-amber-950 cursor-pointer hover:scale-105 hover:shadow-lg' 
           : canReveal
             ? 'border-amber-700 bg-gradient-to-br from-amber-900 to-amber-950 group-hover:scale-110 group-active:scale-95 hover:border-amber-500 animate-pulse cursor-pointer'
             : 'border-amber-700/50 bg-gradient-to-br from-amber-900/50 to-amber-950/50 opacity-50 cursor-not-allowed'
