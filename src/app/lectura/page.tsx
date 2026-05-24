@@ -27,6 +27,7 @@ function ReadingContent() {
   const [revealedCards, setRevealedCards] = useState<Set<number>>(new Set());
   const [selectionPhase, setSelectionPhase] = useState(true);
   const [streamSections, setStreamSections] = useState<{ [key: string]: string }>({});
+  const [animatingCard, setAnimatingCard] = useState<number | null>(null);
   const hasStarted = useRef(false);
 
  const { t, currentLang, aiInstruction } = getI18n(langParam);
@@ -247,7 +248,31 @@ function ReadingContent() {
         <img src="/portada.jpg" className="w-full h-full object-cover" alt="Portada" />
       </div>
 
-      {/* CAPA 2: LAS CARTAS (Lienzo 3D independiente) */}
+      {/* CAPA 2: BARAJA EXTENDIDA (Selección de cartas) */}
+      {selectionPhase && (
+        <ExpandedDeck 
+          cards={cards}
+          revealedCards={revealedCards}
+          onCardClick={(index) => {
+            if (revealedCards.size === index && !revealedCards.has(index)) {
+              setAnimatingCard(index);
+              setTimeout(() => {
+                const newRevealed = new Set(revealedCards);
+                newRevealed.add(index);
+                setRevealedCards(newRevealed);
+                setAnimatingCard(null);
+                setSelectedCard(cards[index]);
+                if (newRevealed.size === cards.length) {
+                  setSelectionPhase(false);
+                }
+              }, 700);
+            }
+          }}
+          animatingCard={animatingCard}
+        />
+      )}
+
+      {/* CAPA 3: LAS CARTAS (Lienzo 3D independiente) */}
       {/* Al ser fixed inset-0 y no tener overflow, las cartas tienen espacio infinito para inclinarse */}
       <div className="fixed inset-0 h-screen w-full flex justify-center items-center z-10 pointer-events-none" style={{ perspective: '120vh' }}>
           {selectionPhase ? (
@@ -311,8 +336,8 @@ function ReadingContent() {
           )}
       </div>
 
-      {/* CAPA 3: SCROLL DE TEXTO (Encima de todo) */}
-      <div className="relative z-20 w-full flex flex-col items-center pointer-events-none">
+      {/* CAPA 4: SCROLL DE TEXTO (Encima de todo) */}
+      <div className="relative z-30 w-full flex flex-col items-center pointer-events-none">
         {/* Espaciador para que el texto empiece abajo */}
         <div className="h-[88vh] w-full" />
 
@@ -354,13 +379,62 @@ function ReadingContent() {
         </div>
       </div>
 
-      {/* CAPA 4: MODAL DE DETALLE */}
+      {/* CAPA 5: MODAL DE DETALLE */}
       <CardDetail 
         card={selectedCard} 
         onClose={() => setSelectedCard(null)} 
         info={selectedCard && streamSections ? streamSections[`C${cards.indexOf(selectedCard) + 1}`] || "Cargando..." : ""}
       />
 
+    </div>
+  );
+}
+
+/**
+ * Componente de Baraja Extendida
+ * Muestra cartas extendidas horizontalmente para seleccionar
+ */
+interface ExpandedDeckProps {
+  cards: TarotCard[];
+  revealedCards: Set<number>;
+  onCardClick: (index: number) => void;
+  animatingCard: number | null;
+}
+
+function ExpandedDeck({ cards, revealedCards, onCardClick, animatingCard }: ExpandedDeckProps) {
+  const cardWidth = 80;
+  const spacing = 40;
+  const totalWidth = cards.length * cardWidth + (cards.length - 1) * spacing;
+
+  return (
+    <div className="fixed top-8 left-1/2 transform -translate-x-1/2 z-40 pointer-events-auto">
+      <div className="flex gap-5 justify-center">
+        {cards.map((card, index) => {
+          const isRevealed = revealedCards.has(index);
+          const isAnimating = animatingCard === index;
+          
+          return (
+            <div
+              key={index}
+              className={`relative transition-all duration-700 ${
+                isRevealed || isAnimating
+                  ? 'opacity-0 scale-0'
+                  : 'opacity-100 scale-100'
+              }`}
+              onClick={() => !isRevealed && onCardClick(index)}
+            >
+              <div className="h-20 aspect-[2/3.2] bg-gradient-to-br from-amber-900 to-amber-950 rounded-sm border-2 border-amber-700 shadow-xl cursor-pointer hover:scale-110 hover:border-amber-500 transition-all group">
+                <div className="w-full h-full flex items-center justify-center text-amber-600 font-bold text-2xl">
+                  ✦
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <p className="text-center text-amber-300 text-sm font-serif italic mt-4">
+        Selecciona tus cartas
+      </p>
     </div>
   );
 }
