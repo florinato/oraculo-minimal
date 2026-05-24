@@ -270,64 +270,58 @@ function ReadingContent() {
       {/* CAPA 3: LAS CARTAS (Lienzo 3D independiente) */}
       {/* Al ser fixed inset-0 y no tener overflow, las cartas tienen espacio infinito para inclinarse */}
       <div className="fixed inset-0 h-screen w-full flex justify-center items-center z-10 pointer-events-none" style={{ perspective: '120vh' }}>
-          {selectionPhase ? (
-            // Mostrar cartas boca abajo durante selección
-            cards.length === 1 ? (
-              <div className="grid grid-cols-1 place-items-center pointer-events-auto">
+          {/* Mostrar cartas boca abajo (en selección o después de seleccionar) */}
+          {cards.length === 1 ? (
+            <div className="grid grid-cols-1 place-items-center pointer-events-auto">
+              <CardImgFaceDown 
+                card={cards[0]} 
+                index={0}
+                isRevealed={revealedCards.has(0)}
+                canReveal={!selectionPhase && revealedCards.size === 0}
+                onReveal={() => {
+                  const newRevealed = new Set(revealedCards);
+                  newRevealed.add(0);
+                  setRevealedCards(newRevealed);
+                  setSelectedCard(cards[0]);
+                }}
+              />
+            </div>
+          ) : cards.length === 3 ? (
+            <div className="grid grid-cols-3 pointer-events-auto" style={{ gap: '3vh' }}>
+              {[0, 1, 2].map(i => (
                 <CardImgFaceDown 
-                  card={cards[0]} 
-                  index={0}
-                  isRevealed={revealedCards.has(0)}
-                  canReveal={revealedCards.size === 0}
+                  key={i}
+                  card={cards[i]} 
+                  index={i}
+                  isRevealed={revealedCards.has(i)}
+                  canReveal={!selectionPhase && revealedCards.size === i}
                   onReveal={() => {
                     const newRevealed = new Set(revealedCards);
-                    newRevealed.add(0);
+                    newRevealed.add(i);
                     setRevealedCards(newRevealed);
-                    setSelectedCard(cards[0]);
-                    if (newRevealed.size === cards.length) setSelectionPhase(false);
+                    setSelectedCard(cards[i]);
                   }}
                 />
-              </div>
-            ) : cards.length === 3 ? (
-              <div className="grid grid-cols-3 pointer-events-auto" style={{ gap: '3vh' }}>
-                {[0, 1, 2].map(i => (
-                  <CardImgFaceDown 
-                    key={i}
-                    card={cards[i]} 
-                    index={i}
-                    isRevealed={revealedCards.has(i)}
-                    canReveal={revealedCards.size === i}
-                    onReveal={() => {
-                      const newRevealed = new Set(revealedCards);
-                      newRevealed.add(i);
-                      setRevealedCards(newRevealed);
-                      setSelectedCard(cards[i]);
-                      if (newRevealed.size === cards.length) setSelectionPhase(false);
-                    }}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="grid grid-cols-3 grid-rows-3 pointer-events-auto" style={{ gap: '2.5vh' }}>
-                <div className="col-start-2 row-start-1">
-                  <CardImgFaceDown card={cards[2]} index={2} isRevealed={revealedCards.has(2)} canReveal={revealedCards.size === 2} onReveal={() => { const n = new Set(revealedCards); n.add(2); setRevealedCards(n); setSelectedCard(cards[2]); if (n.size === cards.length) setSelectionPhase(false); }} />
-                </div>
-                <div className="col-start-1 row-start-2">
-                  <CardImgFaceDown card={cards[0]} index={0} isRevealed={revealedCards.has(0)} canReveal={revealedCards.size === 0} onReveal={() => { const n = new Set(revealedCards); n.add(0); setRevealedCards(n); setSelectedCard(cards[0]); if (n.size === cards.length) setSelectionPhase(false); }} />
-                </div>
-                <div className="col-start-2 row-start-2">
-                  <CardImgFaceDown card={cards[4]} index={4} isRevealed={revealedCards.has(4)} canReveal={revealedCards.size === 4} onReveal={() => { const n = new Set(revealedCards); n.add(4); setRevealedCards(n); setSelectedCard(cards[4]); if (n.size === cards.length) setSelectionPhase(false); }} />
-                </div>
-                <div className="col-start-3 row-start-2">
-                  <CardImgFaceDown card={cards[1]} index={1} isRevealed={revealedCards.has(1)} canReveal={revealedCards.size === 1} onReveal={() => { const n = new Set(revealedCards); n.add(1); setRevealedCards(n); setSelectedCard(cards[1]); if (n.size === cards.length) setSelectionPhase(false); }} />
-                </div>
-                <div className="col-start-2 row-start-3">
-                  <CardImgFaceDown card={cards[3]} index={3} isRevealed={revealedCards.has(3)} canReveal={revealedCards.size === 3} onReveal={() => { const n = new Set(revealedCards); n.add(3); setRevealedCards(n); setSelectedCard(cards[3]); if (n.size === cards.length) setSelectionPhase(false); }} />
-                </div>
-              </div>
-            )
+              ))}
+            </div>
           ) : (
-            renderCards()
+            <div className="grid grid-cols-3 grid-rows-3 pointer-events-auto" style={{ gap: '2.5vh' }}>
+              <div className="col-start-2 row-start-1">
+                <CardImgFaceDown card={cards[2]} index={2} isRevealed={revealedCards.has(2)} canReveal={!selectionPhase && revealedCards.size === 2} onReveal={() => { const n = new Set(revealedCards); n.add(2); setRevealedCards(n); setSelectedCard(cards[2]); }} />
+              </div>
+              <div className="col-start-1 row-start-2">
+                <CardImgFaceDown card={cards[0]} index={0} isRevealed={revealedCards.has(0)} canReveal={!selectionPhase && revealedCards.size === 0} onReveal={() => { const n = new Set(revealedCards); n.add(0); setRevealedCards(n); setSelectedCard(cards[0]); }} />
+              </div>
+              <div className="col-start-2 row-start-2">
+                <CardImgFaceDown card={cards[4]} index={4} isRevealed={revealedCards.has(4)} canReveal={!selectionPhase && revealedCards.size === 4} onReveal={() => { const n = new Set(revealedCards); n.add(4); setRevealedCards(n); setSelectedCard(cards[4]); }} />
+              </div>
+              <div className="col-start-3 row-start-2">
+                <CardImgFaceDown card={cards[1]} index={1} isRevealed={revealedCards.has(1)} canReveal={!selectionPhase && revealedCards.size === 1} onReveal={() => { const n = new Set(revealedCards); n.add(1); setRevealedCards(n); setSelectedCard(cards[1]); }} />
+              </div>
+              <div className="col-start-2 row-start-3">
+                <CardImgFaceDown card={cards[3]} index={3} isRevealed={revealedCards.has(3)} canReveal={!selectionPhase && revealedCards.size === 3} onReveal={() => { const n = new Set(revealedCards); n.add(3); setRevealedCards(n); setSelectedCard(cards[3]); }} />
+              </div>
+            </div>
           )}
       </div>
 
