@@ -24,8 +24,9 @@ function ReadingContent() {
   const [cards, setCards] = useState<TarotCard[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCard, setSelectedCard] = useState<TarotCard | null>(null);
-  const [liftedCards, setLiftedCards] = useState<Set<number>>(new Set());
+  const [revealedCards, setRevealedCards] = useState<Set<number>>(new Set());
   const [selectionPhase, setSelectionPhase] = useState(true);
+  const [streamSections, setStreamSections] = useState<{ [key: string]: string }>({});
   const hasStarted = useRef(false);
 
  const { t, currentLang, aiInstruction } = getI18n(langParam);
@@ -71,7 +72,8 @@ function ReadingContent() {
     
     // Iniciar selección de cartas
     setSelectionPhase(true);
-    setLiftedCards(new Set());
+    setRevealedCards(new Set());
+    setStreamSections({});
     
     const startInference = async () => {
       try {
@@ -132,6 +134,16 @@ function ReadingContent() {
                 if (data.text) {
                   console.log("[v0] Chunk recibido:", data.text.substring(0, 50));
                   setText(prev => prev + data.text);
+                  
+                  // Parsear en tiempo real
+                  const combined = text + data.text;
+                  const regex = /\[(C1|C2|C3|C4|C5|RESUMEN)\]([\s\S]*?)(?=\[(?:C1|C2|C3|C4|C5|RESUMEN)\]|$)/g;
+                  const sections: { [key: string]: string } = {};
+                  let match;
+                  while ((match = regex.exec(combined)) !== null) {
+                    sections[match[1]] = match[2].trim();
+                  }
+                  setStreamSections(sections);
                 }
               } catch (e) {
                 console.log("[v0] Error parseando JSON:", cleanLine.substring(0, 100));
@@ -245,12 +257,14 @@ function ReadingContent() {
                 <CardImgFaceDown 
                   card={cards[0]} 
                   index={0}
-                  isLifted={liftedCards.has(0)}
-                  onLift={() => {
-                    const newLifted = new Set(liftedCards);
-                    newLifted.add(0);
-                    setLiftedCards(newLifted);
-                    if (newLifted.size === cards.length) setSelectionPhase(false);
+                  isRevealed={revealedCards.has(0)}
+                  canReveal={revealedCards.size === 0}
+                  onReveal={() => {
+                    const newRevealed = new Set(revealedCards);
+                    newRevealed.add(0);
+                    setRevealedCards(newRevealed);
+                    setSelectedCard(cards[0]);
+                    if (newRevealed.size === cards.length) setSelectionPhase(false);
                   }}
                 />
               </div>
@@ -261,12 +275,14 @@ function ReadingContent() {
                     key={i}
                     card={cards[i]} 
                     index={i}
-                    isLifted={liftedCards.has(i)}
-                    onLift={() => {
-                      const newLifted = new Set(liftedCards);
-                      newLifted.add(i);
-                      setLiftedCards(newLifted);
-                      if (newLifted.size === cards.length) setSelectionPhase(false);
+                    isRevealed={revealedCards.has(i)}
+                    canReveal={revealedCards.size === i}
+                    onReveal={() => {
+                      const newRevealed = new Set(revealedCards);
+                      newRevealed.add(i);
+                      setRevealedCards(newRevealed);
+                      setSelectedCard(cards[i]);
+                      if (newRevealed.size === cards.length) setSelectionPhase(false);
                     }}
                   />
                 ))}
@@ -274,19 +290,19 @@ function ReadingContent() {
             ) : (
               <div className="grid grid-cols-3 grid-rows-3 pointer-events-auto" style={{ gap: '2.5vh' }}>
                 <div className="col-start-2 row-start-1">
-                  <CardImgFaceDown card={cards[2]} index={2} isLifted={liftedCards.has(2)} onLift={() => { const n = new Set(liftedCards); n.add(2); setLiftedCards(n); if (n.size === cards.length) setSelectionPhase(false); }} />
+                  <CardImgFaceDown card={cards[2]} index={2} isRevealed={revealedCards.has(2)} canReveal={revealedCards.size === 2} onReveal={() => { const n = new Set(revealedCards); n.add(2); setRevealedCards(n); setSelectedCard(cards[2]); if (n.size === cards.length) setSelectionPhase(false); }} />
                 </div>
                 <div className="col-start-1 row-start-2">
-                  <CardImgFaceDown card={cards[0]} index={0} isLifted={liftedCards.has(0)} onLift={() => { const n = new Set(liftedCards); n.add(0); setLiftedCards(n); if (n.size === cards.length) setSelectionPhase(false); }} />
+                  <CardImgFaceDown card={cards[0]} index={0} isRevealed={revealedCards.has(0)} canReveal={revealedCards.size === 0} onReveal={() => { const n = new Set(revealedCards); n.add(0); setRevealedCards(n); setSelectedCard(cards[0]); if (n.size === cards.length) setSelectionPhase(false); }} />
                 </div>
                 <div className="col-start-2 row-start-2">
-                  <CardImgFaceDown card={cards[4]} index={4} isLifted={liftedCards.has(4)} onLift={() => { const n = new Set(liftedCards); n.add(4); setLiftedCards(n); if (n.size === cards.length) setSelectionPhase(false); }} />
+                  <CardImgFaceDown card={cards[4]} index={4} isRevealed={revealedCards.has(4)} canReveal={revealedCards.size === 4} onReveal={() => { const n = new Set(revealedCards); n.add(4); setRevealedCards(n); setSelectedCard(cards[4]); if (n.size === cards.length) setSelectionPhase(false); }} />
                 </div>
                 <div className="col-start-3 row-start-2">
-                  <CardImgFaceDown card={cards[1]} index={1} isLifted={liftedCards.has(1)} onLift={() => { const n = new Set(liftedCards); n.add(1); setLiftedCards(n); if (n.size === cards.length) setSelectionPhase(false); }} />
+                  <CardImgFaceDown card={cards[1]} index={1} isRevealed={revealedCards.has(1)} canReveal={revealedCards.size === 1} onReveal={() => { const n = new Set(revealedCards); n.add(1); setRevealedCards(n); setSelectedCard(cards[1]); if (n.size === cards.length) setSelectionPhase(false); }} />
                 </div>
                 <div className="col-start-2 row-start-3">
-                  <CardImgFaceDown card={cards[3]} index={3} isLifted={liftedCards.has(3)} onLift={() => { const n = new Set(liftedCards); n.add(3); setLiftedCards(n); if (n.size === cards.length) setSelectionPhase(false); }} />
+                  <CardImgFaceDown card={cards[3]} index={3} isRevealed={revealedCards.has(3)} canReveal={revealedCards.size === 3} onReveal={() => { const n = new Set(revealedCards); n.add(3); setRevealedCards(n); setSelectedCard(cards[3]); if (n.size === cards.length) setSelectionPhase(false); }} />
                 </div>
               </div>
             )
@@ -307,52 +323,19 @@ function ReadingContent() {
                 const { sections, introduction } = parseSections(text);
                 return (
                   <div className="space-y-6">
-                    {/* Introducción del Oráculo */}
-                    {introduction && (
-                      <div className="italic text-amber-200/80 pb-4 border-b border-amber-900/30">
-                        <ReactMarkdown components={{ strong: ({...props}) => <span className="text-amber-400 font-bold" {...props} /> }}>
-                          {introduction}
-                        </ReactMarkdown>
-                      </div>
-                    )}
-
-                    {/* Interpretaciones de cada carta */}
-                    {cards.map((_, i) => {
-                      const sectionKey = `C${i + 1}`;
-                      const content = sections[sectionKey];
-                      return (
-                        <div key={sectionKey} className="pb-4 border-b border-amber-900/30">
-                          <p className="text-amber-400 font-bold text-sm uppercase mb-2">Carta {i + 1}</p>
-                          {content ? (
-                            <ReactMarkdown components={{ strong: ({...props}) => <span className="text-amber-500 font-bold" {...props} /> }}>
-                              {content}
-                            </ReactMarkdown>
-                          ) : (
-                            <div className="flex items-center gap-2 text-amber-600 italic">
-                              <div className="w-4 h-4 border-2 border-amber-600 border-t-amber-300 rounded-full animate-spin" />
-                              Levantando el velo...
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                    
-                    {/* Síntesis final */}
-                    {sections.RESUMEN && (
+                    {/* Solo mostrar síntesis */}
+                    {sections.RESUMEN ? (
                       <div className="pt-6 border-t-2 border-amber-600/50">
                         <p className="text-amber-500 font-bold text-sm uppercase mb-3">Síntesis</p>
                         <ReactMarkdown components={{ strong: ({...props}) => <span className="text-amber-400 font-bold" {...props} /> }}>
                           {sections.RESUMEN}
                         </ReactMarkdown>
                       </div>
-                    )}
-
-                    {/* Indicador de carga si aún está llegando */}
-                    {loading && (
+                    ) : loading ? (
                       <div className="pt-4 text-center">
-                        <div className="inline-block animate-pulse text-amber-700 text-sm">Morvan continúa escribiendo...</div>
+                        <div className="inline-block animate-pulse text-amber-700 text-sm">Morvan está tejiendo la síntesis...</div>
                       </div>
-                    )}
+                    ) : null}
                   </div>
                 );
               })()
@@ -375,7 +358,7 @@ function ReadingContent() {
       <CardDetail 
         card={selectedCard} 
         onClose={() => setSelectedCard(null)} 
-        info={selectedCard ? t.cards[selectedCard.imageId as keyof typeof t.cards]?.info : ""}
+        info={selectedCard && streamSections ? streamSections[`C${cards.indexOf(selectedCard) + 1}`] || "Cargando..." : ""}
       />
 
     </div>
@@ -389,28 +372,39 @@ function ReadingContent() {
 interface CardImgFaceDownProps {
   card: TarotCard;
   index: number;
-  isLifted: boolean;
-  onLift: () => void;
+  isRevealed: boolean;
+  canReveal: boolean;
+  onReveal: () => void;
 }
 
-function CardImgFaceDown({ card, index, isLifted, onLift }: CardImgFaceDownProps) {
+function CardImgFaceDown({ card, index, isRevealed, canReveal, onReveal }: CardImgFaceDownProps) {
   return (
     <div 
       className="flex flex-col items-center cursor-pointer group pointer-events-auto" 
       onClick={(e) => {
         e.stopPropagation();
-        if (!isLifted) onLift();
+        if (canReveal && !isRevealed) onReveal();
       }}
     >
       <div className={`h-[12vh] aspect-[2/3.2] shadow-2xl rounded-sm border-2 transition-all duration-500 ${
-        isLifted 
-          ? 'border-amber-500 bg-gradient-to-br from-amber-600 to-amber-800 rotate-180 scale-95 opacity-50' 
-          : 'border-amber-700 bg-gradient-to-br from-amber-900 to-amber-950 group-hover:scale-110 group-active:scale-95 hover:border-amber-500 animate-pulse'
-      }`} style={{ backfaceVisibility: 'hidden', willChange: 'transform', boxShadow: !isLifted ? '0 0 20px rgba(217, 119, 6, 0.4), 0 0 40px rgba(217, 119, 6, 0.2)' : 'none' }}>
-        {!isLifted && (
+        isRevealed 
+          ? 'border-amber-500 bg-gradient-to-br from-amber-900 to-amber-950' 
+          : canReveal
+            ? 'border-amber-700 bg-gradient-to-br from-amber-900 to-amber-950 group-hover:scale-110 group-active:scale-95 hover:border-amber-500 animate-pulse cursor-pointer'
+            : 'border-amber-700/50 bg-gradient-to-br from-amber-900/50 to-amber-950/50 opacity-50 cursor-not-allowed'
+      }`} style={{ backfaceVisibility: 'hidden', willChange: 'transform', boxShadow: canReveal && !isRevealed ? '0 0 20px rgba(217, 119, 6, 0.4), 0 0 40px rgba(217, 119, 6, 0.2)' : 'none' }}>
+        {!isRevealed && (
           <div className="w-full h-full flex items-center justify-center text-amber-600 font-bold text-3xl">
             ✦
           </div>
+        )}
+        {isRevealed && (
+          <img 
+            src={getCardImageUrl(card.imageId)} 
+            className="w-full h-full object-contain" 
+            alt={card.name} 
+            style={{ backfaceVisibility: 'hidden', WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
+          />
         )}
       </div>
     </div>
