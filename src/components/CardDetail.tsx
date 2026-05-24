@@ -35,8 +35,8 @@ export default function CardDetail({ card, onClose, info }: CardDetailProps) {
           {card.name}
         </h3>
 
-        {/* 2. CONTENEDOR DE IMAGEN: Ocupa 2/3 de la tarjeta */}
-        <div className="relative w-full h-2/3 rounded-xl overflow-hidden border border-amber-900/30 bg-neutral-900">
+        {/* 2. CONTENEDOR DE IMAGEN: Ocupa 1/3 de la tarjeta */}
+        <div className="relative w-full h-1/3 rounded-xl overflow-hidden border border-amber-900/30 bg-neutral-900">
           <img 
             src={getCardImageUrl(card.imageId)} 
             className="w-full h-full object-contain"
