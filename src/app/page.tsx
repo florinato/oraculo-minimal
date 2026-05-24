@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 export default function Home() {
   const router = useRouter()
-  const [selectedFormat, setSelectedFormat] = useState<string>("")
+  const [selectedFormat, setSelectedFormat] = useState<string>("pi_simple_5")
   const [question, setQuestion] = useState("")
   const [lang, setLang] = useState<string>("es") 
 
@@ -60,14 +60,15 @@ export default function Home() {
         </div>
       </div>
 
-      {/* CONTROLES */}
-      <div className="relative z-10 w-full max-w-lg p-4 pb-8 space-y-6">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-amber-500 uppercase tracking-widest drop-shadow-md">
-            {t.home.title}
-          </h1>
-        </div>
+      {/* TÍTULO ARRIBA */}
+      <div className="absolute top-12 left-0 right-0 z-10 text-center">
+        <h1 className="text-3xl font-bold text-amber-500 uppercase tracking-widest drop-shadow-md">
+          {t.home.title}
+        </h1>
+      </div>
 
+      {/* CONTROLES ABAJO */}
+      <div className="relative z-10 w-full max-w-lg p-4 pb-8 space-y-6">
         <div className="space-y-2">
           <label className="block text-amber-500/80 text-xs font-bold uppercase tracking-widest">
             {t.home.select_format}
@@ -82,7 +83,6 @@ export default function Home() {
               backgroundPosition: 'right 12px center',
             }}
           >
-            <option value="" className="text-gray-500">{t.home.select_default}</option>
             {formatOptions.map((format) => (
               <option key={format.id} value={format.id} className="bg-black">
                 {format.name}
