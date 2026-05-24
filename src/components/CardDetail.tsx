@@ -35,18 +35,18 @@ export default function CardDetail({ card, onClose, info }: CardDetailProps) {
           {card.name}
         </h3>
 
-        {/* 2. CONTENEDOR DE IMAGEN: La clave está en flex-1 y min-h-0 */}
-        <div className="relative w-full flex-1 min-h-0 rounded-xl overflow-hidden border border-amber-900/30 bg-neutral-900">
+        {/* 2. CONTENEDOR DE IMAGEN: Espacio limitado */}
+        <div className="relative w-full max-h-[35vh] rounded-xl overflow-hidden border border-amber-900/30 bg-neutral-900">
           <img 
             src={getCardImageUrl(card.imageId)} 
-            className="w-full h-full object-contain" // Cambiado a contain para que nunca se corte la ilustración
+            className="w-full h-full object-contain"
             alt={card.name}
           />
         </div>
 
-        {/* 3. TEXTO: Se ajusta al espacio sobrante */}
-        <div className="mt-3 md:mt-4 w-full bg-amber-950/20 border border-amber-900/20 p-3 md:p-4 rounded-lg md:rounded-xl">
-          <p className="text-amber-50/90 font-serif text-center text-xs md:text-sm leading-relaxed md:leading-tight italic">
+        {/* 3. TEXTO: Tamaño aumentado y visible */}
+        <div className="mt-4 w-full flex-1 overflow-y-auto bg-amber-950/20 border border-amber-900/20 p-4 rounded-lg">
+          <p className="text-amber-50/90 font-serif text-center text-sm md:text-base leading-relaxed italic">
             {info}
           </p>
         </div>
