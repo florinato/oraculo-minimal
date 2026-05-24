@@ -24,6 +24,8 @@ function ReadingContent() {
   const [cards, setCards] = useState<TarotCard[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCard, setSelectedCard] = useState<TarotCard | null>(null);
+  const [liftedCards, setLiftedCards] = useState<Set<number>>(new Set());
+  const [selectionPhase, setSelectionPhase] = useState(true);
   const hasStarted = useRef(false);
 
  const { t, currentLang, aiInstruction } = getI18n(langParam);
@@ -66,6 +68,10 @@ function ReadingContent() {
       selectedCards = drawFiveCards(); // 5 cartas (default)
     }
     setCards(selectedCards);
+    
+    // Iniciar selección de cartas
+    setSelectionPhase(true);
+    setLiftedCards(new Set());
     
     const startInference = async () => {
       try {
@@ -188,6 +194,39 @@ function ReadingContent() {
     }
   };
 
+  // Renderizar baraja boca abajo para seleccionar cartas
+  const renderDeck = () => {
+    const remainingCards = cards.length - liftedCards.size;
+    return (
+      <div className="absolute inset-0 h-screen w-full flex justify-center items-center z-50 pointer-events-auto">
+        <div className="flex flex-col items-center gap-8">
+          {/* Pila de cartas boca abajo */}
+          <div className="relative w-48 h-64">
+            {Array.from({ length: Math.min(5, remainingCards) }).map((_, i) => (
+              <div
+                key={i}
+                className="absolute h-[12vh] aspect-[2/3.2] bg-gradient-to-br from-amber-900 to-amber-950 rounded-sm border-2 border-amber-700 shadow-2xl cursor-pointer hover:scale-105 transition-transform"
+                style={{
+                  width: '120px',
+                  height: '180px',
+                  transform: `translateX(${i * 8}px) translateY(${i * 8}px) rotateZ(${i * 2}deg)`,
+                  zIndex: i
+                }}
+              >
+                <div className="w-full h-full flex items-center justify-center text-amber-500 font-bold text-2xl">
+                  ✦
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="text-amber-300 text-lg font-serif italic">
+            Selecciona tus cartas ({remainingCards} restantes)
+          </p>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="relative min-h-screen w-full bg-black text-amber-50 overflow-y-auto overflow-x-hidden scroll-smooth">
       
@@ -199,7 +238,61 @@ function ReadingContent() {
       {/* CAPA 2: LAS CARTAS (Lienzo 3D independiente) */}
       {/* Al ser fixed inset-0 y no tener overflow, las cartas tienen espacio infinito para inclinarse */}
       <div className="fixed inset-0 h-screen w-full flex justify-center items-center z-10 pointer-events-none" style={{ perspective: '120vh' }}>
-          {renderCards()}
+          {selectionPhase ? (
+            // Mostrar cartas boca abajo durante selección
+            cards.length === 1 ? (
+              <div className="grid grid-cols-1 place-items-center pointer-events-auto">
+                <CardImgFaceDown 
+                  card={cards[0]} 
+                  index={0}
+                  isLifted={liftedCards.has(0)}
+                  onLift={() => {
+                    const newLifted = new Set(liftedCards);
+                    newLifted.add(0);
+                    setLiftedCards(newLifted);
+                    if (newLifted.size === cards.length) setSelectionPhase(false);
+                  }}
+                />
+              </div>
+            ) : cards.length === 3 ? (
+              <div className="grid grid-cols-3 pointer-events-auto" style={{ gap: '3vh' }}>
+                {[0, 1, 2].map(i => (
+                  <CardImgFaceDown 
+                    key={i}
+                    card={cards[i]} 
+                    index={i}
+                    isLifted={liftedCards.has(i)}
+                    onLift={() => {
+                      const newLifted = new Set(liftedCards);
+                      newLifted.add(i);
+                      setLiftedCards(newLifted);
+                      if (newLifted.size === cards.length) setSelectionPhase(false);
+                    }}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-3 grid-rows-3 pointer-events-auto" style={{ gap: '2.5vh' }}>
+                <div className="col-start-2 row-start-1">
+                  <CardImgFaceDown card={cards[2]} index={2} isLifted={liftedCards.has(2)} onLift={() => { const n = new Set(liftedCards); n.add(2); setLiftedCards(n); if (n.size === cards.length) setSelectionPhase(false); }} />
+                </div>
+                <div className="col-start-1 row-start-2">
+                  <CardImgFaceDown card={cards[0]} index={0} isLifted={liftedCards.has(0)} onLift={() => { const n = new Set(liftedCards); n.add(0); setLiftedCards(n); if (n.size === cards.length) setSelectionPhase(false); }} />
+                </div>
+                <div className="col-start-2 row-start-2">
+                  <CardImgFaceDown card={cards[4]} index={4} isLifted={liftedCards.has(4)} onLift={() => { const n = new Set(liftedCards); n.add(4); setLiftedCards(n); if (n.size === cards.length) setSelectionPhase(false); }} />
+                </div>
+                <div className="col-start-3 row-start-2">
+                  <CardImgFaceDown card={cards[1]} index={1} isLifted={liftedCards.has(1)} onLift={() => { const n = new Set(liftedCards); n.add(1); setLiftedCards(n); if (n.size === cards.length) setSelectionPhase(false); }} />
+                </div>
+                <div className="col-start-2 row-start-3">
+                  <CardImgFaceDown card={cards[3]} index={3} isLifted={liftedCards.has(3)} onLift={() => { const n = new Set(liftedCards); n.add(3); setLiftedCards(n); if (n.size === cards.length) setSelectionPhase(false); }} />
+                </div>
+              </div>
+            )
+          ) : (
+            renderCards()
+          )}
       </div>
 
       {/* CAPA 3: SCROLL DE TEXTO (Encima de todo) */}
@@ -209,7 +302,7 @@ function ReadingContent() {
 
         <div className="w-full max-w-2xl bg-black p-8 rounded-t-[40px] border-t border-amber-900/40 min-h-[60vh] pointer-events-auto">
           <div className="prose prose-invert prose-amber max-w-none font-serif text-lg leading-relaxed mb-12">
-            {text.length > 0 || loading ? (
+            {!selectionPhase && (text.length > 0 || loading) ? (
               (() => {
                 const { sections, introduction } = parseSections(text);
                 return (
@@ -227,13 +320,19 @@ function ReadingContent() {
                     {cards.map((_, i) => {
                       const sectionKey = `C${i + 1}`;
                       const content = sections[sectionKey];
-                      if (!content) return null;
                       return (
                         <div key={sectionKey} className="pb-4 border-b border-amber-900/30">
                           <p className="text-amber-400 font-bold text-sm uppercase mb-2">Carta {i + 1}</p>
-                          <ReactMarkdown components={{ strong: ({...props}) => <span className="text-amber-500 font-bold" {...props} /> }}>
-                            {content}
-                          </ReactMarkdown>
+                          {content ? (
+                            <ReactMarkdown components={{ strong: ({...props}) => <span className="text-amber-500 font-bold" {...props} /> }}>
+                              {content}
+                            </ReactMarkdown>
+                          ) : (
+                            <div className="flex items-center gap-2 text-amber-600 italic">
+                              <div className="w-4 h-4 border-2 border-amber-600 border-t-amber-300 rounded-full animate-spin" />
+                              Levantando el velo...
+                            </div>
+                          )}
                         </div>
                       );
                     })}
@@ -251,18 +350,18 @@ function ReadingContent() {
                     {/* Indicador de carga si aún está llegando */}
                     {loading && (
                       <div className="pt-4 text-center">
-<div className="inline-block animate-pulse text-amber-700 text-sm">{t.reading.loading_stream}</div>
+                        <div className="inline-block animate-pulse text-amber-700 text-sm">Morvan continúa escribiendo...</div>
                       </div>
                     )}
                   </div>
                 );
               })()
-            ) : (
-<div className="animate-pulse text-amber-700 italic">{t.reading.loading_initial}</div>
-            )}
+            ) : !selectionPhase ? (
+              <div className="animate-pulse text-amber-700 italic">Invocando el oráculo...</div>
+            ) : null}
           </div>
           
-          {!loading && text.length > 50 && (
+          {!loading && text.length > 50 && !selectionPhase && (
             <div className="pb-10 flex justify-center">
                 <button onClick={() => window.location.href='/'} className="px-10 py-4 bg-amber-900/40 border border-amber-600/50 text-amber-500 rounded-full italic font-serif hover:bg-amber-800/40 transition-all active:scale-95 shadow-xl">
                   {t.reading.new_reading}
@@ -279,6 +378,41 @@ function ReadingContent() {
         info={selectedCard ? t.cards[selectedCard.imageId as keyof typeof t.cards]?.info : ""}
       />
 
+    </div>
+  );
+}
+
+/**
+ * Componente Auxiliar CardImgFaceDown 
+ * Carta boca abajo durante selección
+ */
+interface CardImgFaceDownProps {
+  card: TarotCard;
+  index: number;
+  isLifted: boolean;
+  onLift: () => void;
+}
+
+function CardImgFaceDown({ card, index, isLifted, onLift }: CardImgFaceDownProps) {
+  return (
+    <div 
+      className="flex flex-col items-center cursor-pointer group pointer-events-auto" 
+      onClick={(e) => {
+        e.stopPropagation();
+        if (!isLifted) onLift();
+      }}
+    >
+      <div className={`h-[12vh] aspect-[2/3.2] shadow-2xl rounded-sm border-2 transition-all duration-500 ${
+        isLifted 
+          ? 'border-amber-500 bg-gradient-to-br from-amber-600 to-amber-800 rotate-180 scale-95 opacity-50' 
+          : 'border-amber-700 bg-gradient-to-br from-amber-900 to-amber-950 group-hover:scale-110 group-active:scale-95 hover:border-amber-500 animate-pulse'
+      }`} style={{ backfaceVisibility: 'hidden', willChange: 'transform', boxShadow: !isLifted ? '0 0 20px rgba(217, 119, 6, 0.4), 0 0 40px rgba(217, 119, 6, 0.2)' : 'none' }}>
+        {!isLifted && (
+          <div className="w-full h-full flex items-center justify-center text-amber-600 font-bold text-3xl">
+            ✦
+          </div>
+        )}
+      </div>
     </div>
   );
 }
