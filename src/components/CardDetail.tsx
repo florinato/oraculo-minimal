@@ -35,8 +35,8 @@ export default function CardDetail({ card, onClose, info }: CardDetailProps) {
           {card.name}
         </h3>
 
-        {/* 2. CONTENEDOR DE IMAGEN: Espacio limitado */}
-        <div className="relative w-full max-h-[35vh] rounded-xl overflow-hidden border border-amber-900/30 bg-neutral-900">
+        {/* 2. CONTENEDOR DE IMAGEN: Ocupa 2/3 de la tarjeta */}
+        <div className="relative w-full h-2/3 rounded-xl overflow-hidden border border-amber-900/30 bg-neutral-900">
           <img 
             src={getCardImageUrl(card.imageId)} 
             className="w-full h-full object-contain"
@@ -44,9 +44,9 @@ export default function CardDetail({ card, onClose, info }: CardDetailProps) {
           />
         </div>
 
-        {/* 3. TEXTO: Tamaño aumentado y visible */}
+        {/* 3. TEXTO: Tamaño duplicado y visible */}
         <div className="mt-4 w-full flex-1 overflow-y-auto bg-amber-950/20 border border-amber-900/20 p-4 rounded-lg">
-          <p className="text-amber-50/90 font-serif text-center text-sm md:text-base leading-relaxed italic">
+          <p className="text-amber-50/90 font-serif text-center text-xl md:text-2xl leading-relaxed italic">
             {info}
           </p>
         </div>
