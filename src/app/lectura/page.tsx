@@ -397,8 +397,8 @@ interface ExpandedDeckProps {
 
 function ExpandedDeck({ selectedIndices, onCardClick, cardsToSelect }: ExpandedDeckProps) {
   const tarotCards = 22;
-  const cardWidth = 50;
-  const overlap = 42;
+  const cardWidth = 45;
+  const overlap = 38;
   const containerWidth = (tarotCards - 1) * (cardWidth - overlap) + cardWidth;
 
   return (
@@ -411,7 +411,7 @@ function ExpandedDeck({ selectedIndices, onCardClick, cardsToSelect }: ExpandedD
           return (
             <div
               key={index}
-              className={`absolute h-24 aspect-[2/3.2] bg-gradient-to-br from-amber-900 to-amber-950 rounded-sm border-2 transition-all duration-500 cursor-pointer ${
+              className={`absolute h-[12vh] aspect-[2/3.2] bg-gradient-to-br from-amber-900 to-amber-950 rounded-sm border-2 transition-all duration-500 cursor-pointer ${
                 isSelected
                   ? 'opacity-0 scale-0 pointer-events-none'
                   : canSelect
