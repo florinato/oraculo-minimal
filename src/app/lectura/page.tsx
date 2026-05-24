@@ -27,7 +27,7 @@ function ReadingContent() {
   const [revealedCards, setRevealedCards] = useState<Set<number>>(new Set());
   const [selectionPhase, setSelectionPhase] = useState(true);
   const [streamSections, setStreamSections] = useState<{ [key: string]: string }>({});
-  const [animatingCard, setAnimatingCard] = useState<number | null>(null);
+  const [selectedDeckIndices, setSelectedDeckIndices] = useState<Set<number>>(new Set());
   const hasStarted = useRef(false);
 
  const { t, currentLang, aiInstruction } = getI18n(langParam);
@@ -74,6 +74,7 @@ function ReadingContent() {
     // Iniciar selección de cartas
     setSelectionPhase(true);
     setRevealedCards(new Set());
+    setSelectedDeckIndices(new Set());
     setStreamSections({});
     
     const startInference = async () => {
@@ -248,27 +249,21 @@ function ReadingContent() {
         <img src="/portada.jpg" className="w-full h-full object-cover" alt="Portada" />
       </div>
 
-      {/* CAPA 2: BARAJA EXTENDIDA (Selección de cartas) */}
+      {/* CAPA 2: MAZO EXTENDIDO (Selección de cartas) */}
       {selectionPhase && (
         <ExpandedDeck 
-          cards={cards}
-          revealedCards={revealedCards}
+          selectedIndices={selectedDeckIndices}
+          cardsToSelect={cards.length}
           onCardClick={(index) => {
-            if (revealedCards.size === index && !revealedCards.has(index)) {
-              setAnimatingCard(index);
-              setTimeout(() => {
-                const newRevealed = new Set(revealedCards);
-                newRevealed.add(index);
-                setRevealedCards(newRevealed);
-                setAnimatingCard(null);
-                setSelectedCard(cards[index]);
-                if (newRevealed.size === cards.length) {
-                  setSelectionPhase(false);
-                }
-              }, 700);
+            const newSelected = new Set(selectedDeckIndices);
+            newSelected.add(index);
+            setSelectedDeckIndices(newSelected);
+            
+            // Cuando se seleccionan todas, pasar a fase de revelar
+            if (newSelected.size === cards.length) {
+              setSelectionPhase(false);
             }
           }}
-          animatingCard={animatingCard}
         />
       )}
 
@@ -391,49 +386,58 @@ function ReadingContent() {
 }
 
 /**
- * Componente de Baraja Extendida
- * Muestra cartas extendidas horizontalmente para seleccionar
+ * Componente de Mazo Extendido
+ * Muestra todas las 22 cartas del tarot solapadas horizontalmente
  */
 interface ExpandedDeckProps {
-  cards: TarotCard[];
-  revealedCards: Set<number>;
+  selectedIndices: Set<number>;
   onCardClick: (index: number) => void;
-  animatingCard: number | null;
+  cardsToSelect: number;
 }
 
-function ExpandedDeck({ cards, revealedCards, onCardClick, animatingCard }: ExpandedDeckProps) {
-  const cardWidth = 80;
-  const spacing = 40;
-  const totalWidth = cards.length * cardWidth + (cards.length - 1) * spacing;
+function ExpandedDeck({ selectedIndices, onCardClick, cardsToSelect }: ExpandedDeckProps) {
+  const tarotCards = 22;
+  const cardWidth = 60;
+  const overlap = 25;
+  const containerWidth = (tarotCards - 1) * (cardWidth - overlap) + cardWidth;
 
   return (
-    <div className="fixed top-8 left-1/2 transform -translate-x-1/2 z-40 pointer-events-auto">
-      <div className="flex gap-5 justify-center">
-        {cards.map((card, index) => {
-          const isRevealed = revealedCards.has(index);
-          const isAnimating = animatingCard === index;
+    <div className="fixed top-12 left-1/2 transform -translate-x-1/2 z-40 pointer-events-auto">
+      <div className="relative" style={{ width: containerWidth, height: 140 }}>
+        {Array.from({ length: tarotCards }).map((_, index) => {
+          const isSelected = selectedIndices.has(index);
+          const canSelect = selectedIndices.size < cardsToSelect;
           
           return (
             <div
               key={index}
-              className={`relative transition-all duration-700 ${
-                isRevealed || isAnimating
-                  ? 'opacity-0 scale-0'
-                  : 'opacity-100 scale-100'
+              className={`absolute h-24 aspect-[2/3.2] bg-gradient-to-br from-amber-900 to-amber-950 rounded-sm border-2 transition-all duration-500 cursor-pointer ${
+                isSelected
+                  ? 'opacity-0 scale-0 pointer-events-none'
+                  : canSelect
+                    ? 'border-amber-700 hover:scale-125 hover:border-amber-500 hover:shadow-2xl hover:shadow-amber-900/50'
+                    : 'border-amber-700/50 opacity-60 cursor-not-allowed'
               }`}
-              onClick={() => !isRevealed && onCardClick(index)}
+              style={{
+                left: `${index * (cardWidth - overlap)}px`,
+                top: '0',
+                transform: isSelected ? 'scale(0)' : 'scale(1)'
+              }}
+              onClick={() => {
+                if (canSelect && !isSelected) {
+                  onCardClick(index);
+                }
+              }}
             >
-              <div className="h-20 aspect-[2/3.2] bg-gradient-to-br from-amber-900 to-amber-950 rounded-sm border-2 border-amber-700 shadow-xl cursor-pointer hover:scale-110 hover:border-amber-500 transition-all group">
-                <div className="w-full h-full flex items-center justify-center text-amber-600 font-bold text-2xl">
-                  ✦
-                </div>
+              <div className="w-full h-full flex items-center justify-center text-amber-600 font-bold text-xl">
+                ✦
               </div>
             </div>
           );
         })}
       </div>
-      <p className="text-center text-amber-300 text-sm font-serif italic mt-4">
-        Selecciona tus cartas
+      <p className="text-center text-amber-300 text-sm font-serif italic mt-6">
+        Selecciona {cardsToSelect - selectedIndices.size} {cardsToSelect - selectedIndices.size === 1 ? 'carta' : 'cartas'}
       </p>
     </div>
   );
