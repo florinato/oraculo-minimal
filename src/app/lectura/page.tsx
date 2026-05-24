@@ -274,71 +274,57 @@ function ReadingContent() {
             <>
               {cards.length === 1 ? (
                 <div className="grid grid-cols-1 place-items-center pointer-events-auto">
-                  {selectedDeckIndices.has(0) && (
-                    <div className="transition-all duration-500 opacity-100 scale-100">
-                      <CardImgFaceDown 
-                        card={cards[0]} 
-                        index={0}
-                        isRevealed={revealedCards.has(0)}
-                        canReveal={revealedCards.size === 0}
-                        onReveal={() => {
-                          const newRevealed = new Set(revealedCards);
-                          newRevealed.add(0);
-                          setRevealedCards(newRevealed);
-                          setSelectedCard(cards[0]);
-                        }}
-                      />
-                    </div>
-                  )}
+                  <div className="transition-all duration-500 opacity-100 scale-100">
+                    <CardImgFaceDown 
+                      card={cards[0]} 
+                      index={0}
+                      isRevealed={revealedCards.has(0)}
+                      canReveal={revealedCards.size === 0}
+                      onReveal={() => {
+                        const newRevealed = new Set(revealedCards);
+                        newRevealed.add(0);
+                        setRevealedCards(newRevealed);
+                        setSelectedCard(cards[0]);
+                      }}
+                    />
+                  </div>
                 </div>
               ) : cards.length === 3 ? (
                 <div className="grid grid-cols-3 pointer-events-auto" style={{ gap: '3vh' }}>
                   {[0, 1, 2].map(i => (
-                    selectedDeckIndices.has(i) && (
-                      <div key={i} className="transition-all duration-500 opacity-100 scale-100">
-                        <CardImgFaceDown 
-                          card={cards[i]} 
-                          index={i}
-                          isRevealed={revealedCards.has(i)}
-                          canReveal={revealedCards.size === i}
-                          onReveal={() => {
-                            const newRevealed = new Set(revealedCards);
-                            newRevealed.add(i);
-                            setRevealedCards(newRevealed);
-                            setSelectedCard(cards[i]);
-                          }}
-                        />
-                      </div>
-                    )
+                    <div key={i} className="transition-all duration-500 opacity-100 scale-100">
+                      <CardImgFaceDown 
+                        card={cards[i]} 
+                        index={i}
+                        isRevealed={revealedCards.has(i)}
+                        canReveal={revealedCards.size === i}
+                        onReveal={() => {
+                          const newRevealed = new Set(revealedCards);
+                          newRevealed.add(i);
+                          setRevealedCards(newRevealed);
+                          setSelectedCard(cards[i]);
+                        }}
+                      />
+                    </div>
                   ))}
                 </div>
               ) : (
                 <div className="grid grid-cols-3 grid-rows-3 pointer-events-auto" style={{ gap: '2.5vh' }}>
-                  {selectedDeckIndices.has(2) && (
-                    <div className="col-start-2 row-start-1 transition-all duration-500 opacity-100 scale-100">
-                      <CardImgFaceDown card={cards[2]} index={2} isRevealed={revealedCards.has(2)} canReveal={revealedCards.size === 2} onReveal={() => { const n = new Set(revealedCards); n.add(2); setRevealedCards(n); setSelectedCard(cards[2]); }} />
-                    </div>
-                  )}
-                  {selectedDeckIndices.has(0) && (
-                    <div className="col-start-1 row-start-2 transition-all duration-500 opacity-100 scale-100">
-                      <CardImgFaceDown card={cards[0]} index={0} isRevealed={revealedCards.has(0)} canReveal={revealedCards.size === 0} onReveal={() => { const n = new Set(revealedCards); n.add(0); setRevealedCards(n); setSelectedCard(cards[0]); }} />
-                    </div>
-                  )}
-                  {selectedDeckIndices.has(4) && (
-                    <div className="col-start-2 row-start-2 transition-all duration-500 opacity-100 scale-100">
-                      <CardImgFaceDown card={cards[4]} index={4} isRevealed={revealedCards.has(4)} canReveal={revealedCards.size === 4} onReveal={() => { const n = new Set(revealedCards); n.add(4); setRevealedCards(n); setSelectedCard(cards[4]); }} />
-                    </div>
-                  )}
-                  {selectedDeckIndices.has(1) && (
-                    <div className="col-start-3 row-start-2 transition-all duration-500 opacity-100 scale-100">
-                      <CardImgFaceDown card={cards[1]} index={1} isRevealed={revealedCards.has(1)} canReveal={revealedCards.size === 1} onReveal={() => { const n = new Set(revealedCards); n.add(1); setRevealedCards(n); setSelectedCard(cards[1]); }} />
-                    </div>
-                  )}
-                  {selectedDeckIndices.has(3) && (
-                    <div className="col-start-2 row-start-3 transition-all duration-500 opacity-100 scale-100">
-                      <CardImgFaceDown card={cards[3]} index={3} isRevealed={revealedCards.has(3)} canReveal={revealedCards.size === 3} onReveal={() => { const n = new Set(revealedCards); n.add(3); setRevealedCards(n); setSelectedCard(cards[3]); }} />
-                    </div>
-                  )}
+                  <div className="col-start-2 row-start-1 transition-all duration-500 opacity-100 scale-100">
+                    <CardImgFaceDown card={cards[2]} index={2} isRevealed={revealedCards.has(2)} canReveal={revealedCards.size === 2} onReveal={() => { const n = new Set(revealedCards); n.add(2); setRevealedCards(n); setSelectedCard(cards[2]); }} />
+                  </div>
+                  <div className="col-start-1 row-start-2 transition-all duration-500 opacity-100 scale-100">
+                    <CardImgFaceDown card={cards[0]} index={0} isRevealed={revealedCards.has(0)} canReveal={revealedCards.size === 0} onReveal={() => { const n = new Set(revealedCards); n.add(0); setRevealedCards(n); setSelectedCard(cards[0]); }} />
+                  </div>
+                  <div className="col-start-2 row-start-2 transition-all duration-500 opacity-100 scale-100">
+                    <CardImgFaceDown card={cards[4]} index={4} isRevealed={revealedCards.has(4)} canReveal={revealedCards.size === 4} onReveal={() => { const n = new Set(revealedCards); n.add(4); setRevealedCards(n); setSelectedCard(cards[4]); }} />
+                  </div>
+                  <div className="col-start-3 row-start-2 transition-all duration-500 opacity-100 scale-100">
+                    <CardImgFaceDown card={cards[1]} index={1} isRevealed={revealedCards.has(1)} canReveal={revealedCards.size === 1} onReveal={() => { const n = new Set(revealedCards); n.add(1); setRevealedCards(n); setSelectedCard(cards[1]); }} />
+                  </div>
+                  <div className="col-start-2 row-start-3 transition-all duration-500 opacity-100 scale-100">
+                    <CardImgFaceDown card={cards[3]} index={3} isRevealed={revealedCards.has(3)} canReveal={revealedCards.size === 3} onReveal={() => { const n = new Set(revealedCards); n.add(3); setRevealedCards(n); setSelectedCard(cards[3]); }} />
+                  </div>
                 </div>
               )}
             </>
