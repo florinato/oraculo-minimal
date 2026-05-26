@@ -384,7 +384,7 @@ function ExpandedDeck({ selectedIndices, onCardClick, cardsToSelect }: ExpandedD
           return (
             <div
               key={index}
-              className={`absolute h-[12vh] aspect-[2/3.2] bg-gradient-to-br from-amber-900 to-amber-950 rounded-sm border-2 transition-all duration-500 cursor-pointer ${
+              className={`absolute h-[16vh] aspect-[2/3.2] bg-gradient-to-br from-amber-900 to-amber-950 rounded-sm border-2 transition-all duration-500 cursor-pointer ${
                 isSelected
                   ? 'opacity-0 scale-0 pointer-events-none'
                   : canSelect
@@ -442,7 +442,7 @@ function CardImgFaceDown({ card, index, isRevealed, canReveal, onReveal, onRevie
         }
       }}
     >
-      <div className={`h-[12vh] aspect-[2/3.2] shadow-2xl rounded-sm border-2 transition-all duration-500 ${
+      <div className={`h-[16vh] aspect-[2/3.2] shadow-2xl rounded-sm border-2 transition-all duration-500 ${
         isRevealed 
           ? 'border-amber-500 bg-gradient-to-br from-amber-900 to-amber-950 cursor-pointer hover:scale-105 hover:shadow-lg' 
           : canReveal
