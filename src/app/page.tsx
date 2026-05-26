@@ -1,5 +1,6 @@
 "use client"
 import { getI18n, LANGUAGE_CONFIG } from "@/app/lib/i18n";
+import { TarotFormatSelector } from "@/components/TarotFormatSelector";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -69,32 +70,11 @@ export default function Home() {
 
       {/* CONTROLES ABAJO */}
       <div className="relative z-10 w-full max-w-lg p-4 pb-8 space-y-6">
-        <div className="space-y-2">
-          <label className="block text-amber-500/80 text-xs font-bold uppercase tracking-widest">
-            {t.home.select_format}
-          </label>
-          <select
-            value={selectedFormat}
-            onChange={(e) => setSelectedFormat(e.target.value)}
-            className="w-full p-3 bg-black/80 border border-amber-900/50 rounded-xl text-amber-100 focus:outline-none focus:border-amber-500 transition-all text-sm cursor-pointer appearance-none shadow-xl"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23D97706' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'right 12px center',
-            }}
-          >
-            {formatOptions.map((format) => (
-              <option key={format.id} value={format.id} className="bg-black">
-                {format.name}
-              </option>
-            ))}
-          </select>
-          {selectedFormat && (
-            <p className="text-amber-200/70 text-xs italic px-1">
-              {formatOptions.find(f => f.id === selectedFormat)?.description}
-            </p>
-          )}
-        </div>
+        <TarotFormatSelector
+          selectedFormat={selectedFormat}
+          onFormatChange={setSelectedFormat}
+          formats={formatOptions}
+        />
 
         {selectedFormat && (
           <div className="relative animate-in fade-in slide-in-from-bottom-4 duration-300">
