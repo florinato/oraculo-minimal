@@ -58,17 +58,18 @@ export function TarotFormatSelector({
                 </div>
               )}
               {format.id === 'pi_simple_5' && (
-                <div className="flex flex-col items-center gap-0.5">
+                <div className="flex flex-col items-center gap-1">
+                  {/* Fila 1: 1 carta arriba */}
                   <div className="flex justify-center">
                     <div className="w-6 h-10 bg-amber-900 border border-amber-700 rounded-sm" />
                   </div>
-                  <div className="flex gap-0.5 justify-center">
+                  {/* Fila 2: 3 cartas en el medio */}
+                  <div className="flex gap-1 justify-center">
+                    <div className="w-5 h-8 bg-amber-900 border border-amber-700 rounded-sm" />
                     <div className="w-5 h-8 bg-amber-900 border border-amber-700 rounded-sm" />
                     <div className="w-5 h-8 bg-amber-900 border border-amber-700 rounded-sm" />
                   </div>
-                  <div className="flex justify-center">
-                    <div className="w-6 h-10 bg-amber-900 border border-amber-700 rounded-sm" />
-                  </div>
+                  {/* Fila 3: 1 carta abajo */}
                   <div className="flex justify-center">
                     <div className="w-6 h-10 bg-amber-900 border border-amber-700 rounded-sm" />
                   </div>
