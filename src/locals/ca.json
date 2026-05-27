@@ -1,6 +1,7 @@
 {
   "home": {
     "title": "TAROT DE PI",
+    "subtitle": "Descobreix el teu destí a través de les cartes del tarot",
     "select_format": "Tirada",
     "select_default": "Selecciona el tipus de consulta...",
     "placeholder": "Què desitges consultar?...",
