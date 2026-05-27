@@ -68,7 +68,7 @@ export default function Home() {
 
         {/* FOOTER */}
         <div className="absolute bottom-6 text-center text-white/40 text-sm uppercase tracking-widest">
-          <p>{t.home.footer_left || "Consulta tu fortuna"}</p>
+          {/* Footer vacío o puedes remover completamente este div si no quieres mostrar nada */}
         </div>
       </div>
     </main>
