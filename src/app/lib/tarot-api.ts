@@ -5,6 +5,7 @@ export interface TarotCard {
   name: string;
   imageId: string;
   is_reversed: boolean;
+  meaning?: string;
 }
 
 // LA SOLUCIÓN: Forzamos a que las llaves se traten como un diccionario (Record)
@@ -36,7 +37,8 @@ export function drawFiveCards(): TarotCard[] {
       position: index + 1,
       name: cardInfo.name,
       imageId: id,
-      is_reversed: false
+      is_reversed: false,
+      meaning: cardInfo.info
     };
   });
 }
