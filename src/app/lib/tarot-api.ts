@@ -12,7 +12,7 @@ export interface TarotCard {
 const cardTranslations = es.cards as Record<string, { name: string; info: string }>;
 const cardIds = Object.keys(cardTranslations);
 
-export function getCardImageUrl(cardId: string | undefined, isReversed: boolean = false): string {
+export function getCardImageUrl(cardId: string | undefined): string {
   if (!cardId) {
     console.log("[v0] getCardImageUrl: cardId es undefined");
     return "";
@@ -21,10 +21,8 @@ export function getCardImageUrl(cardId: string | undefined, isReversed: boolean 
   const ASSETS_URL = process.env.NEXT_PUBLIC_ASSETS_URL;
   const IMG_TOKEN = process.env.NEXT_PUBLIC_IMAGE_SERVER_TOKEN;
   
-  // Agregar parámetro reversed si la carta está invertida
-  const reversedParam = isReversed ? "&reversed=true" : "";
-  const url = `${ASSETS_URL}/media/card/${cardId}?token=${IMG_TOKEN}${reversedParam}`;
-  console.log("[v0] getCardImageUrl:", { cardId, isReversed, assetsUrl: ASSETS_URL, hasToken: !!IMG_TOKEN, url });
+  const url = `${ASSETS_URL}/media/card/${cardId}?token=${IMG_TOKEN}`;
+  console.log("[v0] getCardImageUrl:", { cardId, assetsUrl: ASSETS_URL, hasToken: !!IMG_TOKEN, url });
   return url;
 }
 
@@ -32,15 +30,14 @@ export function drawFiveCards(): TarotCard[] {
   const shuffledIds = [...cardIds].sort(() => 0.5 - Math.random());
   
   return shuffledIds.slice(0, 5).map((id, index) => {
+    // Ahora cardTranslations[id] ya no da error porque arriba dijimos que acepta strings
     const cardInfo = cardTranslations[id];
-    // Asignar reverso aleatorio (50% de probabilidad)
-    const isReversed = Math.random() > 0.5;
     
     return {
       position: index + 1,
       name: cardInfo.name,
       imageId: id,
-      is_reversed: isReversed,
+      is_reversed: false,
       meaning: cardInfo.info
     };
   });
