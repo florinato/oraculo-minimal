@@ -12,6 +12,7 @@ interface TarotCard {
   name: string;
   imageId: string;
   is_reversed: boolean;
+  meaning?: string;
 }
 
 function ReadingContent() {
@@ -230,10 +231,16 @@ function ReadingContent() {
             newSelected.add(index);
             setSelectedDeckIndices(newSelected);
             
-            // Cuando se seleccionan todas, pasar a fase de revelar
-            if (newSelected.size === cards.length) {
-              setSelectionPhase(false);
+          // Cuando se seleccionan todas, revelar automáticamente todas las cartas
+          if (newSelected.size === cards.length) {
+            setSelectionPhase(false);
+            // Revelar todas las cartas automáticamente
+            const allRevealed = new Set<number>();
+            for (let i = 0; i < cards.length; i++) {
+              allRevealed.add(i);
             }
+            setRevealedCards(allRevealed);
+          }
           }}
         />
       )}
@@ -250,12 +257,11 @@ function ReadingContent() {
                       card={cards[0]} 
                       index={0}
                       isRevealed={revealedCards.has(0)}
-                      canReveal={revealedCards.size === 0}
+                      canReveal={true}
                       onReveal={() => {
                         const newRevealed = new Set(revealedCards);
                         newRevealed.add(0);
                         setRevealedCards(newRevealed);
-                        setSelectedCard(cards[0]);
                       }}
                       onReviewCard={() => setSelectedCard(cards[0])}
                     />
@@ -269,12 +275,11 @@ function ReadingContent() {
                         card={cards[i]} 
                         index={i}
                         isRevealed={revealedCards.has(i)}
-                        canReveal={revealedCards.size === i}
+                        canReveal={true}
                         onReveal={() => {
                           const newRevealed = new Set(revealedCards);
                           newRevealed.add(i);
                           setRevealedCards(newRevealed);
-                          setSelectedCard(cards[i]);
                         }}
                         onReviewCard={() => setSelectedCard(cards[i])}
                       />
@@ -284,19 +289,19 @@ function ReadingContent() {
               ) : (
                 <div className="grid grid-cols-3 grid-rows-3 pointer-events-auto" style={{ gap: '2.5vh' }}>
                   <div className="col-start-2 row-start-1 transition-all duration-500 opacity-100 scale-100">
-                    <CardImgFaceDown card={cards[2]} index={2} isRevealed={revealedCards.has(2)} canReveal={revealedCards.size === 2} onReveal={() => { const n = new Set(revealedCards); n.add(2); setRevealedCards(n); setSelectedCard(cards[2]); }} onReviewCard={() => setSelectedCard(cards[2])} />
+                    <CardImgFaceDown card={cards[2]} index={2} isRevealed={revealedCards.has(2)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(2); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[2])} />
                   </div>
                   <div className="col-start-1 row-start-2 transition-all duration-500 opacity-100 scale-100">
-                    <CardImgFaceDown card={cards[0]} index={0} isRevealed={revealedCards.has(0)} canReveal={revealedCards.size === 0} onReveal={() => { const n = new Set(revealedCards); n.add(0); setRevealedCards(n); setSelectedCard(cards[0]); }} onReviewCard={() => setSelectedCard(cards[0])} />
+                    <CardImgFaceDown card={cards[0]} index={0} isRevealed={revealedCards.has(0)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(0); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[0])} />
                   </div>
                   <div className="col-start-2 row-start-2 transition-all duration-500 opacity-100 scale-100">
-                    <CardImgFaceDown card={cards[4]} index={4} isRevealed={revealedCards.has(4)} canReveal={revealedCards.size === 4} onReveal={() => { const n = new Set(revealedCards); n.add(4); setRevealedCards(n); setSelectedCard(cards[4]); }} onReviewCard={() => setSelectedCard(cards[4])} />
+                    <CardImgFaceDown card={cards[4]} index={4} isRevealed={revealedCards.has(4)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(4); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[4])} />
                   </div>
                   <div className="col-start-3 row-start-2 transition-all duration-500 opacity-100 scale-100">
-                    <CardImgFaceDown card={cards[1]} index={1} isRevealed={revealedCards.has(1)} canReveal={revealedCards.size === 1} onReveal={() => { const n = new Set(revealedCards); n.add(1); setRevealedCards(n); setSelectedCard(cards[1]); }} onReviewCard={() => setSelectedCard(cards[1])} />
+                    <CardImgFaceDown card={cards[1]} index={1} isRevealed={revealedCards.has(1)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(1); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[1])} />
                   </div>
                   <div className="col-start-2 row-start-3 transition-all duration-500 opacity-100 scale-100">
-                    <CardImgFaceDown card={cards[3]} index={3} isRevealed={revealedCards.has(3)} canReveal={revealedCards.size === 3} onReveal={() => { const n = new Set(revealedCards); n.add(3); setRevealedCards(n); setSelectedCard(cards[3]); }} onReviewCard={() => setSelectedCard(cards[3])} />
+                    <CardImgFaceDown card={cards[3]} index={3} isRevealed={revealedCards.has(3)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(3); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[3])} />
                   </div>
                 </div>
               )}
@@ -351,7 +356,7 @@ function ReadingContent() {
       <CardDetail 
         card={selectedCard} 
         onClose={() => setSelectedCard(null)} 
-        info={selectedCard && streamSections ? streamSections[`C${cards.indexOf(selectedCard) + 1}`] || "Cargando..." : ""}
+        info={selectedCard?.meaning || ""}
       />
 
     </div>
