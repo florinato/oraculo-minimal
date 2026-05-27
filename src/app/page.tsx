@@ -15,7 +15,7 @@ export default function Home() {
   const { t } = getI18n(lang);
 
   return (
-    <main className="relative min-h-screen flex flex-col justify-center items-center bg-black text-white font-sans overflow-hidden">
+    <main className="relative min-h-screen flex flex-col items-center bg-black text-white font-sans overflow-hidden">
       
       {/* FONDO */}
       <div className="absolute inset-0 z-0">
@@ -45,10 +45,10 @@ export default function Home() {
         </div>
       </div>
 
-      {/* CONTENIDO CENTRAL */}
-      <div className="relative z-10 flex flex-col items-center justify-center gap-12 px-4">
+      {/* CONTENIDO */}
+      <div className="relative z-10 w-full px-4 pt-24 flex flex-col items-center justify-between flex-1">
         
-        {/* TÍTULO */}
+        {/* TÍTULO ARRIBA */}
         <div className="text-center space-y-4">
           <h1 className="text-5xl md:text-6xl font-bold text-amber-500 uppercase tracking-widest drop-shadow-lg">
             {t.home.title}
@@ -58,17 +58,14 @@ export default function Home() {
           </p>
         </div>
 
-        {/* BOTÓN DE ENTRADA */}
-        <button
-          onClick={() => router.push('/selector')}
-          className="px-12 py-5 bg-amber-800 hover:bg-amber-700 active:bg-amber-900 text-white font-bold rounded-xl text-xl border-b-4 border-amber-950 active:border-b-0 active:translate-y-1 transition-all shadow-2xl uppercase tracking-widest drop-shadow-lg"
-        >
-          {t.home.enter || "Entrar"}
-        </button>
-
-        {/* FOOTER */}
-        <div className="absolute bottom-6 text-center text-white/40 text-sm uppercase tracking-widest">
-          <p>{t.home.footer_left || "Consulta tu fortuna"}</p>
+        {/* BOTÓN DE ENTRADA - Al pie con margen aumentado al doble */}
+        <div className="flex flex-col items-center gap-6 pb-12">
+          <button
+            onClick={() => router.push('/selector')}
+            className="px-12 py-5 bg-amber-800 hover:bg-amber-700 active:bg-amber-900 text-white font-bold rounded-xl text-xl border-b-4 border-amber-950 active:border-b-0 active:translate-y-1 transition-all shadow-2xl uppercase tracking-widest drop-shadow-lg"
+          >
+            {t.home.enter || "Entrar"}
+          </button>
         </div>
       </div>
     </main>
