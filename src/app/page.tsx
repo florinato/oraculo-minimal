@@ -58,8 +58,8 @@ export default function Home() {
           </p>
         </div>
 
-        {/* BOTÓN DE ENTRADA - Al pie con margen */}
-        <div className="flex flex-col items-center gap-6 pb-6">
+        {/* BOTÓN DE ENTRADA - Al pie con margen reducido */}
+        <div className="flex flex-col items-center gap-6 pb-3">
           <button
             onClick={() => router.push('/selector')}
             className="px-12 py-5 bg-amber-800 hover:bg-amber-700 active:bg-amber-900 text-white font-bold rounded-xl text-xl border-b-4 border-amber-950 active:border-b-0 active:translate-y-1 transition-all shadow-2xl uppercase tracking-widest drop-shadow-lg"
