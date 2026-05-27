@@ -1,6 +1,7 @@
 {
   "home": {
     "title": "TAROT DE PI",
+    "subtitle": "Discover your destiny through the cards of tarot",
     "select_format": "Spread",
     "select_default": "Select a reading type...",
     "placeholder": "What do you wish to ask?...",
