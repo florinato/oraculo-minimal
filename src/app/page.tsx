@@ -46,7 +46,7 @@ export default function Home() {
       </div>
 
       {/* CONTENIDO */}
-      <div className="relative z-10 w-full px-4 pt-24 flex flex-col items-center flex-1">
+      <div className="relative z-10 w-full px-4 pt-24 flex flex-col items-center justify-between flex-1">
         
         {/* TÍTULO ARRIBA */}
         <div className="text-center space-y-4">
@@ -58,19 +58,14 @@ export default function Home() {
           </p>
         </div>
 
-        {/* BOTÓN DE ENTRADA - Centrado con margen igual abajo */}
-        <div className="flex items-center justify-center flex-1 pb-24">
+        {/* BOTÓN DE ENTRADA - Al pie con margen */}
+        <div className="flex flex-col items-center gap-6 pb-6">
           <button
             onClick={() => router.push('/selector')}
             className="px-12 py-5 bg-amber-800 hover:bg-amber-700 active:bg-amber-900 text-white font-bold rounded-xl text-xl border-b-4 border-amber-950 active:border-b-0 active:translate-y-1 transition-all shadow-2xl uppercase tracking-widest drop-shadow-lg"
           >
             {t.home.enter || "Entrar"}
           </button>
-        </div>
-
-        {/* FOOTER */}
-        <div className="text-center text-white/40 text-sm uppercase tracking-widest pb-6">
-          {/* Footer vacío */}
         </div>
       </div>
     </main>
