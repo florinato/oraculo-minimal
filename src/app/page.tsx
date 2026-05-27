@@ -58,8 +58,8 @@ export default function Home() {
           </p>
         </div>
 
-        {/* BOTÓN DE ENTRADA - Centrado en el medio */}
-        <div className="flex items-center justify-center flex-1 pb-20">
+        {/* BOTÓN DE ENTRADA - Centrado con margen igual abajo */}
+        <div className="flex items-center justify-center flex-1 pb-24">
           <button
             onClick={() => router.push('/selector')}
             className="px-12 py-5 bg-amber-800 hover:bg-amber-700 active:bg-amber-900 text-white font-bold rounded-xl text-xl border-b-4 border-amber-950 active:border-b-0 active:translate-y-1 transition-all shadow-2xl uppercase tracking-widest drop-shadow-lg"
