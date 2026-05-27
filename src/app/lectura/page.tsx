@@ -371,7 +371,7 @@ interface ExpandedDeckProps {
 function ExpandedDeck({ selectedIndices, onCardClick, cardsToSelect }: ExpandedDeckProps) {
   const tarotCards = 22;
   const cardWidth = 45;
-  const overlap = 38;
+  const overlap = 27;
   const containerWidth = (tarotCards - 1) * (cardWidth - overlap) + cardWidth;
 
   return (
