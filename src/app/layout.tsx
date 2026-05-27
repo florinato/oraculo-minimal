@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Oráculo Celta",
+  title: "Tarot de PI",
   description: "Consulta tu destino",
 };
 
