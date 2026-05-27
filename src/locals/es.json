@@ -2,6 +2,7 @@
   "home": {
     "title": "TAROT DE PI",
     "subtitle": "Descubre tu destino a través de las cartas del tarot",
+    "enter": "Entrar",
     "select_format": "Tirada",
     "select_default": "Selecciona el tipo de consulta...",
     "placeholder": "¿Qué deseas consultar?...",
