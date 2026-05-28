@@ -19,7 +19,7 @@ export default function Home() {
       
       {/* FONDO */}
       <div className="absolute inset-0 z-0">
-        <img src="/portada.jpg" className="w-full h-full object-cover" alt="Portada" />
+        <img src="/portada_PI_ARC.png" className="w-full h-full object-cover" alt="Portada" />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
       </div>
 
@@ -46,23 +46,22 @@ export default function Home() {
       </div>
 
       {/* CONTENIDO */}
-      <div className="relative z-10 w-full px-4 pt-24 flex flex-col items-center justify-between flex-1">
+      <div className="relative z-10 w-full px-4 h-screen flex flex-col items-center">
         
-        {/* TÍTULO ARRIBA */}
-        <div className="text-center space-y-4">
-          <h1 className="text-5xl md:text-6xl font-bold text-amber-500 uppercase tracking-widest drop-shadow-lg">
-            {t.home.title}
+        {/* ESPACIO SUPERIOR (MÁS GRANDE) */}
+        <div className="h-2/3 w-full" />
+        
+        {/* TÍTULO COMENZANDO DESDE LA MITAD HACIA ABAJO */}
+        <div className="text-center space-y-2">
+          <h1 className="text-6xl md:text-7xl font-bold text-amber-500 uppercase tracking-widest drop-shadow-lg">
+            PI ARCANA
           </h1>
-          <p className="text-amber-200/80 text-lg md:text-xl font-serif italic max-w-md">
-            {t.home.subtitle || "Descubre tu destino a través de las cartas del tarot"}
+          <p className="text-amber-500 text-3xl md:text-4xl font-bold uppercase tracking-widest drop-shadow-lg">
+            TAROT
           </p>
-        </div>
-
-        {/* BOTÓN DE ENTRADA - Al pie con margen aumentado al doble */}
-        <div className="flex flex-col items-center gap-6 pb-12">
           <button
             onClick={() => router.push('/selector')}
-            className="px-12 py-5 bg-amber-800 hover:bg-amber-700 active:bg-amber-900 text-white font-bold rounded-xl text-xl border-b-4 border-amber-950 active:border-b-0 active:translate-y-1 transition-all shadow-2xl uppercase tracking-widest drop-shadow-lg"
+            className="mt-8 px-12 py-5 bg-amber-800 hover:bg-amber-700 active:bg-amber-900 text-white font-bold rounded-xl text-xl border-b-4 border-amber-950 active:border-b-0 active:translate-y-1 transition-all shadow-2xl uppercase tracking-widest drop-shadow-lg"
           >
             {t.home.enter || "Entrar"}
           </button>

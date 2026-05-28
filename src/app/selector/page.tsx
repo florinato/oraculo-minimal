@@ -32,9 +32,9 @@ export default function Selector() {
   return (
     <main className="relative min-h-screen flex flex-col justify-end items-center bg-black text-white font-sans overflow-hidden">
       
-      {/* FONDO CON BLUR */}
+      {/* FONDO SIN BLUR */}
       <div className="absolute inset-0 z-0">
-        <img src="/portada.jpg" className="w-full h-full object-cover opacity-90 blur-sm" alt="Portada" />
+        <img src="/portada_PI_ARC.png" className="w-full h-full object-cover opacity-90" alt="Portada" />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
       </div>
 
@@ -62,9 +62,12 @@ export default function Selector() {
 
       {/* TÍTULO ARRIBA */}
       <div className="absolute top-12 left-0 right-0 z-10 text-center">
-        <h1 className="text-3xl font-bold text-amber-500 uppercase tracking-widest drop-shadow-md">
-          {t.home.title}
+        <h1 className="text-6xl md:text-7xl font-bold text-amber-500 uppercase tracking-widest drop-shadow-lg">
+          PI ARCANA
         </h1>
+        <p className="text-amber-500 text-3xl md:text-4xl font-bold uppercase tracking-widest drop-shadow-lg">
+          TAROT
+        </p>
       </div>
 
       {/* CONTROLES ABAJO */}
