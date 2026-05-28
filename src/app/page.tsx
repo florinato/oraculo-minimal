@@ -48,21 +48,22 @@ export default function Home() {
       {/* CONTENIDO */}
       <div className="relative z-10 w-full px-4 h-screen flex flex-col items-center">
         
-        {/* TÍTULO ARRIBA */}
-        <div className="text-center space-y-2 mt-20">
+        {/* BOTÓN AL INICIO */}
+        <div className="flex-1 flex flex-col items-center justify-start pt-20">
+          {/* Espacio vacío */}
+        </div>
+        
+        {/* TÍTULO ABAJO */}
+        <div className="text-center space-y-2 pb-12">
           <h1 className="text-6xl md:text-7xl font-bold text-amber-500 uppercase tracking-widest drop-shadow-lg">
             PI ARCANA
           </h1>
           <p className="text-amber-500 text-3xl md:text-4xl font-bold uppercase tracking-widest drop-shadow-lg">
             TAROT
           </p>
-        </div>
-        
-        {/* BOTÓN ABAJO */}
-        <div className="flex-1 flex flex-col items-center justify-end pb-12">
           <button
             onClick={() => router.push('/selector')}
-            className="px-12 py-5 bg-amber-800 hover:bg-amber-700 active:bg-amber-900 text-white font-bold rounded-xl text-xl border-b-4 border-amber-950 active:border-b-0 active:translate-y-1 transition-all shadow-2xl uppercase tracking-widest drop-shadow-lg"
+            className="mt-8 px-12 py-5 bg-amber-800 hover:bg-amber-700 active:bg-amber-900 text-white font-bold rounded-xl text-xl border-b-4 border-amber-950 active:border-b-0 active:translate-y-1 transition-all shadow-2xl uppercase tracking-widest drop-shadow-lg"
           >
             {t.home.enter || "Entrar"}
           </button>
