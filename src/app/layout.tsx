@@ -7,11 +7,10 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Tarot de PI",
     description: "Consulta tu destino",
-    url: "https://tarotdepi.com",
     siteName: "Tarot de PI",
     images: [
       {
-        url: "/ARC_icono.png",
+        url: "https://oraculo-minimal.vercel.app/ARC_icono.png",
         width: 1200,
         height: 630,
         alt: "Tarot de PI",
