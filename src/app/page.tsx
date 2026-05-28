@@ -46,32 +46,26 @@ export default function Home() {
       </div>
 
       {/* CONTENIDO */}
-      <div className="relative z-10 w-full px-4 flex flex-col items-center flex-1">
+      <div className="relative z-10 w-full px-4 h-screen flex flex-col items-center">
         
-        {/* MITAD SUPERIOR CON TÍTULO AL PRINCIPIO */}
-        <div className="h-1/2 w-full flex flex-col items-center">
-          {/* TÍTULO EN LA CABECERA DE LA MITAD SUPERIOR */}
-          <div className="text-center space-y-2">
-            <h1 className="text-6xl md:text-7xl font-bold text-amber-500 uppercase tracking-widest drop-shadow-lg">
-              PI ARCANA
-            </h1>
-            <p className="text-amber-500 text-3xl md:text-4xl font-bold uppercase tracking-widest drop-shadow-lg">
-              TAROT
-            </p>
-          </div>
+        {/* TÍTULO ARRIBA */}
+        <div className="text-center space-y-2 mt-20">
+          <h1 className="text-6xl md:text-7xl font-bold text-amber-500 uppercase tracking-widest drop-shadow-lg">
+            PI ARCANA
+          </h1>
+          <p className="text-amber-500 text-3xl md:text-4xl font-bold uppercase tracking-widest drop-shadow-lg">
+            TAROT
+          </p>
         </div>
         
-        {/* MITAD INFERIOR CON BOTÓN */}
-        <div className="h-1/2 w-full flex flex-col items-center justify-end pb-12">
-          {/* BOTÓN DE ENTRADA - Al pie con margen */}
-          <div className="flex flex-col items-center gap-6">
-            <button
-              onClick={() => router.push('/selector')}
-              className="px-12 py-5 bg-amber-800 hover:bg-amber-700 active:bg-amber-900 text-white font-bold rounded-xl text-xl border-b-4 border-amber-950 active:border-b-0 active:translate-y-1 transition-all shadow-2xl uppercase tracking-widest drop-shadow-lg"
-            >
-              {t.home.enter || "Entrar"}
-            </button>
-          </div>
+        {/* BOTÓN ABAJO */}
+        <div className="flex-1 flex flex-col items-center justify-end pb-12">
+          <button
+            onClick={() => router.push('/selector')}
+            className="px-12 py-5 bg-amber-800 hover:bg-amber-700 active:bg-amber-900 text-white font-bold rounded-xl text-xl border-b-4 border-amber-950 active:border-b-0 active:translate-y-1 transition-all shadow-2xl uppercase tracking-widest drop-shadow-lg"
+          >
+            {t.home.enter || "Entrar"}
+          </button>
         </div>
       </div>
     </main>
