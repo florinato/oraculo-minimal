@@ -4,6 +4,9 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Tarot de PI",
   description: "Consulta tu destino",
+  icons: {
+    icon: "/ARC_icono.png",
+  },
 };
 
 export default function RootLayout({
