@@ -46,11 +46,15 @@ export default function Home() {
       </div>
 
       {/* CONTENIDO */}
-      <div className="relative z-10 w-full px-4 flex flex-col items-center justify-start flex-1">
+      <div className="relative z-10 w-full px-4 flex flex-col items-center flex-1">
         
-        {/* TÍTULO PEGADO A LA MITAD DE LA PANTALLA */}
-        <div className="h-1/2 flex items-end justify-center w-full">
-          <div className="text-center space-y-2">
+        {/* MITAD SUPERIOR VACÍA */}
+        <div className="h-1/2 w-full" />
+        
+        {/* MITAD INFERIOR CON TÍTULO AL PRINCIPIO */}
+        <div className="h-1/2 w-full flex flex-col items-center">
+          {/* TÍTULO EN LA CABECERA DE LA MITAD INFERIOR */}
+          <div className="text-center space-y-2 pt-8">
             <h1 className="text-6xl md:text-7xl font-bold text-amber-500 uppercase tracking-widest drop-shadow-lg">
               PI ARCANA
             </h1>
@@ -58,16 +62,16 @@ export default function Home() {
               TAROT
             </p>
           </div>
-        </div>
 
-        {/* BOTÓN DE ENTRADA - Al pie con margen aumentado al doble */}
-        <div className="flex flex-col items-center gap-6 pb-12 flex-1 justify-end">
-          <button
-            onClick={() => router.push('/selector')}
-            className="px-12 py-5 bg-amber-800 hover:bg-amber-700 active:bg-amber-900 text-white font-bold rounded-xl text-xl border-b-4 border-amber-950 active:border-b-0 active:translate-y-1 transition-all shadow-2xl uppercase tracking-widest drop-shadow-lg"
-          >
-            {t.home.enter || "Entrar"}
-          </button>
+          {/* BOTÓN DE ENTRADA - Al pie con margen */}
+          <div className="flex flex-col items-center gap-6 pb-12 flex-1 justify-end w-full">
+            <button
+              onClick={() => router.push('/selector')}
+              className="px-12 py-5 bg-amber-800 hover:bg-amber-700 active:bg-amber-900 text-white font-bold rounded-xl text-xl border-b-4 border-amber-950 active:border-b-0 active:translate-y-1 transition-all shadow-2xl uppercase tracking-widest drop-shadow-lg"
+            >
+              {t.home.enter || "Entrar"}
+            </button>
+          </div>
         </div>
       </div>
     </main>
