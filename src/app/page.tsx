@@ -46,16 +46,18 @@ export default function Home() {
       </div>
 
       {/* CONTENIDO */}
-      <div className="relative z-10 w-full px-4 pt-24 flex flex-col items-center justify-between flex-1">
+      <div className="relative z-10 w-full px-4 flex flex-col items-center justify-between flex-1">
         
-        {/* TÍTULO ARRIBA */}
-        <div className="text-center space-y-4">
-          <h1 className="text-5xl md:text-6xl font-bold text-amber-500 uppercase tracking-widest drop-shadow-lg">
-            {t.home.title}
-          </h1>
-          <p className="text-amber-200/80 text-lg md:text-xl font-serif italic max-w-md">
-            {t.home.subtitle || "Descubre tu destino a través de las cartas del tarot"}
-          </p>
+        {/* TÍTULO EN MITAD INFERIOR DE LA PANTALLA */}
+        <div className="flex-1 flex items-end justify-center pb-24">
+          <div className="text-center space-y-2">
+            <h1 className="text-6xl md:text-7xl font-bold text-amber-500 uppercase tracking-widest drop-shadow-lg">
+              PI ARCANA
+            </h1>
+            <p className="text-amber-500 text-3xl md:text-4xl font-bold uppercase tracking-widest drop-shadow-lg">
+              TAROT
+            </p>
+          </div>
         </div>
 
         {/* BOTÓN DE ENTRADA - Al pie con margen aumentado al doble */}
