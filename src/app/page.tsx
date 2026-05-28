@@ -54,7 +54,7 @@ export default function Home() {
         {/* MITAD INFERIOR CON TÍTULO AL PRINCIPIO */}
         <div className="h-1/2 w-full flex flex-col items-center">
           {/* TÍTULO EN LA CABECERA DE LA MITAD INFERIOR */}
-          <div className="text-center space-y-2 pt-8">
+          <div className="text-center space-y-2">
             <h1 className="text-6xl md:text-7xl font-bold text-amber-500 uppercase tracking-widest drop-shadow-lg">
               PI ARCANA
             </h1>
