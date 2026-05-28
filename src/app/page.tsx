@@ -46,15 +46,10 @@ export default function Home() {
       </div>
 
       {/* CONTENIDO */}
-      <div className="relative z-10 w-full px-4 h-screen flex flex-col items-center">
+      <div className="relative z-10 w-full px-4 h-screen flex flex-col items-center justify-center">
         
-        {/* BOTÓN AL INICIO */}
-        <div className="flex-1 flex flex-col items-center justify-start pt-20">
-          {/* Espacio vacío */}
-        </div>
-        
-        {/* TÍTULO ABAJO */}
-        <div className="text-center space-y-2 pb-12">
+        {/* TÍTULO CERCA DE LA MITAD */}
+        <div className="text-center space-y-2">
           <h1 className="text-6xl md:text-7xl font-bold text-amber-500 uppercase tracking-widest drop-shadow-lg">
             PI ARCANA
           </h1>
