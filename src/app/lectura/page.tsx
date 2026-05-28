@@ -218,7 +218,7 @@ function ReadingContent() {
       
       {/* CAPA 1: FONDO FIJO (La foto de portada con blur suave) */}
       <div className="fixed inset-0 h-screen w-full overflow-hidden z-0 pointer-events-none flex justify-center items-center">
-        <img src="/portada.jpg" className="w-full h-full object-cover blur-sm" alt="Portada" />
+        <img src="/portada_PI_ARC.png" className="w-full h-full object-cover blur-sm" alt="Portada" />
       </div>
 
       {/* CAPA 2: MAZO EXTENDIDO (Selección de cartas) */}
