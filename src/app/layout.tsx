@@ -7,6 +7,10 @@ export const metadata: Metadata = {
   icons: {
     icon: "/ARC_icono.png",
   },
+  openGraph: {
+    title: "Tarot de PI",
+    description: "Consulta tu destino",
+  },
 };
 
 export default function RootLayout({
