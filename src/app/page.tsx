@@ -46,9 +46,12 @@ export default function Home() {
       </div>
 
       {/* CONTENIDO */}
-      <div className="relative z-10 w-full px-4 h-screen flex flex-col items-center justify-center">
+      <div className="relative z-10 w-full px-4 h-screen flex flex-col items-center">
         
-        {/* TÍTULO CERCA DE LA MITAD */}
+        {/* ESPACIO SUPERIOR (MITAD) */}
+        <div className="h-1/2 w-full" />
+        
+        {/* TÍTULO COMENZANDO DESDE LA MITAD HACIA ABAJO */}
         <div className="text-center space-y-2">
           <h1 className="text-6xl md:text-7xl font-bold text-amber-500 uppercase tracking-widest drop-shadow-lg">
             PI ARCANA
