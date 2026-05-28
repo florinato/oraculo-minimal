@@ -10,6 +10,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: "PI ARCANA TAROT",
     description: "Consulta tu destino",
+    images: [
+      {
+        url: "/ARC_icono.png",
+      },
+    ],
   },
 };
 
