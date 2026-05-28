@@ -32,9 +32,9 @@ export default function Selector() {
   return (
     <main className="relative min-h-screen flex flex-col justify-end items-center bg-black text-white font-sans overflow-hidden">
       
-      {/* FONDO CON BLUR */}
+      {/* FONDO SIN BLUR */}
       <div className="absolute inset-0 z-0">
-        <img src="/portada_PI_ARC.png" className="w-full h-full object-cover opacity-90 blur-sm" alt="Portada" />
+        <img src="/portada_PI_ARC.png" className="w-full h-full object-cover opacity-90" alt="Portada" />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
       </div>
 
