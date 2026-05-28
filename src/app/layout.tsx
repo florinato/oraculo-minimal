@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Tarot de PI",
+  title: "PI ARCANA TAROT",
   description: "Consulta tu destino",
   icons: {
     icon: "/ARC_icono.png",
   },
   openGraph: {
-    title: "Tarot de PI",
+    title: "PI ARCANA TAROT",
     description: "Consulta tu destino",
   },
 };
