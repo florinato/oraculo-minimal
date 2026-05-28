@@ -46,10 +46,10 @@ export default function Home() {
       </div>
 
       {/* CONTENIDO */}
-      <div className="relative z-10 w-full px-4 flex flex-col items-center justify-between flex-1">
+      <div className="relative z-10 w-full px-4 flex flex-col items-center justify-start flex-1">
         
-        {/* TÍTULO EN MITAD INFERIOR DE LA PANTALLA */}
-        <div className="flex-1 flex items-end justify-center pb-24">
+        {/* TÍTULO PEGADO A LA MITAD DE LA PANTALLA */}
+        <div className="h-1/2 flex items-end justify-center w-full">
           <div className="text-center space-y-2">
             <h1 className="text-6xl md:text-7xl font-bold text-amber-500 uppercase tracking-widest drop-shadow-lg">
               PI ARCANA
@@ -61,7 +61,7 @@ export default function Home() {
         </div>
 
         {/* BOTÓN DE ENTRADA - Al pie con margen aumentado al doble */}
-        <div className="flex flex-col items-center gap-6 pb-12">
+        <div className="flex flex-col items-center gap-6 pb-12 flex-1 justify-end">
           <button
             onClick={() => router.push('/selector')}
             className="px-12 py-5 bg-amber-800 hover:bg-amber-700 active:bg-amber-900 text-white font-bold rounded-xl text-xl border-b-4 border-amber-950 active:border-b-0 active:translate-y-1 transition-all shadow-2xl uppercase tracking-widest drop-shadow-lg"
