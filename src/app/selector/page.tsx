@@ -62,9 +62,12 @@ export default function Selector() {
 
       {/* TÍTULO ARRIBA */}
       <div className="absolute top-12 left-0 right-0 z-10 text-center">
-        <h1 className="text-3xl font-bold text-amber-500 uppercase tracking-widest drop-shadow-md">
-          {t.home.title}
+        <h1 className="text-6xl md:text-7xl font-bold text-amber-500 uppercase tracking-widest drop-shadow-lg">
+          PI ARCANA
         </h1>
+        <p className="text-amber-500 text-3xl md:text-4xl font-bold uppercase tracking-widest drop-shadow-lg">
+          TAROT
+        </p>
       </div>
 
       {/* CONTROLES ABAJO */}
