@@ -19,7 +19,7 @@ export default function Home() {
       
       {/* FONDO */}
       <div className="absolute inset-0 z-0">
-        <img src="/portada.jpg" className="w-full h-full object-cover" alt="Portada" />
+        <img src="/PI_arcana.jpeg" className="w-full h-full object-cover" alt="Portada" />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
       </div>
 
