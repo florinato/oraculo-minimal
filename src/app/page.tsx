@@ -48,8 +48,8 @@ export default function Home() {
       {/* CONTENIDO */}
       <div className="relative z-10 w-full px-4 h-screen flex flex-col items-center">
         
-        {/* ESPACIO SUPERIOR (MITAD) */}
-        <div className="h-1/2 w-full" />
+        {/* ESPACIO SUPERIOR (MÁS GRANDE) */}
+        <div className="h-2/3 w-full" />
         
         {/* TÍTULO COMENZANDO DESDE LA MITAD HACIA ABAJO */}
         <div className="text-center space-y-2">
