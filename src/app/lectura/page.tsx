@@ -107,7 +107,9 @@ function ReadingContent() {
 
   // Cuando se termina la selección de cartas, iniciar la lectura
   useEffect(() => {
-    if (selectionPhase || loading) return;
+    if (selectionPhase) return; // Esperar hasta que termine la selección
+    if (cards.length === 0) return; // Esperar a que haya cartas
+    if (loading) return; // Ya está en proceso
     
     const startInference = async () => {
       try {
@@ -133,6 +135,9 @@ function ReadingContent() {
             knowledge_base_id: "none",
             user_question: question,
             language: aiInstruction,
+            cards: cards
+          })
+        });
             cards: selectedCards
           })
         });
@@ -194,7 +199,7 @@ function ReadingContent() {
       }
     };
     startInference();
-  }, [selectionPhase, cards, question, t.reading.error, currentLang, formatParam]);
+  }, [selectionPhase, cards]);
 
   if (cards.length === 0) return <div className="min-h-screen bg-black flex items-center justify-center text-amber-500 italic">Invocando el umbral...</div>;
 
