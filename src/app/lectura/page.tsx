@@ -2,9 +2,9 @@
 import { getI18n } from "@/app/lib/i18n";
 import { drawFiveCards, getCardImageUrl } from "@/app/lib/tarot-api";
 import CardDetail from "@/components/CardDetail";
+import NarrativeResponse from "@/components/NarrativeResponse";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
-import ReactMarkdown from "react-markdown";
 
 // 1. Tipado para evitar errores de Vercel
 interface TarotCard {
@@ -27,35 +27,10 @@ function ReadingContent() {
   const [selectedCard, setSelectedCard] = useState<TarotCard | null>(null);
   const [revealedCards, setRevealedCards] = useState<Set<number>>(new Set());
   const [selectionPhase, setSelectionPhase] = useState(true);
-  const [streamSections, setStreamSections] = useState<{ [key: string]: string }>({});
   const [selectedDeckIndices, setSelectedDeckIndices] = useState<Set<number>>(new Set());
   const hasStarted = useRef(false);
 
  const { t, currentLang, aiInstruction } = getI18n(langParam);
-
-  // Parsear etiquetas con regex en tiempo real
-  const parseSections = (fullText: string) => {
-    const regex = /\[(C1|C2|C3|C4|C5|RESUMEN)\]([\s\S]*?)(?=\[(?:C1|C2|C3|C4|C5|RESUMEN)\]|$)/g;
-    const sections: { [key: string]: string } = {};
-    let introduction = "";
-    let lastIndex = 0;
-
-    let match;
-    while ((match = regex.exec(fullText)) !== null) {
-      const tag = match[1];
-      const content = match[2].trim();
-      sections[tag] = content;
-      lastIndex = match.index + match[0].length;
-    }
-
-    // Extraer introducción (texto antes de la primera etiqueta)
-    const firstTagIndex = fullText.search(/\[(C1|C2|C3|C4|C5|RESUMEN)\]/);
-    if (firstTagIndex > 0) {
-      introduction = fullText.substring(0, firstTagIndex).trim();
-    }
-
-    return { sections, introduction };
-  };
 
   useEffect(() => {
     if (hasStarted.current) return;
@@ -76,7 +51,6 @@ function ReadingContent() {
     setSelectionPhase(true);
     setRevealedCards(new Set());
     setSelectedDeckIndices(new Set());
-    setStreamSections({});
     
     const startInference = async () => {
       try {
@@ -136,21 +110,7 @@ function ReadingContent() {
                 const data = JSON.parse(cleanLine.slice(6));
                 if (data.text) {
                   console.log("[v0] Chunk recibido:", data.text.substring(0, 50));
-                  setText(prev => {
-                    const combined = prev + data.text;
-                    
-                    // Parsear en tiempo real
-                    const regex = /\[(C1|C2|C3|C4|C5|RESUMEN)\]([\s\S]*?)(?=\[(?:C1|C2|C3|C4|C5|RESUMEN)\]|$)/g;
-                    const sections: { [key: string]: string } = {};
-                    let match;
-                    while ((match = regex.exec(combined)) !== null) {
-                      sections[match[1]] = match[2].trim();
-                    }
-                    console.log("[v0] Secciones parseadas:", Object.keys(sections));
-                    setStreamSections(sections);
-                    
-                    return combined;
-                  });
+                  setText(prev => prev + data.text);
                 }
               } catch (e) {
                 console.log("[v0] Error parseando JSON:", cleanLine.substring(0, 100));
@@ -317,26 +277,23 @@ function ReadingContent() {
         <div className="w-full max-w-2xl bg-black p-8 rounded-t-[40px] border-t border-amber-900/40 min-h-[60vh] pointer-events-auto">
           <div className="prose prose-invert prose-amber max-w-none font-serif text-lg leading-relaxed mb-12">
             {!selectionPhase && (text.length > 0 || loading) ? (
-              (() => {
-                const { sections, introduction } = parseSections(text);
-                return (
-                  <div className="space-y-6">
-                    {/* Solo mostrar síntesis */}
-                    {sections.RESUMEN ? (
-                      <div className="pt-6 border-t-2 border-amber-600/50">
-                        <p className="text-amber-500 font-bold text-sm uppercase mb-3">Síntesis</p>
-                        <ReactMarkdown components={{ strong: ({...props}) => <span className="text-amber-400 font-bold" {...props} /> }}>
-                          {sections.RESUMEN}
-                        </ReactMarkdown>
-                      </div>
-                    ) : loading ? (
-                      <div className="pt-4 text-center">
-                        <div className="inline-block animate-pulse text-amber-700 text-sm">Morvan está tejiendo la síntesis...</div>
-                      </div>
-                    ) : null}
+              <>
+                {text.length > 0 ? (
+                  <NarrativeResponse
+                    text={text}
+                    cards={cards}
+                    onCardClick={(cardIndex) => {
+                      if (cardIndex >= 0 && cardIndex < cards.length) {
+                        setSelectedCard(cards[cardIndex]);
+                      }
+                    }}
+                  />
+                ) : loading ? (
+                  <div className="pt-4 text-center">
+                    <div className="inline-block animate-pulse text-amber-700 text-sm">Morvan está tejiendo la respuesta...</div>
                   </div>
-                );
-              })()
+                ) : null}
+              </>
             ) : !selectionPhase ? (
               <div className="animate-pulse text-amber-700 italic">Invocando el oráculo...</div>
             ) : null}
