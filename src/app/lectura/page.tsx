@@ -232,7 +232,7 @@ function ReadingContent() {
         {/* Espaciador para que el texto empiece abajo */}
         <div className="h-[88vh] w-full" />
 
-        <div className="w-full max-w-2xl bg-black/30 backdrop-blur-md p-8 rounded-t-[40px] border-t border-amber-900/40 min-h-[60vh] pointer-events-auto">
+        <div className="w-full max-w-2xl bg-black/60 backdrop-blur-md p-8 rounded-t-[40px] border-t border-amber-900/40 min-h-[60vh] pointer-events-auto">
           <div className="prose prose-invert prose-amber max-w-none font-serif text-lg leading-relaxed mb-12">
             {!selectionPhase && (text.length > 0 || loading) ? (
               <>
