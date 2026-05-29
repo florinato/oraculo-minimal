@@ -1,82 +1,76 @@
-📜 Especificación de API: Oráculo Pi App (v2.0)
+📜 Especificación de API: Oráculo Pi App (v2.1 - Modo Narrativo)
 1. Configuración de Conexión
-Base URL: https://tu-servicio-cloud-run.a.run.app (Local: http://localhost:8080)
+Base URL: https://tu-servicio-cloud-run.a.run.app
 Endpoint: /api/pi/interpretar
 Seguridad: Header X-Custom-Auth-Token (Valor desde FRONTEND_API_SECRET).
 Respuesta: Streaming SSE (data: {"text": "..."}).
 2. Estructura del Request (JSON)
-El modelo InferenceRequest es compatible con versiones anteriores. El campo language es opcional, pero obligatorio para activar el modo multilingüe en la Pi App.
+Para el nuevo modelo de "Storytelling", se recomienda usar la personalidad "aura".
 code
 JSON
 {
-  "personality_prompt": "aislinn",   // morvan, aislinn, sybil
-  "format_id": "pi_simple_5",       // pi_simple_5, pi_rapida_3, pi_sino_1
+  "personality_prompt": "aura",       // Personalidad de coaching/crecimiento
+  "format_id": "pi_simple_5",        // pi_simple_5, pi_rapida_3, pi_sino_1
   "knowledge_base_id": "none",
   "user_question": "Will I find a romantic connection this summer?", 
   "language": "Answer the whole response strictly in ENGLISH.",
   "cards": [
-    { "position": 1, "name": "El Sol", "is_reversed": false },
-    { "position": 2, "name": "La Estrella", "is_reversed": false },
-    { "position": 3, "name": "El Mago", "is_reversed": false },
-    { "position": 4, "name": "La Torre", "is_reversed": false },
-    { "position": 5, "name": "El Mundo", "is_reversed": false }
+    { "position": 1, "name": "El Loco", "is_reversed": false },
+    { "position": 2, "name": "El Mago", "is_reversed": false },
+    { "position": 3, "name": "La Estrella", "is_reversed": false },
+    { "position": 4, "name": "El Sol", "is_reversed": false },
+    { "position": 5, "name": "La Rueda", "is_reversed": false }
   ]
 }
-Nota: Para la Pi App, enviar siempre is_reversed: false ya que el modelo está instruido para omitir la orientación.
-3. Guía de Formatos y Layouts (Modo Pi)
-Utiliza esta guía para renderizar el layout visual y asignar los textos a cada carta.
-A. pi_simple_5 (Tirada en Cruz)
-Ideal para análisis de situación. Estructura de 5 puntos.
-Etiquetas: [C1] a [C5] y [RESUMEN].
-Posiciones: 1: Pasado, 2: Futuro, 3: Mente, 4: Raíces, 5: Síntesis (Centro).
-B. pi_rapida_3 (Línea Temporal)
-Ideal para consultas rápidas. Disposición horizontal.
-Etiquetas: [C1] a [C3] y [RESUMEN].
-Posiciones: 1: Pasado, 2: Presente, 3: Futuro.
-
-D. pi_sino_1 (El Oráculo Directo)
-Respuesta instantánea de una sola carta.
-Etiquetas: [C1] y [RESUMEN].
-Posiciones: 1: El Veredicto Único.
+3. Guía de Formatos (Modelo de Storytelling)
+A diferencia de la v2.0, el texto no se divide en cajas. Es un relato único donde las cartas aparecen como enlaces dentro del texto.
+A. pi_simple_5 (La Cruz del Mindset): Relato fluido que integra 5 hitos (Pasado, Futuro, Mente, Raíces y Equilibrio).
+B. pi_rapida_3 (El Sendero del Tiempo): Breve crónica sobre la evolución de la energía (Pasado, Presente, Futuro).
+D. pi_sino_1 (El Oráculo Directo): Un solo párrafo de respuesta con veredicto final.
+IMPORTANTE: Las cartas aparecen etiquetadas así: [C1]Nombre de la Carta[/C1].
 4. Lógica Multilingüe (I18n)
-El sistema detecta el idioma a través de la instrucción enviada en el campo language.
-Configuración sugerida para el Frontend:
+El frontend debe enviar la instrucción de idioma en el campo language.
+Inglés: "Answer the whole response strictly in ENGLISH."
+Portugués: "Responda estritamente em PORTUGUÊS."
+Español: "Responde estrictamente en ESPAÑOL."
+5. Procesamiento del Stream en v0 (React)
+v0 no debe separar el texto. Debe renderizar un párrafo continuo y sustituir las etiquetas por componentes de enlace que abran el contenido estático.
+Lógica de Renderizado de Enlaces (Regex):
+Dile a v0 que use este patrón para transformar el texto en tiempo real:
 code
 JavaScript
-const langInstructions = {
-  en: "Answer the whole response strictly in ENGLISH.",
-  pt: "Responda a toda a resposta estritamente en PORTUGUÊS.",
-  fr: "Répondez à toute la réponse strictement en FRANÇAIS.",
-  es: "" // Si es vacío, el backend asume español por defecto
+const renderNarrativaConLinks = (fullText) => {
+  // Regex para detectar [C1]Nombre de Carta[/C1]
+  const regex = /\[C(\d)\](.*?)\[\/C\d\]/g;
+  
+  // Dividimos el texto para encontrar las etiquetas
+  const parts = fullText.split(/(\[C\d\].*?\[\/C\d\])/g);
+
+  return parts.map((part, index) => {
+    const match = part.match(/\[C(\d)\](.*?)\[\/C\d\]/);
+    if (match) {
+      const cardNum = match[1]; // ID de la carta (1 a 5)
+      const cardName = match[2]; // Nombre de la carta (ej: El Sol)
+      
+      return (
+        <button 
+          key={index}
+          onClick={() => handleOpenStaticCard(cardNum)}
+          className="text-gold underline font-bold hover:opacity-80 transition-all"
+        >
+          {cardName}
+        </button>
+      );
+    }
+    // Si no es una etiqueta, es texto normal (Markdown)
+    return <ReactMarkdown key={index}>{part}</ReactMarkdown>;
+  });
 };
-El backend concatenará esta frase al final de la pregunta del usuario dentro del prompt, asegurando que la IA cambie el idioma sin activar el validador de seguridad.
-5. Procesamiento del Stream (Frontend)
-Debido a que el texto llega en fragmentos (chunks) y por etiquetas, el frontend debe "limpiar" el contenido para mostrarlo en variables individuales.
-Función de Parseo (Regex):
-code
-JavaScript
-const parseTag = (fullText, tag) => {
-  // Busca el contenido entre [Tag] y el siguiente [ o el final
-  const regex = new RegExp(`\\[${tag}\\]([\\s\\S]*?)(?=\\[|$)`, 'i');
-  const match = fullText.match(regex);
-  if (match) {
-    // Limpia espacios y símbolos sobrantes al inicio (: , - , *)
-    return match[1].trim().replace(/^[:\s*-]+/, '');
-  }
-  return "";
-};
-Lógica de UI (React):
-Acumulación: Ve sumando cada chunk de texto en un estado streamText.
-Distribución: Crea variables calculadas:
-const textC1 = parseTag(streamText, "C1");
-const textSummary = parseTag(streamText, "RESUMEN");
-Visualización:
-Si textCX está vacío y el stream sigue activo -> Mostrar Skeleton/Spinner.
-Si textCX tiene contenido -> Renderizar con react-markdown.
-6. Notas de Implementación (Backend)
-Para referencia del desarrollador, el backend monta el prompt de la siguiente manera para garantizar el éxito:
-Carga el Rol y Formato desde los JSON (en español).
-Limpia la pregunta y la valida con el Police System.
-Une la pregunta con la instrucción de idioma: f"Pregunta: \"{user_question} {language}\"".
-Añade una Regla Técnica: Do not translate the technical tags like [C1] or [RESUMEN].
-Envía el "muro de texto" limpio (sin corchetes de listas) a Gemini.
+El Cierre (Mantra):
+El texto final tras la etiqueta [RES] (o [RESUMEN]) debe mostrarse destacado (ej: en itálica o en una caja de cita) como el mantra final de la sesión.
+6. Notas de Implementación (Vercel / v0)
+Carga Progresiva: A medida que llega el stream, el texto se irá completando. Los botones de las cartas aparecerán automáticamente en cuanto la IA cierre la etiqueta [/C1].
+Mapeo de Datos: El cardNum (del 1 al 5) corresponde al índice del array cards enviado en la petición. Úsalo para buscar en tu JSON de contenido estático local.
+No redundancia: No es necesario mostrar una lista de cartas aparte; el propio texto narrativo sirve de guía y los links invitan a la exploración.
+Sugerencia para v0:
+Pídele que use un componente de "Typography" elegante y que el botón de la carta tenga un pequeño icono de un destello o una carta al lado para que sea obvio que es clickeable.
