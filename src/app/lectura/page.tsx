@@ -90,11 +90,11 @@ function ReadingContent() {
     // Generar cartas según el formato
     let selectedCards: TarotCard[] = [];
     if (formatParam === "pi_rapida_3") {
-      selectedCards = drawFiveCards().slice(0, 3); // Pasado, Presente, Futuro
+      selectedCards = drawFiveCards().slice(0, 3);
     } else if (formatParam === "pi_sino_1") {
-      selectedCards = drawFiveCards().slice(0, 1); // Solo 1 carta
+      selectedCards = drawFiveCards().slice(0, 1);
     } else {
-      selectedCards = drawFiveCards(); // 5 cartas (default)
+      selectedCards = drawFiveCards();
     }
     setCards(selectedCards);
     
@@ -103,6 +103,11 @@ function ReadingContent() {
     setRevealedCards(new Set());
     setSelectedDeckIndices(new Set());
     setStreamSections({});
+  }, []);
+
+  // Cuando se termina la selección de cartas, iniciar la lectura
+  useEffect(() => {
+    if (selectionPhase || loading) return;
     
     const startInference = async () => {
       try {
@@ -110,8 +115,11 @@ function ReadingContent() {
           question,
           currentLang,
           format: formatParam,
-          cardsCount: selectedCards.length
+          cardsCount: cards.length
         });
+        
+        setLoading(true);
+        setText("");
 
         const response = await fetch('/api/pi/interpretar', { 
           method: 'POST',
@@ -186,7 +194,7 @@ function ReadingContent() {
       }
     };
     startInference();
-  }, [question, t.reading.error, currentLang, formatParam]);
+  }, [selectionPhase, cards, question, t.reading.error, currentLang, formatParam]);
 
   if (cards.length === 0) return <div className="min-h-screen bg-black flex items-center justify-center text-amber-500 italic">Invocando el umbral...</div>;
 
