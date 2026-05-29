@@ -138,11 +138,8 @@ function ReadingContent() {
             cards: cards
           })
         });
-            cards: selectedCards
-          })
-        });
 
-        console.log("[v0] Respuesta /api/chat:", response.status, response.statusText);
+        console.log("[v0] Respuesta /api/pi/interpretar:", response.status, response.statusText);
 
         if (!response.ok) {
           const errorData = await response.text();
