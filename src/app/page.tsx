@@ -60,8 +60,11 @@ export default function Home() {
             TAROT
           </p>
           <button
-            onClick={() => router.push('/selector')}
-            className="mt-8 px-12 py-5 bg-amber-800 hover:bg-amber-700 active:bg-amber-900 text-white font-bold rounded-xl text-xl border-b-4 border-amber-950 active:border-b-0 active:translate-y-1 transition-all shadow-2xl uppercase tracking-widest drop-shadow-lg"
+            onClick={() => {
+              console.log("[v0] Botón Entrar clickeado, navegando a /selector");
+              router.push('/selector');
+            }}
+            className="mt-8 px-12 py-5 bg-amber-800 hover:bg-amber-700 active:bg-amber-900 text-white font-bold rounded-xl text-xl border-b-4 border-amber-950 active:border-b-0 active:translate-y-1 transition-all shadow-2xl uppercase tracking-widest drop-shadow-lg cursor-pointer"
           >
             {t.home.enter || "Entrar"}
           </button>
