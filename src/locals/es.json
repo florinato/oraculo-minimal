@@ -26,7 +26,7 @@
   },
   "reading": {
     "loading_initial": "Invocando el umbral...",
-    "loading_stream": "Morvan continúa escribiendo...",
+    "loading_stream": "Aura continúa escribiendo...",
     "error": "El Oráculo guarda silencio... las energías no fluyen.",
     "new_reading": "Nueva Consulta",
     "card_prefix": "Carta",

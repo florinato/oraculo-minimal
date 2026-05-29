@@ -26,7 +26,7 @@
   },
   "reading": {
     "loading_initial": "Invocant el llindar...",
-    "loading_stream": "Morvan continua escrivint...",
+    "loading_stream": "Aura continua escrivint...",
     "error": "L'Oracle guarda silenci... les energies no flueixen.",
     "new_reading": "Nova Consulta",
     "card_prefix": "Carta",
