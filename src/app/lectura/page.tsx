@@ -34,51 +34,27 @@ function ReadingContent() {
  const { t, currentLang, aiInstruction } = getI18n(langParam);
 
   // Parsear etiquetas con regex en tiempo real
-  const parseNarrativa = (fullText: string) => {
-    // Divide el texto en partes: texto normal y enlaces de cartas [C1]Nombre[/C1]
-    const regex = /(\[C\d\].*?\[\/C\d\])|([^\[]*)/g;
-    const parts: Array<{ type: 'card' | 'text'; cardNum?: string; cardName?: string; content?: string }> = [];
-    
+  const parseSections = (fullText: string) => {
+    const regex = /\[(C1|C2|C3|C4|C5|RESUMEN)\]([\s\S]*?)(?=\[(?:C1|C2|C3|C4|C5|RESUMEN)\]|$)/g;
+    const sections: { [key: string]: string } = {};
+    let introduction = "";
+    let lastIndex = 0;
+
     let match;
     while ((match = regex.exec(fullText)) !== null) {
-      if (match[1]) {
-        // Es una etiqueta de carta
-        const cardMatch = match[1].match(/\[C(\d)\](.*?)\[\/C\d\]/);
-        if (cardMatch) {
-          parts.push({
-            type: 'card',
-            cardNum: cardMatch[1],
-            cardName: cardMatch[2]
-          });
-        }
-      } else if (match[2]?.trim()) {
-        // Es texto normal
-        parts.push({
-          type: 'text',
-          content: match[2]
-        });
-      }
+      const tag = match[1];
+      const content = match[2].trim();
+      sections[tag] = content;
+      lastIndex = match.index + match[0].length;
     }
-    
-    return parts;
-  };
 
-  const renderNarrativaParts = (parts: ReturnType<typeof parseNarrativa>) => {
-    return parts.map((part, index) => {
-      if (part.type === 'card' && part.cardNum && part.cardName) {
-        const cardIndex = parseInt(part.cardNum) - 1;
-        return (
-          <button
-            key={index}
-            onClick={() => setSelectedCard(cards[cardIndex] || null)}
-            className="text-amber-400 underline font-bold hover:opacity-80 transition-all inline"
-          >
-            {part.cardName}
-          </button>
-        );
-      }
-      return <span key={index} className="inline"><ReactMarkdown>{part.content || ''}</ReactMarkdown></span>;
-    });
+    // Extraer introducción (texto antes de la primera etiqueta)
+    const firstTagIndex = fullText.search(/\[(C1|C2|C3|C4|C5|RESUMEN)\]/);
+    if (firstTagIndex > 0) {
+      introduction = fullText.substring(0, firstTagIndex).trim();
+    }
+
+    return { sections, introduction };
   };
 
   useEffect(() => {
@@ -111,19 +87,15 @@ function ReadingContent() {
           cardsCount: selectedCards.length
         });
 
-        const response = await fetch('/api/pi/interpretar', { 
+        const response = await fetch('/api/chat', { 
           method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-            'X-Custom-Auth-Token': process.env.NEXT_PUBLIC_FRONTEND_API_SECRET || ''
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            personality_prompt: "aura",
+            personality_prompt: "morvan",
             format_id: formatParam,
-            knowledge_base_id: "none",
             user_question: question,
-            language: aiInstruction,
-            cards: selectedCards
+            cards: selectedCards,
+            language: aiInstruction 
           })
         });
 
@@ -346,20 +318,22 @@ function ReadingContent() {
           <div className="prose prose-invert prose-amber max-w-none font-serif text-lg leading-relaxed mb-12">
             {!selectionPhase && (text.length > 0 || loading) ? (
               (() => {
-                const parts = parseNarrativa(text);
+                const { sections, introduction } = parseSections(text);
                 return (
                   <div className="space-y-6">
-                    {/* Narrativa completa con enlaces a cartas */}
-                    <div className="pt-6">
-                      <p className="text-amber-200 leading-relaxed">
-                        {renderNarrativaParts(parts)}
-                      </p>
-                    </div>
-                    {loading && (
-                      <div className="pt-4 text-center">
-                        <div className="inline-block animate-pulse text-amber-700 text-sm">El oráculo está completando tu lectura...</div>
+                    {/* Solo mostrar síntesis */}
+                    {sections.RESUMEN ? (
+                      <div className="pt-6 border-t-2 border-amber-600/50">
+                        <p className="text-amber-500 font-bold text-sm uppercase mb-3">Síntesis</p>
+                        <ReactMarkdown components={{ strong: ({...props}) => <span className="text-amber-400 font-bold" {...props} /> }}>
+                          {sections.RESUMEN}
+                        </ReactMarkdown>
                       </div>
-                    )}
+                    ) : loading ? (
+                      <div className="pt-4 text-center">
+                        <div className="inline-block animate-pulse text-amber-700 text-sm">Morvan está tejiendo la síntesis...</div>
+                      </div>
+                    ) : null}
                   </div>
                 );
               })()
