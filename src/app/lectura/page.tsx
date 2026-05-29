@@ -79,7 +79,7 @@ function ReadingContent() {
           );
         }
       }
-      return <span key={index} className="inline"><ReactMarkdown>{part.content || ''}</ReactMarkdown></span>;
+      return <ReactMarkdown key={index} className="inline">{part.content || ''}</ReactMarkdown>;
     });
   };
 
@@ -90,11 +90,11 @@ function ReadingContent() {
     // Generar cartas según el formato
     let selectedCards: TarotCard[] = [];
     if (formatParam === "pi_rapida_3") {
-      selectedCards = drawFiveCards().slice(0, 3);
+      selectedCards = drawFiveCards().slice(0, 3); // Pasado, Presente, Futuro
     } else if (formatParam === "pi_sino_1") {
-      selectedCards = drawFiveCards().slice(0, 1);
+      selectedCards = drawFiveCards().slice(0, 1); // Solo 1 carta
     } else {
-      selectedCards = drawFiveCards();
+      selectedCards = drawFiveCards(); // 5 cartas (default)
     }
     setCards(selectedCards);
     
@@ -103,13 +103,6 @@ function ReadingContent() {
     setRevealedCards(new Set());
     setSelectedDeckIndices(new Set());
     setStreamSections({});
-  }, []);
-
-  // Cuando se termina la selección de cartas, iniciar la lectura
-  useEffect(() => {
-    if (selectionPhase) return; // Esperar hasta que termine la selección
-    if (cards.length === 0) return; // Esperar a que haya cartas
-    if (loading) return; // Ya está en proceso
     
     const startInference = async () => {
       try {
@@ -117,11 +110,8 @@ function ReadingContent() {
           question,
           currentLang,
           format: formatParam,
-          cardsCount: cards.length
+          cardsCount: selectedCards.length
         });
-        
-        setLoading(true);
-        setText("");
 
         const response = await fetch('/api/pi/interpretar', { 
           method: 'POST',
@@ -135,11 +125,11 @@ function ReadingContent() {
             knowledge_base_id: "none",
             user_question: question,
             language: aiInstruction,
-            cards: cards
+            cards: selectedCards
           })
         });
 
-        console.log("[v0] Respuesta /api/pi/interpretar:", response.status, response.statusText);
+        console.log("[v0] Respuesta /api/chat:", response.status, response.statusText);
 
         if (!response.ok) {
           const errorData = await response.text();
@@ -196,7 +186,7 @@ function ReadingContent() {
       }
     };
     startInference();
-  }, [selectionPhase, cards]);
+  }, [question, t.reading.error, currentLang, formatParam]);
 
   if (cards.length === 0) return <div className="min-h-screen bg-black flex items-center justify-center text-amber-500 italic">Invocando el umbral...</div>;
 
