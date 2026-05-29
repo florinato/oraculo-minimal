@@ -26,7 +26,7 @@
   },
   "reading": {
     "loading_initial": "Invocation du seuil...",
-    "loading_stream": "Morvan continue d'écrire...",
+    "loading_stream": "Aura continue d'écrire...",
     "error": "L'Oracle garde le silence... les énergies ne circulent pas.",
     "new_reading": "Nouvelle Consultation",
     "card_prefix": "Carte",

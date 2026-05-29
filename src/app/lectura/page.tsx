@@ -2,9 +2,9 @@
 import { getI18n } from "@/app/lib/i18n";
 import { drawFiveCards, getCardImageUrl } from "@/app/lib/tarot-api";
 import CardDetail from "@/components/CardDetail";
+import NarrativeResponse from "@/components/NarrativeResponse";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
-import ReactMarkdown from "react-markdown";
 
 // 1. Tipado para evitar errores de Vercel
 interface TarotCard {
@@ -27,35 +27,10 @@ function ReadingContent() {
   const [selectedCard, setSelectedCard] = useState<TarotCard | null>(null);
   const [revealedCards, setRevealedCards] = useState<Set<number>>(new Set());
   const [selectionPhase, setSelectionPhase] = useState(true);
-  const [streamSections, setStreamSections] = useState<{ [key: string]: string }>({});
   const [selectedDeckIndices, setSelectedDeckIndices] = useState<Set<number>>(new Set());
   const hasStarted = useRef(false);
 
  const { t, currentLang, aiInstruction } = getI18n(langParam);
-
-  // Parsear etiquetas con regex en tiempo real
-  const parseSections = (fullText: string) => {
-    const regex = /\[(C1|C2|C3|C4|C5|RESUMEN)\]([\s\S]*?)(?=\[(?:C1|C2|C3|C4|C5|RESUMEN)\]|$)/g;
-    const sections: { [key: string]: string } = {};
-    let introduction = "";
-    let lastIndex = 0;
-
-    let match;
-    while ((match = regex.exec(fullText)) !== null) {
-      const tag = match[1];
-      const content = match[2].trim();
-      sections[tag] = content;
-      lastIndex = match.index + match[0].length;
-    }
-
-    // Extraer introducción (texto antes de la primera etiqueta)
-    const firstTagIndex = fullText.search(/\[(C1|C2|C3|C4|C5|RESUMEN)\]/);
-    if (firstTagIndex > 0) {
-      introduction = fullText.substring(0, firstTagIndex).trim();
-    }
-
-    return { sections, introduction };
-  };
 
   useEffect(() => {
     if (hasStarted.current) return;
@@ -76,7 +51,6 @@ function ReadingContent() {
     setSelectionPhase(true);
     setRevealedCards(new Set());
     setSelectedDeckIndices(new Set());
-    setStreamSections({});
     
     const startInference = async () => {
       try {
@@ -91,7 +65,7 @@ function ReadingContent() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            personality_prompt: "morvan",
+            personality_prompt: "aura",
             format_id: formatParam,
             user_question: question,
             cards: selectedCards,
@@ -136,23 +110,9 @@ function ReadingContent() {
                 const data = JSON.parse(cleanLine.slice(6));
                 if (data.text) {
                   console.log("[v0] Chunk recibido:", data.text.substring(0, 50));
-                  setText(prev => {
-                    const combined = prev + data.text;
-                    
-                    // Parsear en tiempo real
-                    const regex = /\[(C1|C2|C3|C4|C5|RESUMEN)\]([\s\S]*?)(?=\[(?:C1|C2|C3|C4|C5|RESUMEN)\]|$)/g;
-                    const sections: { [key: string]: string } = {};
-                    let match;
-                    while ((match = regex.exec(combined)) !== null) {
-                      sections[match[1]] = match[2].trim();
-                    }
-                    console.log("[v0] Secciones parseadas:", Object.keys(sections));
-                    setStreamSections(sections);
-                    
-                    return combined;
-                  });
+                  setText(prev => prev + data.text);
                 }
-              } catch (e) {
+              } catch {
                 console.log("[v0] Error parseando JSON:", cleanLine.substring(0, 100));
               }
             }
@@ -167,51 +127,9 @@ function ReadingContent() {
       }
     };
     startInference();
-  }, [question, t.reading.error, currentLang, formatParam]);
+  }, [question, t.reading.error, currentLang, formatParam, aiInstruction]);
 
   if (cards.length === 0) return <div className="min-h-screen bg-black flex items-center justify-center text-amber-500 italic">Invocando el umbral...</div>;
-
-  // Configurar layout según el número de cartas
-  const renderCards = () => {
-    if (cards.length === 1) {
-      // Oráculo Directo: 1 carta centrada
-      return (
-        <div className="grid grid-cols-1 place-items-center pointer-events-auto">
-          <CardImg card={cards[0]} label={t.reading.labels.veredicto} onClick={() => setSelectedCard(cards[0])} />
-        </div>
-      );
-    } else if (cards.length === 3) {
-      // Línea Temporal: 3 cartas horizontales
-      return (
-        <div 
-          className="grid grid-cols-3 pointer-events-auto" 
-          style={{ 
-            gap: '3vh' 
-          }}
-        >
-          <CardImg card={cards[0]} label={t.reading.labels.pasado} onClick={() => setSelectedCard(cards[0])} />
-          <CardImg card={cards[1]} label={t.reading.labels.presente} onClick={() => setSelectedCard(cards[1])} />
-          <CardImg card={cards[2]} label={t.reading.labels.futuro} onClick={() => setSelectedCard(cards[2])} />
-        </div>
-      );
-    } else {
-      // La Encrucijada: 5 cartas en cruz
-      return (
-        <div 
-          className="grid grid-cols-3 grid-rows-3 pointer-events-auto" 
-          style={{ 
-            gap: '2.5vh' 
-          }}
-        >
-          <div className="col-start-2 row-start-1"><CardImg card={cards[2]} label={t.reading.labels.mente} onClick={() => setSelectedCard(cards[2])} /></div>
-          <div className="col-start-1 row-start-2"><CardImg card={cards[0]} label={t.reading.labels.pasado} onClick={() => setSelectedCard(cards[0])} /></div>
-          <div className="col-start-2 row-start-2"><CardImg card={cards[4]} label={t.reading.labels.presente} onClick={() => setSelectedCard(cards[4])} /></div>
-          <div className="col-start-3 row-start-2"><CardImg card={cards[1]} label={t.reading.labels.futuro} onClick={() => setSelectedCard(cards[1])} /></div>
-          <div className="col-start-2 row-start-3"><CardImg card={cards[3]} label={t.reading.labels.raices} onClick={() => setSelectedCard(cards[3])} /></div>
-        </div>
-      );
-    }
-  };
 
   return (
     <div className="relative min-h-screen w-full bg-black text-amber-50 overflow-y-auto overflow-x-hidden scroll-smooth">
@@ -314,29 +232,26 @@ function ReadingContent() {
         {/* Espaciador para que el texto empiece abajo */}
         <div className="h-[88vh] w-full" />
 
-        <div className="w-full max-w-2xl bg-black p-8 rounded-t-[40px] border-t border-amber-900/40 min-h-[60vh] pointer-events-auto">
+        <div className="w-full max-w-2xl bg-black/60 backdrop-blur-md p-8 rounded-t-[40px] border-t border-amber-900/40 min-h-[60vh] pointer-events-auto">
           <div className="prose prose-invert prose-amber max-w-none font-serif text-lg leading-relaxed mb-12">
             {!selectionPhase && (text.length > 0 || loading) ? (
-              (() => {
-                const { sections, introduction } = parseSections(text);
-                return (
-                  <div className="space-y-6">
-                    {/* Solo mostrar síntesis */}
-                    {sections.RESUMEN ? (
-                      <div className="pt-6 border-t-2 border-amber-600/50">
-                        <p className="text-amber-500 font-bold text-sm uppercase mb-3">Síntesis</p>
-                        <ReactMarkdown components={{ strong: ({...props}) => <span className="text-amber-400 font-bold" {...props} /> }}>
-                          {sections.RESUMEN}
-                        </ReactMarkdown>
-                      </div>
-                    ) : loading ? (
-                      <div className="pt-4 text-center">
-                        <div className="inline-block animate-pulse text-amber-700 text-sm">Morvan está tejiendo la síntesis...</div>
-                      </div>
-                    ) : null}
+              <>
+                {text.length > 0 ? (
+                  <NarrativeResponse
+                    text={text}
+                    cards={cards}
+                    onCardClick={(cardIndex) => {
+                      if (cardIndex >= 0 && cardIndex < cards.length) {
+                        setSelectedCard(cards[cardIndex]);
+                      }
+                    }}
+                  />
+                ) : loading ? (
+                  <div className="pt-4 text-center">
+                    <div className="inline-block animate-pulse text-amber-700 text-sm">Aura está tejiendo la respuesta...</div>
                   </div>
-                );
-              })()
+                ) : null}
+              </>
             ) : !selectionPhase ? (
               <div className="animate-pulse text-amber-700 italic">Invocando el oráculo...</div>
             ) : null}

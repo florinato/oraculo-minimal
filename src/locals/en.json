@@ -26,7 +26,7 @@
   },
   "reading": {
     "loading_initial": "Invoking the threshold...",
-    "loading_stream": "Morvan continues writing...",
+    "loading_stream": "Aura continues writing...",
     "error": "The Oracle is silent... energies are not flowing.",
     "new_reading": "New Consultation",
     "card_prefix": "Card",
