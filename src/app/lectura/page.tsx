@@ -65,7 +65,7 @@ function ReadingContent() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            personality_prompt: "morvan",
+            personality_prompt: "aura",
             format_id: formatParam,
             user_question: question,
             cards: selectedCards,
@@ -290,7 +290,7 @@ function ReadingContent() {
                   />
                 ) : loading ? (
                   <div className="pt-4 text-center">
-                    <div className="inline-block animate-pulse text-amber-700 text-sm">Morvan está tejiendo la respuesta...</div>
+                    <div className="inline-block animate-pulse text-amber-700 text-sm">Aura está tejiendo la respuesta...</div>
                   </div>
                 ) : null}
               </>
