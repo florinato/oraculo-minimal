@@ -26,21 +26,21 @@ export default function NarrativeResponse({ text, cards, onCardClick }: Narrativ
   // Función para renderizar el texto con links de cartas interactivos
   const renderTextWithCardLinks = () => {
     const parts: (string | React.ReactNode)[] = [];
-    let lastIndex = 0;
-    let match;
 
     // Crear regex fresh cada vez para evitar problemas con state global
     const cardRegex = /\[C([1-5])\](.*?)\[\/C\1\]/;
     let workingText = mainText;
     let matchCount = 0;
+    let match;
 
     while (matchCount < 100 && (match = workingText.match(cardRegex)) !== null) {
       const cardNumber = parseInt(match[1], 10);
       const cardName = match[2];
       const cardIndex = cardNumber - 1; // Convertir a índice 0-based
+      const matchIndexPos = match.index ?? 0;
 
       // Texto antes del match
-      const beforeMatch = workingText.substring(0, match.index);
+      const beforeMatch = workingText.substring(0, matchIndexPos);
       if (beforeMatch) {
         parts.push(beforeMatch);
       }
@@ -75,7 +75,7 @@ export default function NarrativeResponse({ text, cards, onCardClick }: Narrativ
       }
 
       // Continuar con el texto restante
-      workingText = workingText.substring(match.index + match[0].length);
+      workingText = workingText.substring(matchIndexPos + match[0].length);
       matchCount++;
     }
 

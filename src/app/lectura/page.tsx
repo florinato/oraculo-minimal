@@ -112,7 +112,7 @@ function ReadingContent() {
                   console.log("[v0] Chunk recibido:", data.text.substring(0, 50));
                   setText(prev => prev + data.text);
                 }
-              } catch (e) {
+              } catch {
                 console.log("[v0] Error parseando JSON:", cleanLine.substring(0, 100));
               }
             }
@@ -127,51 +127,9 @@ function ReadingContent() {
       }
     };
     startInference();
-  }, [question, t.reading.error, currentLang, formatParam]);
+  }, [question, t.reading.error, currentLang, formatParam, aiInstruction]);
 
   if (cards.length === 0) return <div className="min-h-screen bg-black flex items-center justify-center text-amber-500 italic">Invocando el umbral...</div>;
-
-  // Configurar layout según el número de cartas
-  const renderCards = () => {
-    if (cards.length === 1) {
-      // Oráculo Directo: 1 carta centrada
-      return (
-        <div className="grid grid-cols-1 place-items-center pointer-events-auto">
-          <CardImg card={cards[0]} label={t.reading.labels.veredicto} onClick={() => setSelectedCard(cards[0])} />
-        </div>
-      );
-    } else if (cards.length === 3) {
-      // Línea Temporal: 3 cartas horizontales
-      return (
-        <div 
-          className="grid grid-cols-3 pointer-events-auto" 
-          style={{ 
-            gap: '3vh' 
-          }}
-        >
-          <CardImg card={cards[0]} label={t.reading.labels.pasado} onClick={() => setSelectedCard(cards[0])} />
-          <CardImg card={cards[1]} label={t.reading.labels.presente} onClick={() => setSelectedCard(cards[1])} />
-          <CardImg card={cards[2]} label={t.reading.labels.futuro} onClick={() => setSelectedCard(cards[2])} />
-        </div>
-      );
-    } else {
-      // La Encrucijada: 5 cartas en cruz
-      return (
-        <div 
-          className="grid grid-cols-3 grid-rows-3 pointer-events-auto" 
-          style={{ 
-            gap: '2.5vh' 
-          }}
-        >
-          <div className="col-start-2 row-start-1"><CardImg card={cards[2]} label={t.reading.labels.mente} onClick={() => setSelectedCard(cards[2])} /></div>
-          <div className="col-start-1 row-start-2"><CardImg card={cards[0]} label={t.reading.labels.pasado} onClick={() => setSelectedCard(cards[0])} /></div>
-          <div className="col-start-2 row-start-2"><CardImg card={cards[4]} label={t.reading.labels.presente} onClick={() => setSelectedCard(cards[4])} /></div>
-          <div className="col-start-3 row-start-2"><CardImg card={cards[1]} label={t.reading.labels.futuro} onClick={() => setSelectedCard(cards[1])} /></div>
-          <div className="col-start-2 row-start-3"><CardImg card={cards[3]} label={t.reading.labels.raices} onClick={() => setSelectedCard(cards[3])} /></div>
-        </div>
-      );
-    }
-  };
 
   return (
     <div className="relative min-h-screen w-full bg-black text-amber-50 overflow-y-auto overflow-x-hidden scroll-smooth">
