@@ -67,15 +67,17 @@ function ReadingContent() {
     return parts.map((part, index) => {
       if (part.type === 'card' && part.cardNum && part.cardName) {
         const cardIndex = parseInt(part.cardNum) - 1;
-        return (
-          <button
-            key={index}
-            onClick={() => setSelectedCard(cards[cardIndex] || null)}
-            className="text-amber-400 underline font-bold hover:opacity-80 transition-all inline"
-          >
-            {part.cardName}
-          </button>
-        );
+        if (cardIndex >= 0 && cardIndex < cards.length) {
+          return (
+            <button
+              key={index}
+              onClick={() => setSelectedCard(cards[cardIndex])}
+              className="text-amber-400 underline font-bold hover:opacity-80 transition-all inline"
+            >
+              {part.cardName}
+            </button>
+          );
+        }
       }
       return <ReactMarkdown key={index} className="inline">{part.content || ''}</ReactMarkdown>;
     });
@@ -166,17 +168,6 @@ function ReadingContent() {
                   console.log("[v0] Chunk recibido:", data.text.substring(0, 50));
                   setText(prev => {
                     const combined = prev + data.text;
-                    
-                    // Parsear en tiempo real
-                    const regex = /\[(C1|C2|C3|C4|C5|RESUMEN)\]([\s\S]*?)(?=\[(?:C1|C2|C3|C4|C5|RESUMEN)\]|$)/g;
-                    const sections: { [key: string]: string } = {};
-                    let match;
-                    while ((match = regex.exec(combined)) !== null) {
-                      sections[match[1]] = match[2].trim();
-                    }
-                    console.log("[v0] Secciones parseadas:", Object.keys(sections));
-                    setStreamSections(sections);
-                    
                     return combined;
                   });
                 }
