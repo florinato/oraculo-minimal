@@ -77,7 +77,7 @@ function ReadingContent() {
           </button>
         );
       }
-      return <ReactMarkdown key={index} className="inline">{part.content || ''}</ReactMarkdown>;
+      return <span key={index} className="inline"><ReactMarkdown>{part.content || ''}</ReactMarkdown></span>;
     });
   };
 
