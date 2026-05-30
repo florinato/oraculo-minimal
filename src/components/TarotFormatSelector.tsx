@@ -63,14 +63,14 @@ export function TarotFormatSelector({
             <button
               key={format.id}
               onClick={() => onFormatChange(format.id)}
-              className={`w-full text-left transition-all duration-300 rounded-xl border-[1.5px] p-1 
+              className={`w-full text-left transition-all duration-300 rounded-xl border-[1.5px] p-0 
                 ${isSelected 
                   ? 'border-[#E5C158] shadow-[0_0_20px_rgba(229,193,88,0.25)] scale-[1.02] bg-black/60' 
                   : 'border-[#E5C158]/30 hover:border-[#E5C158]/60 bg-black/40 hover:bg-black/50'
                 }`}
             >
               {/* Contenedor interno que hace el efecto del segundo borde */}
-              <div className={`flex items-center h-full rounded-lg border transition-all duration-300 p-3 md:p-4
+              <div className={`flex items-center h-full rounded-lg border transition-all duration-300 p-2 md:p-3
                 ${isSelected 
                   ? 'border-[#E5C158]/50 bg-[#130E24]/90' 
                   : 'border-[#E5C158]/20 bg-[#130E24]/60'
@@ -78,7 +78,7 @@ export function TarotFormatSelector({
               >
                 
                 {/* Icono a la izquierda */}
-                <div className={`flex-shrink-0 flex items-center justify-center mr-4 md:mr-6 transition-colors duration-300
+                <div className={`flex-shrink-0 flex items-center justify-center mr-3 md:mr-4 transition-colors duration-300
                   ${isSelected ? 'text-[#E5C158]' : 'text-[#E5C158]/50'}`}
                 >
                   {getIcon(format.id)}
