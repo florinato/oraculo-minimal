@@ -95,7 +95,7 @@ export default function Selector() {
             <div className="rounded-xl border-[1.5px] border-[#E5C158]/50 p-1 bg-black/40 backdrop-blur-sm shadow-[0_0_15px_rgba(0,0,0,0.8)] transition-all">
               <div className="h-full rounded-lg border border-[#E5C158]/30 bg-[#130E24]/80 p-3 flex flex-col items-center justify-center">
                 <textarea
-                  className="w-full h-20 bg-transparent text-[#E5C158] placeholder:text-[#E5C158]/40 focus:outline-none text-left resize-none font-serif text-sm md:text-base leading-relaxed"
+                  className="w-full h-18 bg-transparent text-[#E5C158] placeholder:text-[#E5C158]/40 focus:outline-none text-left resize-none font-serif text-sm md:text-base leading-relaxed"
                   placeholder={t.home.placeholder}
                   value={question}
                   onChange={(e) => setQuestion(e.target.value)}
