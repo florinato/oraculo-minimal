@@ -81,7 +81,7 @@ export default function Selector() {
         {selectedFormat && (
           <div className="relative animate-in fade-in slide-in-from-bottom-4 duration-300">
             <textarea
-              className="w-full h-28 p-4 bg-black/80 border border-amber-900/50 rounded-2xl text-amber-100 placeholder:text-amber-800/60 focus:outline-none focus:border-amber-500 transition-all text-base shadow-2xl backdrop-blur-md resize-none"
+              className="w-full h-28 p-4 bg-black/70 border-2 border-amber-600/80 rounded-lg text-amber-100 placeholder:text-amber-700/50 focus:outline-none focus:border-amber-400 transition-all text-base shadow-2xl backdrop-blur-md resize-none font-serif"
               placeholder={t.home.placeholder}
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
