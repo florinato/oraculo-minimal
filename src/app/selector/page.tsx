@@ -82,7 +82,7 @@ export default function Selector() {
       </div>
 
       {/* CONTROLES (Empujados hacia abajo para ocupar el espacio central hasta el pie) */}
-      <div className="relative z-10 w-full max-w-lg mx-auto space-y-6 flex-grow flex flex-col justify-end pb-2">
+      <div className="relative z-10 w-full max-w-lg mx-auto space-y-3 flex-grow flex flex-col justify-end pb-2">
         <TarotFormatSelector
           selectedFormat={selectedFormat}
           onFormatChange={setSelectedFormat}
@@ -115,7 +115,7 @@ export default function Selector() {
           </button>
         )}
 
-        <div className="flex justify-between px-3 pt-4 text-[9px] text-white/30 uppercase tracking-[0.3em]">
+        <div className="flex justify-between px-3 pt-1 text-[9px] text-white/30 uppercase tracking-[0.3em]">
           <span>{t.home.footer_left}</span>
           <span>{t.home.footer_right}</span>
         </div>
