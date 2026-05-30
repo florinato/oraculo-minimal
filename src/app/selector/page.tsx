@@ -32,6 +32,17 @@ export default function Selector() {
   return (
     <main className="relative min-h-screen flex flex-col justify-between bg-[#0a0a0a] text-white font-sans overflow-hidden px-4 py-2">
       
+      {/* BOTÓN VOLVER */}
+      <button
+        onClick={() => router.push('/')}
+        className="absolute top-4 left-4 z-50 w-10 h-10 rounded-full border border-[#E5C158]/50 bg-[#100C1A]/80 flex items-center justify-center hover:border-[#E5C158] hover:bg-[#100C1A] transition-all backdrop-blur-md"
+        title="Volver a inicio"
+      >
+        <svg className="w-5 h-5 text-[#E5C158]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+      
       {/* FONDO SIN BLUR */}
       <div className="absolute inset-0 z-0">
         <img src="/portada_PI_ARC.png" className="w-full h-full object-cover opacity-90" alt="Portada" />
