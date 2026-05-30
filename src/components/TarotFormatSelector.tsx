@@ -10,79 +10,108 @@ interface TarotFormatSelectorProps {
   }>;
 }
 
+// Componente reutilizable para mostrar cartas en posiciones
+const CardPlaceholder = ({ className = "" }) => (
+  <div className={`w-6 h-8 md:w-8 md:h-10 rounded border border-[#E5C158]/80 bg-gradient-to-br from-[#E5C158]/20 to-[#E5C158]/5 ${className}`} />
+);
+
+// Estructura de 5 cartas (1 arriba, 3 al medio, 1 abajo)
+const Cards5Layout = ({ isSelected }: { isSelected: boolean }) => (
+  <div className="flex flex-col items-center justify-center gap-1.5">
+    {/* Carta superior */}
+    <CardPlaceholder className={isSelected ? "border-[#E5C158]" : ""} />
+    {/* Fila de 3 cartas */}
+    <div className="flex gap-1.5">
+      <CardPlaceholder className={isSelected ? "border-[#E5C158]" : ""} />
+      <CardPlaceholder className={isSelected ? "border-[#E5C158]" : ""} />
+      <CardPlaceholder className={isSelected ? "border-[#E5C158]" : ""} />
+    </div>
+    {/* Carta inferior */}
+    <CardPlaceholder className={isSelected ? "border-[#E5C158]" : ""} />
+  </div>
+);
+
+// Estructura de 3 cartas (seguidas en fila)
+const Cards3Layout = ({ isSelected }: { isSelected: boolean }) => (
+  <div className="flex gap-1.5 items-center justify-center">
+    <CardPlaceholder className={isSelected ? "border-[#E5C158]" : ""} />
+    <CardPlaceholder className={isSelected ? "border-[#E5C158]" : ""} />
+    <CardPlaceholder className={isSelected ? "border-[#E5C158]" : ""} />
+  </div>
+);
+
+// Estructura de 1 carta (Yes/No)
+const Card1Layout = ({ isSelected }: { isSelected: boolean }) => (
+  <div className="flex gap-1.5 items-center justify-center">
+    <CardPlaceholder className={isSelected ? "border-[#E5C158]" : ""} />
+  </div>
+);
+
 export function TarotFormatSelector({
   selectedFormat,
   onFormatChange,
   formats
 }: TarotFormatSelectorProps) {
+  
+  const getCardLayout = (id: string, isSelected: boolean) => {
+    if (id === 'pi_simple_5') return <Cards5Layout isSelected={isSelected} />;
+    if (id === 'pi_rapida_3') return <Cards3Layout isSelected={isSelected} />;
+    if (id === 'pi_sino_1') return <Card1Layout isSelected={isSelected} />;
+    return <Cards3Layout isSelected={isSelected} />;
+  }
+
   return (
     <div className="space-y-4">
-      <label className="block text-amber-500/80 text-xs font-bold uppercase tracking-widest">
-        Elige tu tirada
-      </label>
-
       {/* Grid de opciones */}
       <div className="space-y-3">
-        {formats.map((format) => (
-          <button
-            key={format.id}
-            onClick={() => onFormatChange(format.id)}
-            className={`w-full p-4 rounded-xl border-2 transition-all text-left flex items-start gap-4 ${
-              selectedFormat === format.id
-                ? 'border-amber-500 bg-amber-950/30 shadow-lg shadow-amber-900/30'
-                : 'border-amber-900/30 bg-black/40 hover:border-amber-700 hover:bg-black/60'
-            }`}
-          >
-            {/* Descripción */}
-            <div className="flex-1">
-              <h3 className="text-amber-500 font-bold text-sm uppercase mb-1">
-                {format.name}
-              </h3>
-              <p className="text-amber-200/70 text-xs leading-relaxed">
-                {format.description}
-              </p>
-            </div>
+        {formats.map((format) => {
+          const isSelected = selectedFormat === format.id;
+          
+          return (
+            <button
+              key={format.id}
+              onClick={() => onFormatChange(format.id)}
+              className={`w-full text-left transition-all duration-300 rounded-xl border-[1.5px] p-0 
+                ${isSelected 
+                  ? 'border-[#E5C158] shadow-[0_0_20px_rgba(229,193,88,0.25)] scale-[1.02] bg-black/60' 
+                  : 'border-[#E5C158]/30 hover:border-[#E5C158]/60 bg-black/40 hover:bg-black/50'
+                }`}
+            >
+              {/* Contenedor interno que hace el efecto del segundo borde */}
+              <div className={`flex items-center h-full rounded-lg border transition-all duration-300 p-2 md:p-3
+                ${isSelected 
+                  ? 'border-[#E5C158]/50 bg-[#130E24]/90' 
+                  : 'border-[#E5C158]/20 bg-[#130E24]/60'
+                }`}
+              >
+                
+                {/* Icono a la izquierda */}
+                <div className={`flex-shrink-0 flex items-center justify-center mr-3 md:mr-4 transition-colors duration-300
+                  ${isSelected ? 'text-[#E5C158]' : 'text-[#E5C158]/50'}`}
+                >
+                  {getCardLayout(format.id, isSelected)}
+                </div>
 
-            {/* Visualización de cartas */}
-            <div className="flex-shrink-0">
-              {format.id === 'pi_sino_1' && (
-                <div className="flex justify-center">
-                  <div className="w-8 h-12 bg-amber-900 border border-amber-700 rounded-sm" />
+                {/* Textos apilados */}
+                <div className="flex flex-col justify-center flex-1 min-w-0">
+                  <h3 className={`font-serif font-bold uppercase tracking-wider text-base md:text-lg transition-colors duration-300 break-words
+                    ${isSelected ? 'text-[#E5C158] drop-shadow-md' : 'text-[#E5C158]/70'}`}
+                  >
+                    {format.name}
+                  </h3>
+                  
+                  {/* Subtítulo tipo "- TIRADA 5 CARTAS" */}
+                  <span className={`text-xs uppercase tracking-widest mt-1 font-sans transition-colors duration-300 break-words
+                    ${isSelected ? 'text-[#E5C158]/90' : 'text-[#E5C158]/40'}`}
+                  >
+                    - {format.description}
+                  </span>
                 </div>
-              )}
-              {format.id === 'pi_rapida_3' && (
-                <div className="flex gap-1">
-                  {[0, 1, 2].map(i => (
-                    <div key={i} className="w-6 h-10 bg-amber-900 border border-amber-700 rounded-sm" />
-                  ))}
-                </div>
-              )}
-              {format.id === 'pi_simple_5' && (
-                <div className="flex flex-col items-center gap-1">
-                  {/* Fila 1: 1 carta arriba */}
-                  <div className="flex justify-center">
-                    <div className="w-6 h-10 bg-amber-900 border border-amber-700 rounded-sm" />
-                  </div>
-                  {/* Fila 2: 3 cartas en el medio */}
-                  <div className="flex gap-1 justify-center">
-                    <div className="w-5 h-8 bg-amber-900 border border-amber-700 rounded-sm" />
-                    <div className="w-5 h-8 bg-amber-900 border border-amber-700 rounded-sm" />
-                    <div className="w-5 h-8 bg-amber-900 border border-amber-700 rounded-sm" />
-                  </div>
-                  {/* Fila 3: 1 carta abajo */}
-                  <div className="flex justify-center">
-                    <div className="w-6 h-10 bg-amber-900 border border-amber-700 rounded-sm" />
-                  </div>
-                </div>
-              )}
-            </div>
 
-            {/* Indicador de selección */}
-            {selectedFormat === format.id && (
-              <div className="absolute -left-3 top-1/2 transform -translate-y-1/2 w-1.5 h-1.5 bg-amber-500 rounded-full shadow-lg shadow-amber-500/50" />
-            )}
-          </button>
-        ))}
+              </div>
+            </button>
+          )
+        })}
       </div>
     </div>
   );

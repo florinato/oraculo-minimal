@@ -134,6 +134,17 @@ function ReadingContent() {
   return (
     <div className="relative min-h-screen w-full bg-black text-amber-50 overflow-y-auto overflow-x-hidden scroll-smooth">
       
+      {/* BOTÓN VOLVER */}
+      <button
+        onClick={() => window.history.back()}
+        className="fixed top-4 left-4 z-50 w-10 h-10 rounded-full border border-[#E5C158]/50 bg-[#100C1A]/80 flex items-center justify-center hover:border-[#E5C158] hover:bg-[#100C1A] transition-all backdrop-blur-md"
+        title="Volver atrás"
+      >
+        <svg className="w-5 h-5 text-[#E5C158]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+      
       {/* CAPA 1: FONDO FIJO (La foto de portada con blur suave) */}
       <div className="fixed inset-0 h-screen w-full overflow-hidden z-0 pointer-events-none flex justify-center items-center">
         <img src="/portada_PI_ARC.png" className="w-full h-full object-cover blur-sm" alt="Portada" />
