@@ -71,7 +71,7 @@ export default function Selector() {
       </div>
 
       {/* CONTROLES (Empujados hacia abajo para ocupar el espacio central hasta el pie) */}
-      <div className="relative z-10 w-full max-w-sm mx-auto space-y-6 flex-grow flex flex-col justify-center">
+      <div className="relative z-10 w-full max-w-sm mx-auto space-y-6 flex-grow flex flex-col justify-end pb-12">
         <TarotFormatSelector
           selectedFormat={selectedFormat}
           onFormatChange={setSelectedFormat}
