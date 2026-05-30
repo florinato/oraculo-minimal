@@ -10,34 +10,42 @@ interface TarotFormatSelectorProps {
   }>;
 }
 
-// Helpers para dibujar los iconos en SVG
-const Icons = {
-  Cards5: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinejoin="round" className="w-10 h-10">
-      <path d="M4 8l2-4 12 4-2 14-12-4 2-14z" />
-      <path d="M7 6l1-5 13 3-2 15-13-3 1-5" />
-      <rect x="5" y="7" width="10" height="14" rx="1" transform="rotate(-10 5 7)" />
-      <rect x="7" y="5" width="10" height="14" rx="1" />
-      <rect x="9" y="4" width="10" height="14" rx="1" transform="rotate(10 9 4)" />
-    </svg>
-  ),
-  Cards3: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinejoin="round" className="w-10 h-10">
-      <rect x="5" y="6" width="10" height="14" rx="1" transform="rotate(-15 5 6)" />
-      <rect x="7" y="5" width="10" height="14" rx="1" />
-      <rect x="9" y="5" width="10" height="14" rx="1" transform="rotate(15 9 5)" />
-    </svg>
-  ),
-  Scale: () => (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="w-10 h-10">
-      <path d="M12 3v18" />
-      <path d="M3 7h18" />
-      <path d="M3 7l2 8c0 1.5 2 1.5 4 1.5s4 0 4-1.5l-2-8" />
-      <path d="M15 7l2 8c0 1.5 2 1.5 4 1.5s4 0 4-1.5l-2-8" />
-      <path d="M9 21h6" />
-    </svg>
-  )
-};
+// Componente reutilizable para mostrar cartas en posiciones
+const CardPlaceholder = ({ className = "" }) => (
+  <div className={`w-6 h-8 md:w-8 md:h-10 rounded border border-[#E5C158]/80 bg-gradient-to-br from-[#E5C158]/20 to-[#E5C158]/5 ${className}`} />
+);
+
+// Estructura de 5 cartas (1 arriba, 3 al medio, 1 abajo)
+const Cards5Layout = ({ isSelected }: { isSelected: boolean }) => (
+  <div className="flex flex-col items-center justify-center gap-1.5">
+    {/* Carta superior */}
+    <CardPlaceholder className={isSelected ? "border-[#E5C158]" : ""} />
+    {/* Fila de 3 cartas */}
+    <div className="flex gap-1.5">
+      <CardPlaceholder className={isSelected ? "border-[#E5C158]" : ""} />
+      <CardPlaceholder className={isSelected ? "border-[#E5C158]" : ""} />
+      <CardPlaceholder className={isSelected ? "border-[#E5C158]" : ""} />
+    </div>
+    {/* Carta inferior */}
+    <CardPlaceholder className={isSelected ? "border-[#E5C158]" : ""} />
+  </div>
+);
+
+// Estructura de 3 cartas (seguidas en fila)
+const Cards3Layout = ({ isSelected }: { isSelected: boolean }) => (
+  <div className="flex gap-1.5 items-center justify-center">
+    <CardPlaceholder className={isSelected ? "border-[#E5C158]" : ""} />
+    <CardPlaceholder className={isSelected ? "border-[#E5C158]" : ""} />
+    <CardPlaceholder className={isSelected ? "border-[#E5C158]" : ""} />
+  </div>
+);
+
+// Estructura de 1 carta (Yes/No)
+const Card1Layout = ({ isSelected }: { isSelected: boolean }) => (
+  <div className="flex gap-1.5 items-center justify-center">
+    <CardPlaceholder className={isSelected ? "border-[#E5C158]" : ""} />
+  </div>
+);
 
 export function TarotFormatSelector({
   selectedFormat,
@@ -45,11 +53,11 @@ export function TarotFormatSelector({
   formats
 }: TarotFormatSelectorProps) {
   
-  const getIcon = (id: string) => {
-    if (id === 'pi_simple_5') return <Icons.Cards5 />;
-    if (id === 'pi_rapida_3') return <Icons.Cards3 />;
-    if (id === 'pi_sino_1') return <Icons.Scale />;
-    return <Icons.Cards3 />;
+  const getCardLayout = (id: string, isSelected: boolean) => {
+    if (id === 'pi_simple_5') return <Cards5Layout isSelected={isSelected} />;
+    if (id === 'pi_rapida_3') return <Cards3Layout isSelected={isSelected} />;
+    if (id === 'pi_sino_1') return <Card1Layout isSelected={isSelected} />;
+    return <Cards3Layout isSelected={isSelected} />;
   }
 
   return (
@@ -81,7 +89,7 @@ export function TarotFormatSelector({
                 <div className={`flex-shrink-0 flex items-center justify-center mr-3 md:mr-4 transition-colors duration-300
                   ${isSelected ? 'text-[#E5C158]' : 'text-[#E5C158]/50'}`}
                 >
-                  {getIcon(format.id)}
+                  {getCardLayout(format.id, isSelected)}
                 </div>
 
                 {/* Textos apilados */}
