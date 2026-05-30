@@ -85,18 +85,18 @@ export function TarotFormatSelector({
                 </div>
 
                 {/* Textos apilados */}
-                <div className="flex flex-col justify-center flex-1">
-                  <h3 className={`font-serif font-bold uppercase tracking-wider text-base md:text-lg transition-colors duration-300
+                <div className="flex flex-col justify-center flex-1 min-w-0">
+                  <h3 className={`font-serif font-bold uppercase tracking-wider text-base md:text-lg transition-colors duration-300 break-words
                     ${isSelected ? 'text-[#E5C158] drop-shadow-md' : 'text-[#E5C158]/70'}`}
                   >
                     {format.name}
                   </h3>
                   
                   {/* Subtítulo tipo "- TIRADA 5 CARTAS" */}
-                  <span className={`text-xs uppercase tracking-widest mt-1 font-sans transition-colors duration-300
+                  <span className={`text-xs uppercase tracking-widest mt-1 font-sans transition-colors duration-300 break-words
                     ${isSelected ? 'text-[#E5C158]/90' : 'text-[#E5C158]/40'}`}
                   >
-                    - {format.description.substring(0, 25)}...
+                    - {format.description}
                   </span>
                 </div>
 
