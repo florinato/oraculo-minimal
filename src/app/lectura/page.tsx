@@ -400,13 +400,15 @@ function CardImgFaceDown({ card, index, isRevealed, canReveal, onReveal, onRevie
         }
       }}
     >
-      <div className={`h-[16vh] aspect-[2/3.2] rounded-sm border-2 shadow-2xl ${isRevealed ? 'card-flip border-amber-500 cursor-pointer hover:scale-105 hover:shadow-lg' : 'border-amber-700 cursor-pointer group-hover:scale-110 group-active:scale-95 hover:border-amber-500'}`} style={{ overflow: 'hidden', backfaceVisibility: 'hidden', willChange: 'transform' }}>
+      <div className={`h-[16vh] aspect-[2/3.2] rounded-sm border-2 shadow-2xl ${isRevealed ? 'card-flip border-amber-500 cursor-pointer hover:scale-105 hover:shadow-lg' : 'border-amber-700 cursor-pointer group-hover:scale-110 group-active:scale-95 hover:border-amber-500'}`} style={{ overflow: 'hidden', backfaceVisibility: 'hidden', willChange: 'transform', backgroundColor: isRevealed ? 'transparent' : 'white' }}>
         {!isRevealed && (
           <img 
             src="/dorso_PI.jpg" 
             crossOrigin="anonymous"
             className="w-full h-full object-cover" 
             alt="Dorso de carta"
+            onLoad={() => console.log("[v0] Dorso image loaded successfully")}
+            onError={(e) => console.log("[v0] Error loading dorso:", e.currentTarget.src)}
           />
         )}
         {isRevealed && (
