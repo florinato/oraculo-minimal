@@ -339,10 +339,10 @@ function ExpandedDeck({ selectedIndices, onCardClick, cardsToSelect }: ExpandedD
             <div
               key={index}
               className={`absolute h-[16vh] aspect-[2/3.2] rounded-sm border-2 transition-all duration-500 cursor-pointer overflow-hidden ${isSelected
-                  ? 'opacity-0 scale-0 pointer-events-none'
-                  : canSelect
-                    ? 'border-amber-700 hover:scale-125 hover:border-amber-500 hover:shadow-2xl hover:shadow-amber-900/50'
-                    : 'border-amber-700/50 opacity-60 cursor-not-allowed'
+                ? 'opacity-0 scale-0 pointer-events-none'
+                : canSelect
+                  ? 'border-amber-700 hover:scale-125 hover:border-amber-500 hover:shadow-2xl hover:shadow-amber-900/50'
+                  : 'border-amber-700/50 opacity-60 cursor-not-allowed'
                 }`}
               style={{
                 left: `${index * (cardWidth - overlap)}px`,
@@ -357,7 +357,7 @@ function ExpandedDeck({ selectedIndices, onCardClick, cardsToSelect }: ExpandedD
             >
               <img
                 src="/dorso_PI.jpg"
-                crossOrigin="anonymous"
+
                 className="w-full h-full object-cover"
                 alt="Dorso de carta"
                 style={{ WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
