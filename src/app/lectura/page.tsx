@@ -315,7 +315,7 @@ function ExpandedDeck({ selectedIndices, onCardClick, cardsToSelect }: ExpandedD
           return (
             <div
               key={index}
-              className={`absolute h-[16vh] aspect-[2/3.2] bg-gradient-to-br from-amber-900 to-amber-950 rounded-sm border-2 transition-all duration-500 cursor-pointer ${
+              className={`absolute h-[16vh] aspect-[2/3.2] rounded-sm border-2 transition-all duration-500 cursor-pointer overflow-hidden ${
                 isSelected
                   ? 'opacity-0 scale-0 pointer-events-none'
                   : canSelect
@@ -333,9 +333,12 @@ function ExpandedDeck({ selectedIndices, onCardClick, cardsToSelect }: ExpandedD
                 }
               }}
             >
-              <div className="w-full h-full flex items-center justify-center text-amber-600 font-bold text-xl">
-                ✦
-              </div>
+              <img 
+                src="/dorso_PI.jpg" 
+                className="w-full h-full object-cover" 
+                alt="Dorso de carta"
+                style={{ WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
+              />
             </div>
           );
         })}
@@ -381,9 +384,12 @@ function CardImgFaceDown({ card, index, isRevealed, canReveal, onReveal, onRevie
             : 'border-amber-700/50 bg-gradient-to-br from-amber-900/50 to-amber-950/50 opacity-50 cursor-not-allowed'
       }`} style={{ backfaceVisibility: 'hidden', willChange: 'transform', boxShadow: canReveal && !isRevealed ? '0 0 20px rgba(217, 119, 6, 0.4), 0 0 40px rgba(217, 119, 6, 0.2)' : 'none' }}>
         {!isRevealed && (
-          <div className="w-full h-full flex items-center justify-center text-amber-600 font-bold text-3xl">
-            ✦
-          </div>
+          <img 
+            src="/dorso_PI.jpg" 
+            className="w-full h-full object-cover rounded-sm" 
+            alt="Dorso de carta"
+            style={{ backfaceVisibility: 'hidden', WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
+          />
         )}
         {isRevealed && (
           <img 
