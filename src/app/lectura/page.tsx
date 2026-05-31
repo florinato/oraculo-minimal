@@ -129,6 +129,29 @@ function ReadingContent() {
     startInference();
   }, [question, t.reading.error, currentLang, formatParam, aiInstruction]);
 
+  // Auto-reveal cartas en secuencia cuando termina la fase de selección
+  useEffect(() => {
+    if (!selectionPhase && cards.length > 0 && revealedCards.size === 0) {
+      // Iniciar revelación automática de cartas en secuencia (0.3 seg entre cada una)
+      const timers: NodeJS.Timeout[] = [];
+      
+      for (let i = 0; i < cards.length; i++) {
+        const timer = setTimeout(() => {
+          setRevealedCards(prev => {
+            const newRevealed = new Set(prev);
+            newRevealed.add(i);
+            return newRevealed;
+          });
+        }, i * 300);
+        timers.push(timer);
+      }
+      
+      return () => {
+        timers.forEach(timer => clearTimeout(timer));
+      };
+    }
+  }, [selectionPhase, cards.length]);
+
   if (cards.length === 0) return <div className="min-h-screen bg-black flex items-center justify-center text-amber-500 italic">Invocando el umbral...</div>;
 
   return (
@@ -376,7 +399,7 @@ function CardImgFaceDown({ card, index, isRevealed, canReveal, onReveal, onRevie
         }
       }}
     >
-      <div className={`h-[16vh] aspect-[2/3.2] shadow-2xl rounded-sm border-2 transition-all duration-500 ${
+      <div className={`h-[16vh] aspect-[2/3.2] shadow-2xl rounded-sm border-2 transition-all duration-500 ${isRevealed ? 'card-flip' : ''} ${
         isRevealed 
           ? 'border-amber-500 bg-gradient-to-br from-amber-900 to-amber-950 cursor-pointer hover:scale-105 hover:shadow-lg' 
           : canReveal
