@@ -219,9 +219,7 @@ function ReadingContent() {
                 {[0, 1, 2].map(i => (
                   <div key={i} className="transition-all duration-500">
                     {selectionPhase ? (
-                      <div className="h-[16vh] aspect-[2/3.2] rounded-sm border-2 border-dashed border-amber-700/30 bg-black/20 backdrop-blur-sm flex items-center justify-center">
-                        <span className="text-amber-700/50 text-sm font-serif">Pos {i + 1}</span>
-                      </div>
+                      <CardPlaceholder index={i} />
                     ) : (
                       <CardImgFaceDown
                         card={cards[i]}
@@ -242,49 +240,19 @@ function ReadingContent() {
             ) : (
               <div className="grid grid-cols-3 grid-rows-3 pointer-events-auto" style={{ gap: '2.5vh' }}>
                 <div className="col-start-2 row-start-1 transition-all duration-500">
-                  {selectionPhase ? (
-                    <div className="h-[16vh] aspect-[2/3.2] rounded-sm border-2 border-dashed border-amber-700/30 bg-black/20 backdrop-blur-sm flex items-center justify-center">
-                      <span className="text-amber-700/50 text-xs font-serif">Pos 1</span>
-                    </div>
-                  ) : (
-                    <CardImgFaceDown card={cards[2]} index={2} isRevealed={revealedCards.has(2)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(2); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[2])} />
-                  )}
+                  {selectionPhase ? <CardPlaceholder index={2} /> : <CardImgFaceDown card={cards[2]} index={2} isRevealed={revealedCards.has(2)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(2); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[2])} />}
                 </div>
                 <div className="col-start-1 row-start-2 transition-all duration-500">
-                  {selectionPhase ? (
-                    <div className="h-[16vh] aspect-[2/3.2] rounded-sm border-2 border-dashed border-amber-700/30 bg-black/20 backdrop-blur-sm flex items-center justify-center">
-                      <span className="text-amber-700/50 text-xs font-serif">Pos 2</span>
-                    </div>
-                  ) : (
-                    <CardImgFaceDown card={cards[0]} index={0} isRevealed={revealedCards.has(0)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(0); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[0])} />
-                  )}
+                  {selectionPhase ? <CardPlaceholder index={0} /> : <CardImgFaceDown card={cards[0]} index={0} isRevealed={revealedCards.has(0)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(0); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[0])} />}
                 </div>
                 <div className="col-start-2 row-start-2 transition-all duration-500">
-                  {selectionPhase ? (
-                    <div className="h-[16vh] aspect-[2/3.2] rounded-sm border-2 border-dashed border-amber-700/30 bg-black/20 backdrop-blur-sm flex items-center justify-center">
-                      <span className="text-amber-700/50 text-xs font-serif">Pos 3</span>
-                    </div>
-                  ) : (
-                    <CardImgFaceDown card={cards[4]} index={4} isRevealed={revealedCards.has(4)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(4); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[4])} />
-                  )}
+                  {selectionPhase ? <CardPlaceholder index={4} /> : <CardImgFaceDown card={cards[4]} index={4} isRevealed={revealedCards.has(4)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(4); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[4])} />}
                 </div>
                 <div className="col-start-3 row-start-2 transition-all duration-500">
-                  {selectionPhase ? (
-                    <div className="h-[16vh] aspect-[2/3.2] rounded-sm border-2 border-dashed border-amber-700/30 bg-black/20 backdrop-blur-sm flex items-center justify-center">
-                      <span className="text-amber-700/50 text-xs font-serif">Pos 4</span>
-                    </div>
-                  ) : (
-                    <CardImgFaceDown card={cards[1]} index={1} isRevealed={revealedCards.has(1)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(1); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[1])} />
-                  )}
+                  {selectionPhase ? <CardPlaceholder index={1} /> : <CardImgFaceDown card={cards[1]} index={1} isRevealed={revealedCards.has(1)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(1); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[1])} />}
                 </div>
                 <div className="col-start-2 row-start-3 transition-all duration-500">
-                  {selectionPhase ? (
-                    <div className="h-[16vh] aspect-[2/3.2] rounded-sm border-2 border-dashed border-amber-700/30 bg-black/20 backdrop-blur-sm flex items-center justify-center">
-                      <span className="text-amber-700/50 text-xs font-serif">Pos 5</span>
-                    </div>
-                  ) : (
-                    <CardImgFaceDown card={cards[3]} index={3} isRevealed={revealedCards.has(3)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(3); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[3])} />
-                  )}
+                  {selectionPhase ? <CardPlaceholder index={3} /> : <CardImgFaceDown card={cards[3]} index={3} isRevealed={revealedCards.has(3)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(3); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[3])} />}
                 </div>
               </div>
             )}
@@ -410,6 +378,31 @@ function ExpandedDeck({ selectedIndices, onCardClick, cardsToSelect }: ExpandedD
         </p>
       </div>
     </AnimatePresence>
+  );
+}
+
+/**
+ * Componente Auxiliar CardPlaceholder
+ * Placeholder boca abajo para animar cartas durante selección
+ */
+function CardPlaceholder({ index }: { index: number }) {
+  const layoutId = `card-${index}`;
+  
+  return (
+    <motion.div
+      layoutId={layoutId}
+      className="flex flex-col items-center pointer-events-none"
+    >
+      <div className="h-[16vh] aspect-[2/3.2] rounded-sm border-2 border-amber-700 shadow-2xl bg-black/40" style={{ overflow: 'hidden', backfaceVisibility: 'hidden' }}>
+        <img
+          src="/dorso_PI.jpg"
+          crossOrigin="anonymous"
+          className="w-full h-full object-cover"
+          alt="Dorso placeholder"
+          style={{ WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
+        />
+      </div>
+    </motion.div>
   );
 }
 
