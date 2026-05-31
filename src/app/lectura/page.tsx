@@ -381,7 +381,7 @@ function ExpandedDeck({ selectedIndices, onCardClick, cardsToSelect }: ExpandedD
 
 /**
  * Componente Auxiliar CardPlaceholder
- * Placeholder boca abajo para animar cartas durante selección
+ * Placeholder invisible para animar cartas durante selección
  */
 function CardPlaceholder({ index }: { index: number }) {
   const layoutId = `card-${index}`;
@@ -391,14 +391,8 @@ function CardPlaceholder({ index }: { index: number }) {
       layoutId={layoutId}
       className="flex flex-col items-center pointer-events-none"
     >
-      <div className="h-[16vh] aspect-[2/3.2] rounded-sm border-2 border-amber-700 shadow-2xl bg-black/40" style={{ overflow: 'hidden', backfaceVisibility: 'hidden' }}>
-        <img
-          src="/dorso_PI.jpg"
-          crossOrigin="anonymous"
-          className="w-full h-full object-cover"
-          alt="Dorso placeholder"
-          style={{ WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
-        />
+      <div className="h-[16vh] aspect-[2/3.2] rounded-sm border-2 border-transparent" style={{ overflow: 'hidden', backfaceVisibility: 'hidden' }}>
+        {/* Hueco invisible para la animación */}
       </div>
     </motion.div>
   );
