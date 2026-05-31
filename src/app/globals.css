@@ -50,3 +50,17 @@ body {
 .card-flip {
   animation: cardFlip 0.8s ease-in-out forwards;
 }
+
+/* Animación de fulgor pulsante para cartas seleccionables (móvil) */
+@keyframes cardGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(217, 119, 6, 0.3), 0 0 30px rgba(217, 119, 6, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(217, 119, 6, 0.6), 0 0 50px rgba(217, 119, 6, 0.3);
+  }
+}
+
+.card-glow {
+  animation: cardGlow 2s ease-in-out infinite;
+}

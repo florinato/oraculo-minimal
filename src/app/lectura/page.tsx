@@ -335,7 +335,7 @@ function ExpandedDeck({ selectedIndices, onCardClick, cardsToSelect }: ExpandedD
               className={`absolute h-[16vh] aspect-[2/3.2] rounded-sm border-2 transition-all duration-500 cursor-pointer overflow-hidden ${isSelected
                 ? 'opacity-0 scale-0 pointer-events-none'
                 : canSelect
-                  ? 'border-amber-700 hover:scale-125 hover:border-amber-500 hover:shadow-2xl hover:shadow-amber-900/50'
+                  ? 'border-amber-700 hover:scale-125 hover:border-amber-500 hover:shadow-2xl hover:shadow-amber-900/50 card-glow'
                   : 'border-amber-700/50 opacity-60 cursor-not-allowed'
                 }`}
               style={{
