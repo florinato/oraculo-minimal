@@ -20,7 +20,7 @@ function ReadingContent() {
   const question = searchParams.get("q") || "";
   const langParam = searchParams.get("lang");
   const formatParam = searchParams.get("format") || "pi_simple_5";
-  
+
   const [text, setText] = useState("");
   const [cards, setCards] = useState<TarotCard[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,7 +30,7 @@ function ReadingContent() {
   const [selectedDeckIndices, setSelectedDeckIndices] = useState<Set<number>>(new Set());
   const hasStarted = useRef(false);
 
- const { t, currentLang, aiInstruction } = getI18n(langParam);
+  const { t, currentLang, aiInstruction } = getI18n(langParam);
 
   useEffect(() => {
     if (hasStarted.current) return;
@@ -46,12 +46,12 @@ function ReadingContent() {
       selectedCards = drawFiveCards(); // 5 cartas (default)
     }
     setCards(selectedCards);
-    
+
     // Iniciar selección de cartas
     setSelectionPhase(true);
     setRevealedCards(new Set());
     setSelectedDeckIndices(new Set());
-    
+
     const startInference = async () => {
       try {
         console.log("[v0] Iniciando lectura con:", {
@@ -61,7 +61,7 @@ function ReadingContent() {
           cardsCount: selectedCards.length
         });
 
-        const response = await fetch('/api/chat', { 
+        const response = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -69,7 +69,7 @@ function ReadingContent() {
             format_id: formatParam,
             user_question: question,
             cards: selectedCards,
-            language: aiInstruction 
+            language: aiInstruction
           })
         });
 
@@ -134,7 +134,7 @@ function ReadingContent() {
     if (!selectionPhase && cards.length > 0 && revealedCards.size === 0) {
       // Iniciar revelación automática de cartas en secuencia (2 seg de retraso inicial, 0.5 seg entre cada una)
       const timers: NodeJS.Timeout[] = [];
-      
+
       for (let i = 0; i < cards.length; i++) {
         const timer = setTimeout(() => {
           setRevealedCards(prev => {
@@ -145,7 +145,7 @@ function ReadingContent() {
         }, 2000 + (i * 500)); // 2 seg de retraso inicial + 0.5 seg entre cada carta
         timers.push(timer);
       }
-      
+
       return () => {
         timers.forEach(timer => clearTimeout(timer));
       };
@@ -156,7 +156,7 @@ function ReadingContent() {
 
   return (
     <div className="relative min-h-screen w-full bg-black text-amber-50 overflow-y-auto overflow-x-hidden scroll-smooth">
-      
+
       {/* BOTÓN VOLVER */}
       <button
         onClick={() => window.history.back()}
@@ -167,7 +167,7 @@ function ReadingContent() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
       </button>
-      
+
       {/* CAPA 1: FONDO FIJO (La foto de portada con blur suave) */}
       <div className="fixed inset-0 h-screen w-full overflow-hidden z-0 pointer-events-none flex justify-center items-center">
         <img src="/portada_PI_ARC.png" className="w-full h-full object-cover blur-sm" alt="Portada" />
@@ -175,24 +175,24 @@ function ReadingContent() {
 
       {/* CAPA 2: MAZO EXTENDIDO (Selección de cartas) */}
       {selectionPhase && (
-        <ExpandedDeck 
+        <ExpandedDeck
           selectedIndices={selectedDeckIndices}
           cardsToSelect={cards.length}
           onCardClick={(index) => {
             const newSelected = new Set(selectedDeckIndices);
             newSelected.add(index);
             setSelectedDeckIndices(newSelected);
-            
-          // Cuando se seleccionan todas, revelar automáticamente todas las cartas
-          if (newSelected.size === cards.length) {
-            setSelectionPhase(false);
-            // Revelar todas las cartas automáticamente
-            const allRevealed = new Set<number>();
-            for (let i = 0; i < cards.length; i++) {
-              allRevealed.add(i);
+
+            // Cuando se seleccionan todas, revelar automáticamente todas las cartas
+            if (newSelected.size === cards.length) {
+              setSelectionPhase(false);
+              // Revelar todas las cartas automáticamente
+              const allRevealed = new Set<number>();
+              for (let i = 0; i < cards.length; i++) {
+                allRevealed.add(i);
+              }
+              setRevealedCards(allRevealed);
             }
-            setRevealedCards(allRevealed);
-          }
           }}
         />
       )}
@@ -200,65 +200,65 @@ function ReadingContent() {
       {/* CAPA 3: LAS CARTAS (Lienzo 3D independiente) */}
       {/* Mostrar cartas boca abajo solo después de seleccionar del mazo */}
       <div className="fixed inset-0 h-screen w-full flex justify-center items-center z-10 pointer-events-none" style={{ perspective: '120vh' }}>
-          {!selectionPhase && (
-            <>
-              {cards.length === 1 ? (
-                <div className="grid grid-cols-1 place-items-center pointer-events-auto">
-                  <div className="transition-all duration-500 opacity-100 scale-100">
-                    <CardImgFaceDown 
-                      card={cards[0]} 
-                      index={0}
-                      isRevealed={revealedCards.has(0)}
+        {!selectionPhase && (
+          <>
+            {cards.length === 1 ? (
+              <div className="grid grid-cols-1 place-items-center pointer-events-auto">
+                <div className="transition-all duration-500 opacity-100 scale-100">
+                  <CardImgFaceDown
+                    card={cards[0]}
+                    index={0}
+                    isRevealed={revealedCards.has(0)}
+                    canReveal={true}
+                    onReveal={() => {
+                      const newRevealed = new Set(revealedCards);
+                      newRevealed.add(0);
+                      setRevealedCards(newRevealed);
+                    }}
+                    onReviewCard={() => setSelectedCard(cards[0])}
+                  />
+                </div>
+              </div>
+            ) : cards.length === 3 ? (
+              <div className="grid grid-cols-3 pointer-events-auto" style={{ gap: '3vh' }}>
+                {[0, 1, 2].map(i => (
+                  <div key={i} className="transition-all duration-500 opacity-100 scale-100">
+                    <CardImgFaceDown
+                      card={cards[i]}
+                      index={i}
+                      isRevealed={revealedCards.has(i)}
                       canReveal={true}
                       onReveal={() => {
                         const newRevealed = new Set(revealedCards);
-                        newRevealed.add(0);
+                        newRevealed.add(i);
                         setRevealedCards(newRevealed);
                       }}
-                      onReviewCard={() => setSelectedCard(cards[0])}
+                      onReviewCard={() => setSelectedCard(cards[i])}
                     />
                   </div>
+                ))}
+              </div>
+            ) : (
+              <div className="grid grid-cols-3 grid-rows-3 pointer-events-auto" style={{ gap: '2.5vh' }}>
+                <div className="col-start-2 row-start-1 transition-all duration-500 opacity-100 scale-100">
+                  <CardImgFaceDown card={cards[2]} index={2} isRevealed={revealedCards.has(2)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(2); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[2])} />
                 </div>
-              ) : cards.length === 3 ? (
-                <div className="grid grid-cols-3 pointer-events-auto" style={{ gap: '3vh' }}>
-                  {[0, 1, 2].map(i => (
-                    <div key={i} className="transition-all duration-500 opacity-100 scale-100">
-                      <CardImgFaceDown 
-                        card={cards[i]} 
-                        index={i}
-                        isRevealed={revealedCards.has(i)}
-                        canReveal={true}
-                        onReveal={() => {
-                          const newRevealed = new Set(revealedCards);
-                          newRevealed.add(i);
-                          setRevealedCards(newRevealed);
-                        }}
-                        onReviewCard={() => setSelectedCard(cards[i])}
-                      />
-                    </div>
-                  ))}
+                <div className="col-start-1 row-start-2 transition-all duration-500 opacity-100 scale-100">
+                  <CardImgFaceDown card={cards[0]} index={0} isRevealed={revealedCards.has(0)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(0); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[0])} />
                 </div>
-              ) : (
-                <div className="grid grid-cols-3 grid-rows-3 pointer-events-auto" style={{ gap: '2.5vh' }}>
-                  <div className="col-start-2 row-start-1 transition-all duration-500 opacity-100 scale-100">
-                    <CardImgFaceDown card={cards[2]} index={2} isRevealed={revealedCards.has(2)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(2); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[2])} />
-                  </div>
-                  <div className="col-start-1 row-start-2 transition-all duration-500 opacity-100 scale-100">
-                    <CardImgFaceDown card={cards[0]} index={0} isRevealed={revealedCards.has(0)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(0); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[0])} />
-                  </div>
-                  <div className="col-start-2 row-start-2 transition-all duration-500 opacity-100 scale-100">
-                    <CardImgFaceDown card={cards[4]} index={4} isRevealed={revealedCards.has(4)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(4); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[4])} />
-                  </div>
-                  <div className="col-start-3 row-start-2 transition-all duration-500 opacity-100 scale-100">
-                    <CardImgFaceDown card={cards[1]} index={1} isRevealed={revealedCards.has(1)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(1); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[1])} />
-                  </div>
-                  <div className="col-start-2 row-start-3 transition-all duration-500 opacity-100 scale-100">
-                    <CardImgFaceDown card={cards[3]} index={3} isRevealed={revealedCards.has(3)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(3); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[3])} />
-                  </div>
+                <div className="col-start-2 row-start-2 transition-all duration-500 opacity-100 scale-100">
+                  <CardImgFaceDown card={cards[4]} index={4} isRevealed={revealedCards.has(4)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(4); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[4])} />
                 </div>
-              )}
-            </>
-          )}
+                <div className="col-start-3 row-start-2 transition-all duration-500 opacity-100 scale-100">
+                  <CardImgFaceDown card={cards[1]} index={1} isRevealed={revealedCards.has(1)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(1); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[1])} />
+                </div>
+                <div className="col-start-2 row-start-3 transition-all duration-500 opacity-100 scale-100">
+                  <CardImgFaceDown card={cards[3]} index={3} isRevealed={revealedCards.has(3)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(3); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[3])} />
+                </div>
+              </div>
+            )}
+          </>
+        )}
       </div>
 
       {/* CAPA 4: SCROLL DE TEXTO (Encima de todo) */}
@@ -290,21 +290,21 @@ function ReadingContent() {
               <div className="animate-pulse text-amber-700 italic">Invocando el oráculo...</div>
             ) : null}
           </div>
-          
+
           {!loading && text.length > 50 && !selectionPhase && (
             <div className="pb-10 flex justify-center">
-                <button onClick={() => window.location.href='/'} className="px-10 py-4 bg-amber-900/40 border border-amber-600/50 text-amber-500 rounded-full italic font-serif hover:bg-amber-800/40 transition-all active:scale-95 shadow-xl">
-                  {t.reading.new_reading}
-                </button>
+              <button onClick={() => window.location.href = '/'} className="px-10 py-4 bg-amber-900/40 border border-amber-600/50 text-amber-500 rounded-full italic font-serif hover:bg-amber-800/40 transition-all active:scale-95 shadow-xl">
+                {t.reading.new_reading}
+              </button>
             </div>
           )}
         </div>
       </div>
 
       {/* CAPA 5: MODAL DE DETALLE */}
-      <CardDetail 
-        card={selectedCard} 
-        onClose={() => setSelectedCard(null)} 
+      <CardDetail
+        card={selectedCard}
+        onClose={() => setSelectedCard(null)}
         info={selectedCard?.meaning || ""}
       />
 
@@ -334,17 +334,16 @@ function ExpandedDeck({ selectedIndices, onCardClick, cardsToSelect }: ExpandedD
         {Array.from({ length: tarotCards }).map((_, index) => {
           const isSelected = selectedIndices.has(index);
           const canSelect = selectedIndices.size < cardsToSelect;
-          
+
           return (
             <div
               key={index}
-              className={`absolute h-[16vh] aspect-[2/3.2] rounded-sm border-2 transition-all duration-500 cursor-pointer overflow-hidden ${
-                isSelected
+              className={`absolute h-[16vh] aspect-[2/3.2] rounded-sm border-2 transition-all duration-500 cursor-pointer overflow-hidden ${isSelected
                   ? 'opacity-0 scale-0 pointer-events-none'
                   : canSelect
                     ? 'border-amber-700 hover:scale-125 hover:border-amber-500 hover:shadow-2xl hover:shadow-amber-900/50'
                     : 'border-amber-700/50 opacity-60 cursor-not-allowed'
-              }`}
+                }`}
               style={{
                 left: `${index * (cardWidth - overlap)}px`,
                 top: '0',
@@ -356,10 +355,10 @@ function ExpandedDeck({ selectedIndices, onCardClick, cardsToSelect }: ExpandedD
                 }
               }}
             >
-              <img 
-                src="/dorso_PI.jpg" 
+              <img
+                src="/dorso_PI.jpg"
                 crossOrigin="anonymous"
-                className="w-full h-full object-cover" 
+                className="w-full h-full object-cover"
                 alt="Dorso de carta"
                 style={{ WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
               />
@@ -389,8 +388,8 @@ interface CardImgFaceDownProps {
 
 function CardImgFaceDown({ card, index, isRevealed, canReveal, onReveal, onReviewCard }: CardImgFaceDownProps) {
   return (
-    <div 
-      className="flex flex-col items-center cursor-pointer group pointer-events-auto" 
+    <div
+      className="flex flex-col items-center cursor-pointer group pointer-events-auto"
       onClick={(e) => {
         e.stopPropagation();
         if (canReveal && !isRevealed) {
@@ -402,18 +401,18 @@ function CardImgFaceDown({ card, index, isRevealed, canReveal, onReveal, onRevie
     >
       <div className={`h-[16vh] aspect-[2/3.2] rounded-sm border-2 shadow-2xl transition-all duration-500 ${isRevealed ? 'card-flip border-amber-500 cursor-pointer hover:scale-105 hover:shadow-lg' : 'border-amber-700 cursor-pointer group-hover:scale-110 group-active:scale-95 hover:border-amber-500 animate-pulse'}`} style={{ overflow: 'hidden', backfaceVisibility: 'hidden', willChange: 'transform', boxShadow: canReveal && !isRevealed ? '0 0 20px rgba(217, 119, 6, 0.4), 0 0 40px rgba(217, 119, 6, 0.2)' : 'none' }}>
         {!isRevealed && (
-          <img 
-            src="/dorso_PI.jpg" 
-            crossOrigin="anonymous"
+          <img
+            src="/dorso_PI.jpg"
+
             className="w-full h-full object-cover"
             alt="Dorso"
             style={{ WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
           />
         )}
         {isRevealed && (
-          <img 
-            src={getCardImageUrl(card.imageId)} 
-            className="w-full h-full object-contain bg-gradient-to-br from-amber-900 to-amber-950" 
+          <img
+            src={getCardImageUrl(card.imageId)}
+            className="w-full h-full object-contain bg-gradient-to-br from-amber-900 to-amber-950"
             alt={card.name}
           />
         )}
@@ -434,8 +433,8 @@ interface CardImgProps {
 
 function CardImg({ card, label, onClick }: CardImgProps) {
   return (
-    <div 
-      className="flex flex-col items-center cursor-pointer group pointer-events-auto" 
+    <div
+      className="flex flex-col items-center cursor-pointer group pointer-events-auto"
       onClick={(e) => {
         e.stopPropagation();
         onClick();
@@ -445,10 +444,10 @@ function CardImg({ card, label, onClick }: CardImgProps) {
         {label}
       </span>
       <div className="h-[12vh] aspect-[2/3.2] shadow-2xl rounded-sm border border-white/10 bg-amber-900/10 transition-all duration-300 group-hover:scale-110 group-active:scale-95 animate-pulse" style={{ backfaceVisibility: 'hidden', willChange: 'transform', boxShadow: '0 0 20px rgba(217, 119, 6, 0.4), 0 0 40px rgba(217, 119, 6, 0.2)' }}>
-        <img 
-          src={getCardImageUrl(card.imageId)} 
-          className="w-full h-full object-contain" 
-          alt={card.name} 
+        <img
+          src={getCardImageUrl(card.imageId)}
+          className="w-full h-full object-contain"
+          alt={card.name}
           style={{ backfaceVisibility: 'hidden', WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
         />
       </div>
