@@ -132,7 +132,7 @@ function ReadingContent() {
   // Auto-reveal cartas en secuencia cuando termina la fase de selección
   useEffect(() => {
     if (!selectionPhase && cards.length > 0 && revealedCards.size === 0) {
-      // Iniciar revelación automática de cartas en secuencia (0.3 seg entre cada una)
+      // Iniciar revelación automática de cartas en secuencia (2 seg de retraso inicial, 0.5 seg entre cada una)
       const timers: NodeJS.Timeout[] = [];
       
       for (let i = 0; i < cards.length; i++) {
@@ -142,7 +142,7 @@ function ReadingContent() {
             newRevealed.add(i);
             return newRevealed;
           });
-        }, i * 300);
+        }, 2000 + (i * 500)); // 2 seg de retraso inicial + 0.5 seg entre cada carta
         timers.push(timer);
       }
       
