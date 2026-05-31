@@ -404,8 +404,8 @@ function CardImgFaceDown({ card, index, isRevealed, canReveal, onReveal, onRevie
         isRevealed 
           ? 'border-amber-500 bg-gradient-to-br from-amber-900 to-amber-950 cursor-pointer hover:scale-105 hover:shadow-lg' 
           : canReveal
-            ? 'border-amber-700 bg-gradient-to-br from-amber-900 to-amber-950 group-hover:scale-110 group-active:scale-95 hover:border-amber-500 animate-pulse cursor-pointer'
-            : 'border-amber-700/50 bg-gradient-to-br from-amber-900/50 to-amber-950/50 opacity-50 cursor-not-allowed'
+            ? 'border-amber-700 bg-transparent group-hover:scale-110 group-active:scale-95 hover:border-amber-500 animate-pulse cursor-pointer overflow-hidden'
+            : 'border-amber-700/50 bg-transparent opacity-50 cursor-not-allowed overflow-hidden'
       }`} style={{ backfaceVisibility: 'hidden', willChange: 'transform', boxShadow: canReveal && !isRevealed ? '0 0 20px rgba(217, 119, 6, 0.4), 0 0 40px rgba(217, 119, 6, 0.2)' : 'none' }}>
         {!isRevealed && (
           <img 
