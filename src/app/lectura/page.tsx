@@ -400,22 +400,21 @@ function CardImgFaceDown({ card, index, isRevealed, canReveal, onReveal, onRevie
         }
       }}
     >
-      <div className={`h-[16vh] aspect-[2/3.2] rounded-sm border-2 shadow-2xl ${isRevealed ? 'card-flip border-amber-500 cursor-pointer hover:scale-105 hover:shadow-lg' : 'border-amber-700 cursor-pointer group-hover:scale-110 group-active:scale-95 hover:border-amber-500'}`} style={{ overflow: 'hidden', backfaceVisibility: 'hidden', willChange: 'transform', backgroundColor: isRevealed ? 'transparent' : 'white' }}>
+      <div className={`h-[16vh] aspect-[2/3.2] rounded-sm border-2 shadow-2xl transition-all duration-500 ${isRevealed ? 'card-flip border-amber-500 cursor-pointer hover:scale-105 hover:shadow-lg' : 'border-amber-700 cursor-pointer group-hover:scale-110 group-active:scale-95 hover:border-amber-500 animate-pulse'}`} style={{ overflow: 'hidden', backfaceVisibility: 'hidden', willChange: 'transform', boxShadow: canReveal && !isRevealed ? '0 0 20px rgba(217, 119, 6, 0.4), 0 0 40px rgba(217, 119, 6, 0.2)' : 'none' }}>
         {!isRevealed && (
           <img 
             src="/dorso_PI.jpg" 
-            crossOrigin="anonymous"
-            className="w-full h-full object-cover" 
-            alt="Dorso de carta"
-            onLoad={() => console.log("[v0] Dorso image loaded successfully")}
-            onError={(e) => console.log("[v0] Error loading dorso:", e.currentTarget.src)}
+            className="w-full h-full object-contain"
+            alt="Dorso"
+            style={{ backfaceVisibility: 'hidden', WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
           />
         )}
         {isRevealed && (
           <img 
             src={getCardImageUrl(card.imageId)} 
-            className="w-full h-full object-contain bg-gradient-to-br from-amber-900 to-amber-950" 
-            alt={card.name} 
+            className="w-full h-full object-contain" 
+            alt={card.name}
+            style={{ backfaceVisibility: 'hidden', WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
           />
         )}
       </div>
