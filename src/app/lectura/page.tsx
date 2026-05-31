@@ -400,29 +400,20 @@ function CardImgFaceDown({ card, index, isRevealed, canReveal, onReveal, onRevie
         }
       }}
     >
-      <div className={`h-[16vh] aspect-[2/3.2] shadow-2xl rounded-sm border-2 transition-all duration-500 ${isRevealed ? 'card-flip' : ''} ${
-        isRevealed 
-          ? 'border-amber-500 bg-gradient-to-br from-amber-900 to-amber-950 cursor-pointer hover:scale-105 hover:shadow-lg' 
-          : canReveal
-            ? 'border-amber-700 bg-transparent group-hover:scale-110 group-active:scale-95 hover:border-amber-500 animate-pulse cursor-pointer overflow-hidden'
-            : 'border-amber-700/50 bg-transparent opacity-50 cursor-not-allowed overflow-hidden'
-      }`} style={{ backfaceVisibility: 'hidden', willChange: 'transform', boxShadow: canReveal && !isRevealed ? '0 0 20px rgba(217, 119, 6, 0.4), 0 0 40px rgba(217, 119, 6, 0.2)' : 'none' }}>
+      <div className={`h-[16vh] aspect-[2/3.2] rounded-sm border-2 shadow-2xl ${isRevealed ? 'card-flip border-amber-500 cursor-pointer hover:scale-105 hover:shadow-lg' : 'border-amber-700 cursor-pointer group-hover:scale-110 group-active:scale-95 hover:border-amber-500'}`} style={{ overflow: 'hidden', backfaceVisibility: 'hidden', willChange: 'transform' }}>
         {!isRevealed && (
           <img 
             src="/dorso_PI.jpg" 
             crossOrigin="anonymous"
-            className="w-full h-full object-cover rounded-sm" 
+            className="w-full h-full object-cover" 
             alt="Dorso de carta"
-            style={{ backfaceVisibility: 'hidden', WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
-            onError={(e) => console.log("[v0] Error loading dorso image:", e)}
           />
         )}
         {isRevealed && (
           <img 
             src={getCardImageUrl(card.imageId)} 
-            className="w-full h-full object-contain" 
+            className="w-full h-full object-contain bg-gradient-to-br from-amber-900 to-amber-950" 
             alt={card.name} 
-            style={{ backfaceVisibility: 'hidden', WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
           />
         )}
       </div>
