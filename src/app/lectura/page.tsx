@@ -193,11 +193,10 @@ function ReadingContent() {
       )}
 
       {/* CAPA 3: LAS CARTAS (Lienzo 3D independiente) */}
-      {/* Mostrar cartas boca abajo solo después de seleccionar del mazo */}
+      {/* Grid siempre visible: placeholders durante selección, cartas reales después */}
       <div className="fixed inset-0 h-screen w-full flex justify-center items-center z-10 pointer-events-none" style={{ perspective: '120vh' }}>
-        {!selectionPhase && (
-          <>
-            {cards.length === 1 ? (
+        <>
+          {cards.length === 1 ? (
               <div className="grid grid-cols-1 place-items-center pointer-events-auto">
                 <div className="transition-all duration-500 opacity-100 scale-100">
                   <CardImgFaceDown
