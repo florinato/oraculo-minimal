@@ -107,7 +107,10 @@ export default function Selector() {
 
         {selectedFormat && (
           <button
-            onClick={handleStart}
+            onClick={() => {
+              console.log("[v0] Button clicked, question:", question, "length:", question.trim().length);
+              handleStart();
+            }}
             disabled={question.trim().length <= 5}
             className="w-full py-4 bg-gradient-to-b from-[#E5C158] to-[#B38F1B] hover:from-[#f5d576] hover:to-[#c4a12f] disabled:opacity-30 disabled:grayscale text-[#100C1A] font-bold uppercase tracking-widest rounded-xl text-sm border-b-4 border-[#7A600D] active:border-b-0 active:translate-y-1 transition-all animate-in fade-in duration-300 shadow-xl"
           >
