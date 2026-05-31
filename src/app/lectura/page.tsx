@@ -5,6 +5,7 @@ import CardDetail from "@/components/CardDetail";
 import NarrativeResponse from "@/components/NarrativeResponse";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 // 1. Tipado para evitar errores de Vercel
 interface TarotCard {
@@ -323,47 +324,56 @@ function ExpandedDeck({ selectedIndices, onCardClick, cardsToSelect }: ExpandedD
   const containerWidth = (tarotCards - 1) * (cardWidth - overlap) + cardWidth;
 
   return (
-    <div className="fixed top-12 left-1/2 transform -translate-x-1/2 z-40 pointer-events-auto">
-      <div className="relative" style={{ width: containerWidth, height: 140 }}>
-        {Array.from({ length: tarotCards }).map((_, index) => {
-          const isSelected = selectedIndices.has(index);
-          const canSelect = selectedIndices.size < cardsToSelect;
+    <AnimatePresence>
+      <div className="fixed top-12 left-1/2 transform -translate-x-1/2 z-40 pointer-events-auto">
+        <div className="relative" style={{ width: containerWidth, height: 140 }}>
+          {Array.from({ length: tarotCards }).map((_, index) => {
+            const isSelected = selectedIndices.has(index);
+            const canSelect = selectedIndices.size < cardsToSelect;
+            const layoutId = `card-${index}`;
 
-          return (
-            <div
-              key={index}
-              className={`absolute h-[16vh] aspect-[2/3.2] rounded-sm border-2 transition-all duration-500 cursor-pointer overflow-hidden ${isSelected
-                ? 'opacity-0 scale-0 pointer-events-none'
-                : canSelect
-                  ? 'border-amber-700 hover:scale-125 hover:border-amber-500 hover:shadow-2xl hover:shadow-amber-900/50'
-                  : 'border-amber-700/50 opacity-60 cursor-not-allowed'
-                }`}
-              style={{
-                left: `${index * (cardWidth - overlap)}px`,
-                top: '0',
-                transform: isSelected ? 'scale(0)' : 'scale(1)'
-              }}
-              onClick={() => {
-                if (canSelect && !isSelected) {
-                  onCardClick(index);
-                }
-              }}
-            >
-              <img
-                src="/dorso_PI.jpg"
-
-                className="w-full h-full object-cover"
-                alt="Dorso de carta"
-                style={{ WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
-              />
-            </div>
-          );
-        })}
+            return (
+              <motion.div
+                key={index}
+                layoutId={isSelected ? layoutId : undefined}
+                className={`absolute h-[16vh] aspect-[2/3.2] rounded-sm border-2 transition-all duration-500 cursor-pointer overflow-hidden ${isSelected
+                  ? 'opacity-0 scale-0 pointer-events-none'
+                  : canSelect
+                    ? 'border-amber-700 hover:scale-125 hover:border-amber-500 hover:shadow-2xl hover:shadow-amber-900/50'
+                    : 'border-amber-700/50 opacity-60 cursor-not-allowed'
+                  }`}
+                style={{
+                  left: `${index * (cardWidth - overlap)}px`,
+                  top: '0',
+                  transform: isSelected ? 'scale(0)' : 'scale(1)'
+                }}
+                animate={{
+                  opacity: isSelected ? 0 : 1,
+                  scale: isSelected ? 0 : 1
+                }}
+                transition={{ duration: 0.5 }}
+                onClick={() => {
+                  if (canSelect && !isSelected) {
+                    onCardClick(index);
+                  }
+                }}
+              >
+                <img
+                  src="/dorso_PI.jpg"
+                  crossOrigin="anonymous"
+                  className="w-full h-full object-cover"
+                  alt="Dorso de carta"
+                  style={{ WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
+                />
+              </motion.div>
+            );
+          })}
+        </div>
+        <p className="text-center text-amber-300 text-sm font-serif italic mt-6">
+          Selecciona {cardsToSelect - selectedIndices.size} {cardsToSelect - selectedIndices.size === 1 ? 'carta' : 'cartas'}
+        </p>
       </div>
-      <p className="text-center text-amber-300 text-sm font-serif italic mt-6">
-        Selecciona {cardsToSelect - selectedIndices.size} {cardsToSelect - selectedIndices.size === 1 ? 'carta' : 'cartas'}
-      </p>
-    </div>
+    </AnimatePresence>
   );
 }
 
@@ -381,8 +391,11 @@ interface CardImgFaceDownProps {
 }
 
 function CardImgFaceDown({ card, index, isRevealed, canReveal, onReveal, onReviewCard }: CardImgFaceDownProps) {
+  const layoutId = `card-${index}`;
+  
   return (
-    <div
+    <motion.div
+      layoutId={layoutId}
       className="flex flex-col items-center cursor-pointer group pointer-events-auto"
       onClick={(e) => {
         e.stopPropagation();
@@ -397,7 +410,7 @@ function CardImgFaceDown({ card, index, isRevealed, canReveal, onReveal, onRevie
         {!isRevealed && (
           <img
             src="/dorso_PI.jpg"
-
+            crossOrigin="anonymous"
             className="w-full h-full object-cover"
             alt="Dorso"
             style={{ WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
@@ -408,10 +421,11 @@ function CardImgFaceDown({ card, index, isRevealed, canReveal, onReveal, onRevie
             src={getCardImageUrl(card.imageId)}
             className="w-full h-full object-contain bg-gradient-to-br from-amber-900 to-amber-950"
             alt={card.name}
+            style={{ WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
           />
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
