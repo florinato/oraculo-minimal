@@ -132,13 +132,11 @@ function ReadingContent() {
   // Auto-reveal cartas en secuencia cuando termina la fase de selección
   useEffect(() => {
     if (!selectionPhase && cards.length > 0 && revealedCards.size === 0) {
-      console.log("[v0] Starting card reveal in 2 seconds, cards ready with dorso visible");
       // Iniciar revelación automática de cartas en secuencia (2 seg de retraso inicial, 0.5 seg entre cada una)
       const timers: NodeJS.Timeout[] = [];
 
       for (let i = 0; i < cards.length; i++) {
         const timer = setTimeout(() => {
-          console.log("[v0] Revealing card", i);
           setRevealedCards(prev => {
             const newRevealed = new Set(prev);
             newRevealed.add(i);
@@ -185,15 +183,9 @@ function ReadingContent() {
             newSelected.add(index);
             setSelectedDeckIndices(newSelected);
 
-            // Cuando se seleccionan todas, revelar automáticamente todas las cartas
+            // Cuando se seleccionan todas, pasamos a la mesa
             if (newSelected.size === cards.length) {
               setSelectionPhase(false);
-              // Revelar todas las cartas automáticamente
-              const allRevealed = new Set<number>();
-              for (let i = 0; i < cards.length; i++) {
-                allRevealed.add(i);
-              }
-              setRevealedCards(allRevealed);
             }
           }}
         />
