@@ -404,8 +404,10 @@ function CardImgFaceDown({ card, index, isRevealed, canReveal, onReveal, onRevie
         {!isRevealed && (
           <img 
             src="/dorso_PI.jpg" 
+            crossOrigin="anonymous"
             className="w-full h-full object-cover"
             alt="Dorso"
+            style={{ WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
           />
         )}
         {isRevealed && (
