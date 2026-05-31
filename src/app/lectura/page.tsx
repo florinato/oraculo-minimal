@@ -335,7 +335,7 @@ function ExpandedDeck({ selectedIndices, onCardClick, cardsToSelect }: ExpandedD
               className={`absolute h-[16vh] aspect-[2/3.2] rounded-sm border-2 transition-all duration-500 cursor-pointer overflow-hidden ${isSelected
                 ? 'opacity-0 scale-0 pointer-events-none'
                 : canSelect
-                  ? 'border-amber-700 hover:scale-125 hover:border-amber-500 hover:shadow-2xl hover:shadow-amber-900/50 card-glow'
+                  ? 'border-amber-700 hover:scale-125 hover:border-amber-500 hover:shadow-2xl hover:shadow-amber-900/50'
                   : 'border-amber-700/50 opacity-60 cursor-not-allowed'
                 }`}
               style={{
@@ -393,7 +393,7 @@ function CardImgFaceDown({ card, index, isRevealed, canReveal, onReveal, onRevie
         }
       }}
     >
-      <div className={`h-[16vh] aspect-[2/3.2] rounded-sm border-2 shadow-2xl transition-all duration-500 ${isRevealed ? 'card-flip border-amber-500 cursor-pointer hover:scale-105 hover:shadow-lg' : 'border-amber-700 cursor-pointer group-hover:scale-110 group-active:scale-95 hover:border-amber-500 animate-pulse'}`} style={{ overflow: 'hidden', backfaceVisibility: 'hidden', willChange: 'transform', boxShadow: canReveal && !isRevealed ? '0 0 20px rgba(217, 119, 6, 0.4), 0 0 40px rgba(217, 119, 6, 0.2)' : 'none' }}>
+      <div className={`h-[16vh] aspect-[2/3.2] rounded-sm border-2 shadow-2xl transition-all duration-500 ${isRevealed ? 'card-flip card-glow border-amber-500 cursor-pointer hover:scale-105 hover:shadow-lg' : 'border-amber-700 cursor-pointer group-hover:scale-110 group-active:scale-95 hover:border-amber-500 animate-pulse'}`} style={{ overflow: 'hidden', backfaceVisibility: 'hidden', willChange: 'transform', boxShadow: canReveal && !isRevealed ? '0 0 20px rgba(217, 119, 6, 0.4), 0 0 40px rgba(217, 119, 6, 0.2)' : 'none' }}>
         {!isRevealed && (
           <img
             src="/dorso_PI.jpg"
