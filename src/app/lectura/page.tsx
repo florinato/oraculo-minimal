@@ -254,8 +254,9 @@ function ReadingContent() {
                   {selectionPhase ? <CardPlaceholder index={3} /> : <CardImgFaceDown card={cards[3]} index={3} isRevealed={revealedCards.has(3)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(3); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[3])} />}
                 </div>
               </div>
+            )}
           </>
-      </div>
+        </div>
 
       {/* CAPA 4: SCROLL DE TEXTO (Encima de todo) */}
       <div className="relative z-30 w-full flex flex-col items-center pointer-events-none">
