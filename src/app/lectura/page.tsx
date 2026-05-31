@@ -358,6 +358,7 @@ function ExpandedDeck({ selectedIndices, onCardClick, cardsToSelect }: ExpandedD
             >
               <img 
                 src="/dorso_PI.jpg" 
+                crossOrigin="anonymous"
                 className="w-full h-full object-cover" 
                 alt="Dorso de carta"
                 style={{ WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
@@ -409,9 +410,11 @@ function CardImgFaceDown({ card, index, isRevealed, canReveal, onReveal, onRevie
         {!isRevealed && (
           <img 
             src="/dorso_PI.jpg" 
+            crossOrigin="anonymous"
             className="w-full h-full object-cover rounded-sm" 
             alt="Dorso de carta"
             style={{ backfaceVisibility: 'hidden', WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
+            onError={(e) => console.log("[v0] Error loading dorso image:", e)}
           />
         )}
         {isRevealed && (
