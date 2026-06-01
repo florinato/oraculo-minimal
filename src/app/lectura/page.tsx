@@ -195,7 +195,7 @@ function ReadingContent() {
       {/* CAPA 3: LAS CARTAS (Lienzo 3D independiente) */}
       {/* Grid visible: durante selección si son 3+ cartas, siempre después de seleccionar */}
       {(!selectionPhase || cards.length > 1) && (
-      <div className="fixed inset-0 h-screen w-full flex justify-center items-start z-10 pointer-events-none pt-12" style={{ perspective: '120vh' }}>
+      <div className="fixed inset-0 h-screen w-full flex justify-center items-start z-10 pointer-events-none pt-40" style={{ perspective: '120vh' }}>
         <>
           {cards.length === 1 ? (
               <div className="grid grid-cols-1 place-items-center pointer-events-auto">
