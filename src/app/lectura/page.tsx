@@ -193,7 +193,8 @@ function ReadingContent() {
       )}
 
       {/* CAPA 3: LAS CARTAS (Lienzo 3D independiente) */}
-      {/* Grid siempre visible: placeholders durante selección, cartas reales después */}
+      {/* Grid visible: durante selección si son 3+ cartas, siempre después de seleccionar */}
+      {(!selectionPhase || cards.length > 1) && (
       <div className="fixed inset-0 h-screen w-full flex justify-center items-start z-10 pointer-events-none pt-12" style={{ perspective: '120vh' }}>
         <>
           {cards.length === 1 ? (
@@ -257,6 +258,7 @@ function ReadingContent() {
             )}
           </>
         </div>
+      )}
 
       {/* CAPA 4: SCROLL DE TEXTO (Encima de todo) */}
       <div className="relative z-30 w-full flex flex-col items-center pointer-events-none">
