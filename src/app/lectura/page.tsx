@@ -40,11 +40,11 @@ function ReadingContent() {
     // Generar cartas según el formato
     let selectedCards: TarotCard[] = [];
     if (formatParam === "pi_rapida_3") {
-      selectedCards = drawFiveCards().slice(0, 3); // Pasado, Presente, Futuro
+      selectedCards = drawFiveCards(currentLang).slice(0, 3); // Pasado, Presente, Futuro
     } else if (formatParam === "pi_sino_1") {
-      selectedCards = drawFiveCards().slice(0, 1); // Solo 1 carta
+      selectedCards = drawFiveCards(currentLang).slice(0, 1); // Solo 1 carta
     } else {
-      selectedCards = drawFiveCards(); // 5 cartas (default)
+      selectedCards = drawFiveCards(currentLang); // 5 cartas (default)
     }
     setCards(selectedCards);
 
@@ -193,8 +193,9 @@ function ReadingContent() {
       )}
 
       {/* CAPA 3: LAS CARTAS (Lienzo 3D independiente) */}
-      {/* Grid siempre visible: placeholders durante selección, cartas reales después */}
-      <div className="fixed inset-0 h-screen w-full flex justify-center items-start z-10 pointer-events-none pt-12" style={{ perspective: '120vh' }}>
+      {/* Grid visible: durante selección si son 3+ cartas, siempre después de seleccionar */}
+      {(!selectionPhase || cards.length > 1) && (
+      <div className={`fixed inset-0 h-screen w-full flex justify-center items-start z-10 pointer-events-none ${cards.length === 5 ? 'pt-12' : 'pt-40'}`} style={{ perspective: '120vh' }}>
         <>
           {cards.length === 1 ? (
               <div className="grid grid-cols-1 place-items-center pointer-events-auto">
@@ -257,6 +258,7 @@ function ReadingContent() {
             )}
           </>
         </div>
+      )}
 
       {/* CAPA 4: SCROLL DE TEXTO (Encima de todo) */}
       <div className="relative z-30 w-full flex flex-col items-center pointer-events-none">
@@ -290,7 +292,7 @@ function ReadingContent() {
 
           {!loading && text.length > 50 && !selectionPhase && (
             <div className="pb-10 flex justify-center">
-              <button onClick={() => window.location.href = '/'} className="px-10 py-4 bg-amber-900/40 border border-amber-600/50 text-amber-500 rounded-full italic font-serif hover:bg-amber-800/40 transition-all active:scale-95 shadow-xl">
+              <button onClick={() => window.location.href = '/selector'} className="px-10 py-4 bg-amber-900/40 border border-amber-600/50 text-amber-500 rounded-full italic font-serif hover:bg-amber-800/40 transition-all active:scale-95 shadow-xl">
                 {t.reading.new_reading}
               </button>
             </div>
