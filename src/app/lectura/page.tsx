@@ -261,7 +261,7 @@ function ReadingContent() {
       {/* CAPA 4: SCROLL DE TEXTO (Encima de todo) */}
       <div className="relative z-30 w-full flex flex-col items-center pointer-events-none">
         {/* Espaciador para que el texto empiece abajo */}
-        <div className="h-[88vh] w-full" />
+        <div className="h-[60vh] w-full" />
 
         <div className="w-full max-w-2xl bg-black/60 backdrop-blur-md p-8 rounded-t-[40px] border-t border-amber-900/40 min-h-[60vh] pointer-events-auto">
           <div className="prose prose-invert prose-amber max-w-none font-serif text-lg leading-relaxed mb-12">
