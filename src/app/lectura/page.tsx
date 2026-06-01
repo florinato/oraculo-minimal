@@ -40,11 +40,11 @@ function ReadingContent() {
     // Generar cartas según el formato
     let selectedCards: TarotCard[] = [];
     if (formatParam === "pi_rapida_3") {
-      selectedCards = drawFiveCards().slice(0, 3); // Pasado, Presente, Futuro
+      selectedCards = drawFiveCards(currentLang).slice(0, 3); // Pasado, Presente, Futuro
     } else if (formatParam === "pi_sino_1") {
-      selectedCards = drawFiveCards().slice(0, 1); // Solo 1 carta
+      selectedCards = drawFiveCards(currentLang).slice(0, 1); // Solo 1 carta
     } else {
-      selectedCards = drawFiveCards(); // 5 cartas (default)
+      selectedCards = drawFiveCards(currentLang); // 5 cartas (default)
     }
     setCards(selectedCards);
 

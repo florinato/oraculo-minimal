@@ -1,4 +1,7 @@
 import es from "@/locals/es.json";
+import en from "@/locals/en.json";
+import fr from "@/locals/fr.json";
+import ca from "@/locals/ca.json";
 
 export interface TarotCard {
   position: number;
@@ -8,9 +11,20 @@ export interface TarotCard {
   meaning?: string;
 }
 
-// LA SOLUCIÓN: Forzamos a que las llaves se traten como un diccionario (Record)
-const cardTranslations = es.cards as Record<string, { name: string; info: string }>;
-const cardIds = Object.keys(cardTranslations);
+// Diccionario de traducciones por idioma
+const translations: Record<string, { cards: Record<string, { name: string; info: string }> }> = {
+  es: es,
+  en: en,
+  fr: fr,
+  ca: ca
+};
+
+export function getCardTranslations(lang: string = "es") {
+  return (translations[lang] || translations.es).cards as Record<string, { name: string; info: string }>;
+}
+
+const defaultCardTranslations = getCardTranslations("es");
+const cardIds = Object.keys(defaultCardTranslations);
 
 export function getCardImageUrl(cardId: string | undefined): string {
   if (!cardId) {
@@ -26,11 +40,11 @@ export function getCardImageUrl(cardId: string | undefined): string {
   return url;
 }
 
-export function drawFiveCards(): TarotCard[] {
+export function drawFiveCards(lang: string = "es"): TarotCard[] {
+  const cardTranslations = getCardTranslations(lang);
   const shuffledIds = [...cardIds].sort(() => 0.5 - Math.random());
   
   return shuffledIds.slice(0, 5).map((id, index) => {
-    // Ahora cardTranslations[id] ya no da error porque arriba dijimos que acepta strings
     const cardInfo = cardTranslations[id];
     
     return {
