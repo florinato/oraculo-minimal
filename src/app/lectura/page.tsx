@@ -292,7 +292,7 @@ function ReadingContent() {
 
           {!loading && text.length > 50 && !selectionPhase && (
             <div className="pb-10 flex justify-center">
-              <button onClick={() => window.location.href = '/'} className="px-10 py-4 bg-amber-900/40 border border-amber-600/50 text-amber-500 rounded-full italic font-serif hover:bg-amber-800/40 transition-all active:scale-95 shadow-xl">
+              <button onClick={() => window.location.href = '/selector'} className="px-10 py-4 bg-amber-900/40 border border-amber-600/50 text-amber-500 rounded-full italic font-serif hover:bg-amber-800/40 transition-all active:scale-95 shadow-xl">
                 {t.reading.new_reading}
               </button>
             </div>
