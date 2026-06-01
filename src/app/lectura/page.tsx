@@ -5,6 +5,7 @@ import CardDetail from "@/components/CardDetail";
 import NarrativeResponse from "@/components/NarrativeResponse";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 // 1. Tipado para evitar errores de Vercel
 interface TarotCard {
@@ -192,11 +193,10 @@ function ReadingContent() {
       )}
 
       {/* CAPA 3: LAS CARTAS (Lienzo 3D independiente) */}
-      {/* Mostrar cartas boca abajo solo después de seleccionar del mazo */}
-      <div className="fixed inset-0 h-screen w-full flex justify-center items-center z-10 pointer-events-none" style={{ perspective: '120vh' }}>
-        {!selectionPhase && (
-          <>
-            {cards.length === 1 ? (
+      {/* Grid siempre visible: placeholders durante selección, cartas reales después */}
+      <div className="fixed inset-0 h-screen w-full flex justify-center items-start z-10 pointer-events-none pt-12" style={{ perspective: '120vh' }}>
+        <>
+          {cards.length === 1 ? (
               <div className="grid grid-cols-1 place-items-center pointer-events-auto">
                 <div className="transition-all duration-500 opacity-100 scale-100">
                   <CardImgFaceDown
@@ -216,49 +216,52 @@ function ReadingContent() {
             ) : cards.length === 3 ? (
               <div className="grid grid-cols-3 pointer-events-auto" style={{ gap: '3vh' }}>
                 {[0, 1, 2].map(i => (
-                  <div key={i} className="transition-all duration-500 opacity-100 scale-100">
-                    <CardImgFaceDown
-                      card={cards[i]}
-                      index={i}
-                      isRevealed={revealedCards.has(i)}
-                      canReveal={true}
-                      onReveal={() => {
-                        const newRevealed = new Set(revealedCards);
-                        newRevealed.add(i);
-                        setRevealedCards(newRevealed);
-                      }}
-                      onReviewCard={() => setSelectedCard(cards[i])}
-                    />
+                  <div key={i} className="transition-all duration-500">
+                    {selectionPhase ? (
+                      <CardPlaceholder index={i} />
+                    ) : (
+                      <CardImgFaceDown
+                        card={cards[i]}
+                        index={i}
+                        isRevealed={revealedCards.has(i)}
+                        canReveal={true}
+                        onReveal={() => {
+                          const newRevealed = new Set(revealedCards);
+                          newRevealed.add(i);
+                          setRevealedCards(newRevealed);
+                        }}
+                        onReviewCard={() => setSelectedCard(cards[i])}
+                      />
+                    )}
                   </div>
                 ))}
               </div>
             ) : (
               <div className="grid grid-cols-3 grid-rows-3 pointer-events-auto" style={{ gap: '2.5vh' }}>
-                <div className="col-start-2 row-start-1 transition-all duration-500 opacity-100 scale-100">
-                  <CardImgFaceDown card={cards[2]} index={2} isRevealed={revealedCards.has(2)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(2); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[2])} />
+                <div className="col-start-2 row-start-1 transition-all duration-500">
+                  {selectionPhase ? <CardPlaceholder index={2} /> : <CardImgFaceDown card={cards[2]} index={2} isRevealed={revealedCards.has(2)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(2); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[2])} />}
                 </div>
-                <div className="col-start-1 row-start-2 transition-all duration-500 opacity-100 scale-100">
-                  <CardImgFaceDown card={cards[0]} index={0} isRevealed={revealedCards.has(0)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(0); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[0])} />
+                <div className="col-start-1 row-start-2 transition-all duration-500">
+                  {selectionPhase ? <CardPlaceholder index={0} /> : <CardImgFaceDown card={cards[0]} index={0} isRevealed={revealedCards.has(0)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(0); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[0])} />}
                 </div>
-                <div className="col-start-2 row-start-2 transition-all duration-500 opacity-100 scale-100">
-                  <CardImgFaceDown card={cards[4]} index={4} isRevealed={revealedCards.has(4)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(4); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[4])} />
+                <div className="col-start-2 row-start-2 transition-all duration-500">
+                  {selectionPhase ? <CardPlaceholder index={4} /> : <CardImgFaceDown card={cards[4]} index={4} isRevealed={revealedCards.has(4)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(4); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[4])} />}
                 </div>
-                <div className="col-start-3 row-start-2 transition-all duration-500 opacity-100 scale-100">
-                  <CardImgFaceDown card={cards[1]} index={1} isRevealed={revealedCards.has(1)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(1); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[1])} />
+                <div className="col-start-3 row-start-2 transition-all duration-500">
+                  {selectionPhase ? <CardPlaceholder index={1} /> : <CardImgFaceDown card={cards[1]} index={1} isRevealed={revealedCards.has(1)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(1); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[1])} />}
                 </div>
-                <div className="col-start-2 row-start-3 transition-all duration-500 opacity-100 scale-100">
-                  <CardImgFaceDown card={cards[3]} index={3} isRevealed={revealedCards.has(3)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(3); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[3])} />
+                <div className="col-start-2 row-start-3 transition-all duration-500">
+                  {selectionPhase ? <CardPlaceholder index={3} /> : <CardImgFaceDown card={cards[3]} index={3} isRevealed={revealedCards.has(3)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(3); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[3])} />}
                 </div>
               </div>
             )}
           </>
-        )}
-      </div>
+        </div>
 
       {/* CAPA 4: SCROLL DE TEXTO (Encima de todo) */}
       <div className="relative z-30 w-full flex flex-col items-center pointer-events-none">
         {/* Espaciador para que el texto empiece abajo */}
-        <div className="h-[88vh] w-full" />
+        <div className="h-[75vh] w-full" />
 
         <div className="w-full max-w-2xl bg-black/60 backdrop-blur-md p-8 rounded-t-[40px] border-t border-amber-900/40 min-h-[60vh] pointer-events-auto">
           <div className="prose prose-invert prose-amber max-w-none font-serif text-lg leading-relaxed mb-12">
@@ -323,47 +326,75 @@ function ExpandedDeck({ selectedIndices, onCardClick, cardsToSelect }: ExpandedD
   const containerWidth = (tarotCards - 1) * (cardWidth - overlap) + cardWidth;
 
   return (
-    <div className="fixed top-12 left-1/2 transform -translate-x-1/2 z-40 pointer-events-auto">
-      <div className="relative" style={{ width: containerWidth, height: 140 }}>
-        {Array.from({ length: tarotCards }).map((_, index) => {
-          const isSelected = selectedIndices.has(index);
-          const canSelect = selectedIndices.size < cardsToSelect;
+    <AnimatePresence>
+      <div className="fixed top-24 left-1/2 transform -translate-x-1/2 z-40 pointer-events-auto">
+        <div className="relative" style={{ width: containerWidth, height: 140 }}>
+          {Array.from({ length: tarotCards }).map((_, index) => {
+            const isSelected = selectedIndices.has(index);
+            const canSelect = selectedIndices.size < cardsToSelect;
+            const layoutId = `card-${index}`;
 
-          return (
-            <div
-              key={index}
-              className={`absolute h-[16vh] aspect-[2/3.2] rounded-sm border-2 transition-all duration-500 cursor-pointer overflow-hidden ${isSelected
-                ? 'opacity-0 scale-0 pointer-events-none'
-                : canSelect
-                  ? 'border-amber-700 hover:scale-125 hover:border-amber-500 hover:shadow-2xl hover:shadow-amber-900/50'
-                  : 'border-amber-700/50 opacity-60 cursor-not-allowed'
-                }`}
-              style={{
-                left: `${index * (cardWidth - overlap)}px`,
-                top: '0',
-                transform: isSelected ? 'scale(0)' : 'scale(1)'
-              }}
-              onClick={() => {
-                if (canSelect && !isSelected) {
-                  onCardClick(index);
-                }
-              }}
-            >
-              <img
-                src="/dorso_PI.jpg"
-
-                className="w-full h-full object-cover"
-                alt="Dorso de carta"
-                style={{ WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
-              />
-            </div>
-          );
-        })}
+            return (
+              <motion.div
+                key={index}
+                layoutId={isSelected ? layoutId : undefined}
+                className={`absolute h-[19.2vh] aspect-[2/3.2] rounded-sm border-2 transition-all duration-500 cursor-pointer overflow-hidden ${isSelected
+                  ? 'opacity-0 scale-0 pointer-events-none'
+                  : canSelect
+                    ? 'border-amber-700 hover:scale-125 hover:border-amber-500 hover:shadow-2xl hover:shadow-amber-900/50'
+                    : 'border-amber-700/50 opacity-60 cursor-not-allowed'
+                  }`}
+                style={{
+                  left: `${index * (cardWidth - overlap)}px`,
+                  top: '0',
+                  transform: isSelected ? 'scale(0)' : 'scale(1)'
+                }}
+                animate={{
+                  opacity: isSelected ? 0 : 1,
+                  scale: isSelected ? 0 : 1
+                }}
+                transition={{ duration: 0.5 }}
+                onClick={() => {
+                  if (canSelect && !isSelected) {
+                    onCardClick(index);
+                  }
+                }}
+              >
+                <img
+                  src="/dorso_PI.jpg"
+                  crossOrigin="anonymous"
+                  className="w-full h-full object-cover"
+                  alt="Dorso de carta"
+                  style={{ WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
+                />
+              </motion.div>
+            );
+          })}
+        </div>
+        <p className="text-center text-amber-300 text-sm font-serif italic mt-6">
+          Selecciona {cardsToSelect - selectedIndices.size} {cardsToSelect - selectedIndices.size === 1 ? 'carta' : 'cartas'}
+        </p>
       </div>
-      <p className="text-center text-amber-300 text-sm font-serif italic mt-6">
-        Selecciona {cardsToSelect - selectedIndices.size} {cardsToSelect - selectedIndices.size === 1 ? 'carta' : 'cartas'}
-      </p>
-    </div>
+    </AnimatePresence>
+  );
+}
+
+/**
+ * Componente Auxiliar CardPlaceholder
+ * Placeholder invisible para animar cartas durante selección
+ */
+function CardPlaceholder({ index }: { index: number }) {
+  const layoutId = `card-${index}`;
+  
+  return (
+    <motion.div
+      layoutId={layoutId}
+      className="flex flex-col items-center pointer-events-none"
+    >
+      <div className="h-[19.2vh] aspect-[2/3.2] rounded-sm border-2 border-transparent" style={{ overflow: 'hidden', backfaceVisibility: 'hidden' }}>
+        {/* Hueco invisible para la animación */}
+      </div>
+    </motion.div>
   );
 }
 
@@ -381,8 +412,11 @@ interface CardImgFaceDownProps {
 }
 
 function CardImgFaceDown({ card, index, isRevealed, canReveal, onReveal, onReviewCard }: CardImgFaceDownProps) {
+  const layoutId = `card-${index}`;
+  
   return (
-    <div
+    <motion.div
+      layoutId={layoutId}
       className="flex flex-col items-center cursor-pointer group pointer-events-auto"
       onClick={(e) => {
         e.stopPropagation();
@@ -393,11 +427,11 @@ function CardImgFaceDown({ card, index, isRevealed, canReveal, onReveal, onRevie
         }
       }}
     >
-      <div className={`h-[16vh] aspect-[2/3.2] rounded-sm border-2 shadow-2xl transition-all duration-500 ${isRevealed ? 'card-flip border-amber-500 cursor-pointer hover:scale-105 hover:shadow-lg' : 'border-amber-700 cursor-pointer group-hover:scale-110 group-active:scale-95 hover:border-amber-500 animate-pulse'}`} style={{ overflow: 'hidden', backfaceVisibility: 'hidden', willChange: 'transform', boxShadow: canReveal && !isRevealed ? '0 0 20px rgba(217, 119, 6, 0.4), 0 0 40px rgba(217, 119, 6, 0.2)' : 'none' }}>
+      <div className={`h-[19.2vh] aspect-[2/3.2] rounded-sm border-2 shadow-2xl transition-all duration-500 ${isRevealed ? 'card-flip card-glow border-amber-500 cursor-pointer hover:scale-105 hover:shadow-lg' : 'border-amber-700 cursor-pointer group-hover:scale-110 group-active:scale-95 hover:border-amber-500 animate-pulse'}`} style={{ overflow: 'hidden', backfaceVisibility: 'hidden', willChange: 'transform', boxShadow: canReveal && !isRevealed ? '0 0 20px rgba(217, 119, 6, 0.4), 0 0 40px rgba(217, 119, 6, 0.2)' : 'none' }}>
         {!isRevealed && (
           <img
             src="/dorso_PI.jpg"
-
+            crossOrigin="anonymous"
             className="w-full h-full object-cover"
             alt="Dorso"
             style={{ WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
@@ -408,10 +442,11 @@ function CardImgFaceDown({ card, index, isRevealed, canReveal, onReveal, onRevie
             src={getCardImageUrl(card.imageId)}
             className="w-full h-full object-contain bg-gradient-to-br from-amber-900 to-amber-950"
             alt={card.name}
+            style={{ WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
           />
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
