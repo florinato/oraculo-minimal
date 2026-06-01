@@ -46,7 +46,7 @@ export default function CardDetail({ card, onClose, info }: CardDetailProps) {
 
         {/* 3. TEXTO: Tamaño duplicado y visible */}
         <div className="mt-4 w-full flex-1 overflow-y-auto bg-amber-950/20 border border-amber-900/20 p-4 rounded-lg">
-          <p className="text-amber-50/90 font-serif text-center text-xl md:text-2xl leading-relaxed italic">
+          <p className="text-amber-50/90 font-serif text-center text-xl md:text-2xl leading-relaxed italic whitespace-pre-line">
             {info}
           </p>
         </div>
