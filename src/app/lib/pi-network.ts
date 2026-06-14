@@ -1,10 +1,3 @@
-// Indica a TypeScript que 'Pi' puede existir dentro del objeto window
-declare global {
-  interface Window {
-    Pi?: any;
-  }
-}
-
 export const PI_APP_ID = "v0lst1mewqaxecp72qzp2iu1pugi33cdszf8oh87adnpcxf0euzlhdxlnv9sfkj3";
 
 /**
@@ -13,22 +6,33 @@ export const PI_APP_ID = "v0lst1mewqaxecp72qzp2iu1pugi33cdszf8oh87adnpcxf0euzlhd
  */
 export function showInterstitialAd(): Promise<void> {
   return new Promise((resolve) => {
-    if (typeof window === "undefined" || !window.Pi) {
+    // Si estamos en el servidor, salimos rápido
+    if (typeof window === "undefined") {
+      resolve();
+      return;
+    }
+
+    // Convertimos window a 'any' para saltarnos el bloqueo de TypeScript
+    const globalWindow = window as any;
+
+    // Ahora comprobamos si Pi existe sin que TypeScript se queje
+    if (!globalWindow.Pi) {
       console.warn("[Pi Network] SDK no disponible");
       resolve();
       return;
     }
 
-    window.Pi.showAd({
-      adType: "interstitial",
-      onClose: () => {
-        console.log("[Pi Network] Anuncio cerrado");
+    // Ejecutamos el anuncio usando la variable puente
+    globalWindow.Pi.Ads.showAd({ adType: "interstitial" })
+      .then((adResult: any) => {
+        if (adResult.status === "COMPLETED") {
+          console.log("Anuncio visto con éxito");
+        }
         resolve();
-      },
-      onError: (error: any) => {
-        console.error("[Pi Network] Error en anuncio:", error);
+      })
+      .catch((error: any) => {
+        console.error("Error al cargar el anuncio de Pi:", error);
         resolve();
-      },
-    });
+      });
   });
 }
