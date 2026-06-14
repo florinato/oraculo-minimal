@@ -181,7 +181,7 @@ function ReadingContent() {
         <ExpandedDeck
           selectedIndices={selectedDeckIndices}
           cardsToSelect={cards.length}
-          onCardClick={(index) => {
+          onCardClick={async (index) => {
             // No permitir más clics si ya se está cargando el anuncio
             if (adLoading) return;
 
@@ -194,17 +194,15 @@ function ReadingContent() {
               console.log("[v0] Todas las cartas seleccionadas. Iniciando anuncio de Pi...");
               setAdLoading(true);
               
-              showInterstitialAd()
-                .then(() => {
-                  console.log("[v0] Anuncio completado. Ocultando mazo...");
-                  setSelectionPhase(false);
-                  setAdLoading(false);
-                })
-                .catch((error) => {
-                  console.error("[v0] Error en anuncio:", error);
-                  setSelectionPhase(false);
-                  setAdLoading(false);
-                });
+              try {
+                await showInterstitialAd();
+                console.log("[v0] Anuncio completado. Ocultando mazo...");
+              } catch (error) {
+                console.error("[v0] Error en anuncio:", error);
+              } finally {
+                setSelectionPhase(false);
+                setAdLoading(false);
+              }
             }
           }}
         />
