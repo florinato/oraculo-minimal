@@ -30,6 +30,7 @@ function ReadingContent() {
   const [revealedCards, setRevealedCards] = useState<Set<number>>(new Set());
   const [selectionPhase, setSelectionPhase] = useState(true);
   const [selectedDeckIndices, setSelectedDeckIndices] = useState<Set<number>>(new Set());
+  const [adLoading, setAdLoading] = useState(false);
   const hasStarted = useRef(false);
 
   const { t, currentLang, aiInstruction } = getI18n(langParam);
@@ -181,15 +182,29 @@ function ReadingContent() {
           selectedIndices={selectedDeckIndices}
           cardsToSelect={cards.length}
           onCardClick={(index) => {
+            // No permitir más clics si ya se está cargando el anuncio
+            if (adLoading) return;
+
             const newSelected = new Set(selectedDeckIndices);
             newSelected.add(index);
             setSelectedDeckIndices(newSelected);
 
             // Cuando se seleccionan todas, mostramos anuncio y pasamos a la mesa
             if (newSelected.size === cards.length) {
-              showInterstitialAd().then(() => {
-                setSelectionPhase(false);
-              });
+              console.log("[v0] Todas las cartas seleccionadas. Iniciando anuncio de Pi...");
+              setAdLoading(true);
+              
+              showInterstitialAd()
+                .then(() => {
+                  console.log("[v0] Anuncio completado. Ocultando mazo...");
+                  setSelectionPhase(false);
+                  setAdLoading(false);
+                })
+                .catch((error) => {
+                  console.error("[v0] Error en anuncio:", error);
+                  setSelectionPhase(false);
+                  setAdLoading(false);
+                });
             }
           }}
         />
