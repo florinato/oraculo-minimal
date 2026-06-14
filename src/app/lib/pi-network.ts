@@ -35,7 +35,7 @@ export function initializePiSdk(): Promise<void> {
       return;
     }
 
-    // Cargar el script de Pi
+    // Cargar el script oficial de Pi
     globalWindow.piLoading = true;
     const script = document.createElement("script");
     script.src = "https://sdk.minepi.com/pi-sdk.js";
@@ -44,18 +44,14 @@ export function initializePiSdk(): Promise<void> {
     script.onload = () => {
       console.log("[v0] Script de Pi cargado.");
       
-      // Esperar a que Pi esté disponible
+      // Esperar a que el objeto Pi esté inyectado en el window
       const waitForPi = setInterval(() => {
         if (globalWindow.Pi) {
           clearInterval(waitForPi);
           console.log("[v0] Pi disponible. Inicializando...");
           
-          // Inicializar Pi
-          globalWindow.Pi.init({
-            version: "2.0",
-            sandbox: false,
-            appId: PI_APP_ID,
-          });
+          // CORRECCIÓN: Pi.init SOLO recibe la versión en su SDK oficial
+          globalWindow.Pi.init({ version: "2.0" });
 
           // Esperar a que ready se resuelva
           if (globalWindow.Pi.ready) {
@@ -80,7 +76,7 @@ export function initializePiSdk(): Promise<void> {
         }
       }, 100);
 
-      // Timeout si Pi no se carga en 5 segundos
+      // Timeout de seguridad si falla la carga
       setTimeout(() => {
         clearInterval(waitForPi);
         globalWindow.piLoading = false;
@@ -105,29 +101,21 @@ export function initializePiSdk(): Promise<void> {
  * Muestra un anuncio intersticial de Pi Network
  */
 export async function showInterstitialAd(): Promise<void> {
-  // Primero asegurarse de que Pi está cargado e inicializado
+  // Asegurar la carga limpia del SDK primero
   await initializePiSdk();
 
   return new Promise((resolve) => {
     const globalWindow = window as any;
 
-    // Verificar que Pi.Ads está disponible
-    if (!globalWindow.Pi) {
-      console.warn("[v0] Pi no está disponible");
-      alert("Pi SDK no se ha cargado correctamente");
+    if (!globalWindow.Pi || !globalWindow.Pi.Ads) {
+      console.warn("[v0] Pi Ads no disponible en este entorno");
       resolve();
       return;
     }
 
-    if (!globalWindow.Pi.Ads) {
-      console.warn("[v0] Pi.Ads no disponible");
-      alert("Pi.Ads no está disponible. SDK no completamente inicializado");
-      resolve();
-      return;
-    }
+    console.log("[v0] Solicitando anuncio intersticial...");
 
-    console.log("[v0] Mostrando anuncio intersticial...");
-
+    // CORRECCIÓN: Se vuelve a añadir el objeto de configuración requerido por el SDK
     globalWindow.Pi.Ads.showAd({ adType: "interstitial" })
       .then((adResult: any) => {
         console.log("[v0] Resultado del anuncio:", adResult);
@@ -135,8 +123,8 @@ export async function showInterstitialAd(): Promise<void> {
         resolve();
       })
       .catch((error: any) => {
-        console.error("[v0] Error en anuncio:", error);
-        alert("Error en anuncio: " + (error?.message || JSON.stringify(error)));
+        console.error("[v0] Error al mostrar el anuncio:", error);
+        alert("Error de Pi Ads: " + (error?.message || JSON.stringify(error)));
         resolve();
       });
   });
