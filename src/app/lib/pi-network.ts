@@ -26,7 +26,10 @@ export function showInterstitialAd(): Promise<void> {
     // Ejecutamos el anuncio usando la variable puente
     globalWindow.Pi.Ads.showAd({ adType: "interstitial" })
       .then((adResult: any) => {
-        if (adResult.status === "COMPLETED") {
+        // Esto te soltará una ventana flotante en el móvil con el estado real
+        alert("Respuesta de Pi: " + JSON.stringify(adResult));
+
+        if (adResult && adResult.status === "COMPLETED") {
           console.log("Anuncio visto con éxito");
         }
         resolve();
