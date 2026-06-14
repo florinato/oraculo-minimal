@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import PiNetworkProvider from "@/components/PiNetworkProvider";
 
 export const metadata: Metadata = {
   title: "PI ARCANA TAROT",
@@ -25,7 +26,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body>{children}</body>
+      <body>
+        <PiNetworkProvider>{children}</PiNetworkProvider>
+      </body>
     </html>
   );
 }

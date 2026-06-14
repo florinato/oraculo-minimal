@@ -2,6 +2,7 @@
 import { getI18n, LANGUAGE_CONFIG } from "@/app/lib/i18n";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import PiNetworkButton from "@/components/PiNetworkButton";
 
 export default function Home() {
   const router = useRouter();
@@ -59,16 +60,20 @@ export default function Home() {
           <p className="text-[#E5C158]/80 text-3xl md:text-4xl font-serif font-bold uppercase tracking-[0.3em]">
             TAROT
           </p>
-          <button
-            onClick={() => router.push('/selector')}
-            className="mt-8 px-12 py-4 text-[#E5C158] font-serif font-bold rounded-xl text-lg uppercase tracking-widest transition-all shadow-2xl
-              border-[1.5px] border-[#E5C158] bg-[#130E24]/60 hover:bg-[#130E24]/90 hover:border-[#E5C158] hover:shadow-[0_0_25px_rgba(229,193,88,0.3)]
-              active:scale-95 active:shadow-[0_0_10px_rgba(229,193,88,0.2)]"
-          >
-            {t.home.enter || "Entrar"}
-          </button>
+          <div className="flex flex-col gap-4 items-center mt-8">
+            <button
+              onClick={() => router.push('/selector')}
+              className="px-12 py-4 text-[#E5C158] font-serif font-bold rounded-xl text-lg uppercase tracking-widest transition-all shadow-2xl
+                border-[1.5px] border-[#E5C158] bg-[#130E24]/60 hover:bg-[#130E24]/90 hover:border-[#E5C158] hover:shadow-[0_0_25px_rgba(229,193,88,0.3)]
+                active:scale-95 active:shadow-[0_0_10px_rgba(229,193,88,0.2)]"
+            >
+              {t.home.enter || "Entrar"}
+            </button>
+            <PiNetworkButton />
+          </div>
         </div>
       </div>
     </main>
   )
 }
+
