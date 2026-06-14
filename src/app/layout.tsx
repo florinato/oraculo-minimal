@@ -3,13 +3,13 @@ import "./globals.css";
 import PiNetworkInitializer from "@/components/PiNetworkInitializer";
 
 export const metadata: Metadata = {
-  title: "PI ARCANA TAROT",
+  title: "ARCANA TAROT",
   description: "Consulta tu destino",
   icons: {
     icon: "/ARC_icono.png",
   },
   openGraph: {
-    title: "PI ARCANA TAROT",
+    title: "ARCANA TAROT",
     description: "Consulta tu destino",
     images: [
       {
