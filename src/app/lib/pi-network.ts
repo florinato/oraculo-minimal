@@ -1,12 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const PI_APP_ID = "v0lst1mewqaxecp72qzp2iu1pugi33cdszf8oh87adnpcxf0euzlhdxlnv9sfkj3";
 
+// 🚦 INTERRUPTOR DE ANUNCIOS
+// false = Deshabilitados (para testear el tarot rápido sin esperas)
+// true  = Habilitados (para cuando pases la app a Mainnet)
+const ENABLE_ADS = false;
+
 /**
  * Inicializa el SDK de Pi Network de forma segura
  */
 export function initializePiSdk(): Promise<void> {
   return new Promise((resolve) => {
-    if (typeof window === "undefined") {
+    // Si los anuncios están apagados, no gastamos recursos cargando el SDK
+    if (!ENABLE_ADS || typeof window === "undefined") {
       resolve();
       return;
     }
@@ -14,7 +20,6 @@ export function initializePiSdk(): Promise<void> {
     const globalWindow = window as any;
 
     if (globalWindow.Pi && globalWindow.piInitialized) {
-      console.log("[v0] Pi SDK ya está inicializado");
       resolve();
       return;
     }
@@ -29,7 +34,7 @@ export function initializePiSdk(): Promise<void> {
       setTimeout(() => {
         clearInterval(checkInterval);
         resolve();
-      }, 10000);
+      }, 5000);
       return;
     }
 
@@ -43,12 +48,10 @@ export function initializePiSdk(): Promise<void> {
         if (globalWindow.Pi) {
           clearInterval(waitForPi);
           
-          // DIAGNÓSTICO 1: Probamos Pi.init con un try/catch aislado
           try {
             globalWindow.Pi.init({ version: "2.0" });
-            console.log("[v0] Pi.init ejecutado con éxito");
-          } catch (initError: any) {
-            alert("AVISO en Pi.init: " + (initError?.message || JSON.stringify(initError)));
+          } catch (e) {
+            console.error("[Pi SDK] Error en Pi.init:", e);
           }
 
           if (globalWindow.Pi.ready) {
@@ -58,7 +61,7 @@ export function initializePiSdk(): Promise<void> {
                 globalWindow.piLoading = false;
                 resolve();
               })
-              .catch((err: any) => {
+              .catch(() => {
                 globalWindow.piInitialized = true;
                 globalWindow.piLoading = false;
                 resolve();
@@ -74,11 +77,9 @@ export function initializePiSdk(): Promise<void> {
       setTimeout(() => {
         clearInterval(waitForPi);
         globalWindow.piLoading = false;
-        if (!globalWindow.piInitialized) {
-          globalWindow.piInitialized = true;
-        }
+        globalWindow.piInitialized = true;
         resolve();
-      }, 5000);
+      }, 4000);
     };
 
     script.onerror = () => {
@@ -91,73 +92,43 @@ export function initializePiSdk(): Promise<void> {
 }
 
 /**
- * Muestra un anuncio intersticial probando todas las variantes de la API de Pi
+ * Muestra un anuncio de Pi Network si están habilitados
  */
 export async function showInterstitialAd(): Promise<void> {
-  await initializePiSdk();
-
   return new Promise(async (resolve) => {
+    // Si están deshabilitados, saltamos instantáneamente sin esperar nada
+    if (!ENABLE_ADS) {
+      console.log("[Pi Ads] Anuncios deshabilitados temporalmente en Testnet. Saltando...");
+      resolve();
+      return;
+    }
+
+    // Si están habilitados (Mainnet), ejecutamos la lógica oficial
+    await initializePiSdk();
+
     const globalWindow = window as any;
 
     if (!globalWindow.Pi || !globalWindow.Pi.Ads) {
-      alert("Diagnóstico: El objeto Pi.Ads no existe en este entorno.");
+      console.warn("[Pi Ads] SDK de anuncios no disponible.");
       resolve();
       return;
     }
 
-    // --- CADENA DE FALLBACKS DE AUTORECUPERACIÓN ---
-    
-    // Opción 1: El estándar oficial documentado
-    try {
-      console.log("[v0] Intentando Opción 1: { adType: 'interstitial' }");
-      const result = await globalWindow.Pi.Ads.showAd({ adType: "interstitial" });
-      alert("¡ÉXITO OPCIÓN 1! Respuesta: " + JSON.stringify(result));
+    const timeoutSeguridad = setTimeout(() => {
+      console.warn("[Pi Ads] Timeout de seguridad (4s). Continuando...");
       resolve();
-      return;
-    } catch (err1: any) {
-      console.warn("Falló Opción 1:", err1?.message || err1);
-      
-      // Si la opción 1 tira 'invalid argument', saltamos a la Opción 2: Pasar el string directo
-      try {
-        console.log("[v0] Intentando Opción 2: 'interstitial' (string directo)");
-        const result = await globalWindow.Pi.Ads.showAd("interstitial" as any);
-        alert("¡ÉXITO OPCIÓN 2! Respuesta: " + JSON.stringify(result));
+    }, 4000);
+
+    globalWindow.Pi.Ads.showAd("interstitial" as any)
+      .then((adResult: any) => {
+        clearTimeout(timeoutSeguridad);
+        console.log("[Pi Ads] Anuncio procesado:", adResult);
         resolve();
-        return;
-      } catch (err2: any) {
-        console.warn("Falló Opción 2:", err2?.message || err2);
-        
-        // Opción 3: Variación de clave alternativa { type: 'interstitial' }
-        try {
-          console.log("[v0] Intentando Opción 3: { type: 'interstitial' }");
-          const result = await globalWindow.Pi.Ads.showAd({ type: "interstitial" } as any);
-          alert("¡ÉXITO OPCIÓN 3! Respuesta: " + JSON.stringify(result));
-          resolve();
-          return;
-        } catch (err3: any) {
-          console.warn("Falló Opción 3:", err3?.message || err3);
-          
-          // Opción 4: Totalmente vacío (por si la versión del SDK autodetecta el bloque)
-          try {
-            console.log("[v0] Intentando Opción 4: sin argumentos");
-            const result = await globalWindow.Pi.Ads.showAd();
-            alert("¡ÉXITO OPCIÓN 4! Respuesta: " + JSON.stringify(result));
-            resolve();
-            return;
-          } catch (err4: any) {
-            // Si todo lo humano y lo divino falla, escupimos el error final exacto
-            console.error("[v0] Absolutamente todas las variantes fallaron.");
-            alert(
-              "Error definitivo en Pi Ads.\n\n" +
-              "Opción 1: " + (err1?.message || JSON.stringify(err1)) + "\n" +
-              "Opción 2: " + (err2?.message || JSON.stringify(err2)) + "\n" +
-              "Opción 3: " + (err3?.message || JSON.stringify(err3)) + "\n" +
-              "Opción 4: " + (err4?.message || JSON.stringify(err4))
-            );
-            resolve();
-          }
-        }
-      }
-    }
+      })
+      .catch((error: any) => {
+        clearTimeout(timeoutSeguridad);
+        console.error("[Pi Ads] Error controlado:", error);
+        resolve();
+      });
   });
 }
