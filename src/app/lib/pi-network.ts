@@ -127,8 +127,9 @@ export async function showInterstitialAd(): Promise<void> {
     }
 
     console.log("[v0] Mostrando anuncio intersticial...");
+    alert("Iniciando anuncio de Pi Network...");
 
-    globalWindow.Pi.Ads.showAd({ adType: "interstitial" })
+    globalWindow.Pi.Ads.showAd()
       .then((adResult: any) => {
         console.log("[v0] Resultado del anuncio:", adResult);
         alert("Respuesta de Pi: " + JSON.stringify(adResult));
