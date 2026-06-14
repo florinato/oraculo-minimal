@@ -20,6 +20,8 @@ export interface PiPaymentCallbacks {
 
 let piSdk: any = null;
 
+const PI_APP_ID = "v0lst1mewqaxecp72qzp2iu1pugi33cdszf8oh87adnpcxf0euzlhdxlnv9sfkj3";
+
 /**
  * Inicializa el SDK de Pi Network
  * @param config - Configuración del SDK
@@ -53,6 +55,7 @@ export async function initPiNetwork(config?: {
         piSdk.init({
           version: config?.version || "2.0",
           sandbox: config?.sandbox !== false,
+          appId: PI_APP_ID,
         });
         console.log("[Pi Network] SDK inicializado correctamente");
         resolve(piSdk);
