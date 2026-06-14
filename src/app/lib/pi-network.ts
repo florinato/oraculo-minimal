@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export const PI_APP_ID = "v0lst1mewqaxecp72qzp2iu1pugi33cdszf8oh87adnpcxf0euzlhdxlnv9sfkj3";
+export const PI_APP_ID = "7e9cd4b3ee16e3622ed6c252cd3352bdf0d3dcb7e8e720b596cdd9b461cae0d76dece6a97b5464ab02264f6b17dd7a5e309e3ef9b08601b7335809273e772dc0";
 
 // 🚦 INTERRUPTOR DE ANUNCIOS
 // false = Deshabilitados (para testear el tarot rápido sin esperas)
