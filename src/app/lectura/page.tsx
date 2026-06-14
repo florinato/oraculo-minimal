@@ -1,6 +1,7 @@
 "use client"
 import { getI18n } from "@/app/lib/i18n";
 import { drawFiveCards, getCardImageUrl } from "@/app/lib/tarot-api";
+import { showInterstitialAd } from "@/app/lib/pi-network";
 import CardDetail from "@/components/CardDetail";
 import NarrativeResponse from "@/components/NarrativeResponse";
 import { useSearchParams } from "next/navigation";
@@ -184,9 +185,11 @@ function ReadingContent() {
             newSelected.add(index);
             setSelectedDeckIndices(newSelected);
 
-            // Cuando se seleccionan todas, pasamos a la mesa
+            // Cuando se seleccionan todas, mostramos anuncio y pasamos a la mesa
             if (newSelected.size === cards.length) {
-              setSelectionPhase(false);
+              showInterstitialAd().then(() => {
+                setSelectionPhase(false);
+              });
             }
           }}
         />
