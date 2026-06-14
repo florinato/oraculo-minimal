@@ -2,40 +2,35 @@
 export const PI_APP_ID = "v0lst1mewqaxecp72qzp2iu1pugi33cdszf8oh87adnpcxf0euzlhdxlnv9sfkj3";
 
 /**
- * Muestra un anuncio intersticial de Pi Network
- * @returns Promise que se resuelve cuando el anuncio se cierra
+ * Muestra un anuncio intersticial de Pi Network con Alertas de Diagnóstico
  */
 export function showInterstitialAd(): Promise<void> {
   return new Promise((resolve) => {
-    // Si estamos en el servidor, salimos rápido
     if (typeof window === "undefined") {
       resolve();
       return;
     }
 
-    // Convertimos window a 'any' para saltarnos el bloqueo de TypeScript
     const globalWindow = window as any;
 
-    // Ahora comprobamos si Pi existe sin que TypeScript se queje
+    // DIAGNÓSTICO 1: ¿El script de Pi realmente se ha cargado en el móvil?
     if (!globalWindow.Pi) {
-      console.warn("[Pi Network] SDK no disponible");
+      alert("Alerta 1: El SDK de Pi NO se ha cargado en el navegador.");
       resolve();
       return;
     }
 
-    // Ejecutamos el anuncio usando la variable puente
+    alert("Alerta 2: SDK detectado. Solicitando anuncio a Pi Network...");
+
     globalWindow.Pi.Ads.showAd({ adType: "interstitial" })
       .then((adResult: any) => {
-        // Esto te soltará una ventana flotante en el móvil con el estado real
-        alert("Respuesta de Pi: " + JSON.stringify(adResult));
-
-        if (adResult && adResult.status === "COMPLETED") {
-          console.log("Anuncio visto con éxito");
-        }
+        // DIAGNÓSTICO 2: Qué responde Pi exactamente
+        alert("Alerta 3: Pi respondió. Estado: " + JSON.stringify(adResult));
         resolve();
       })
       .catch((error: any) => {
-        console.error("Error al cargar el anuncio de Pi:", error);
+        // DIAGNÓSTICO 3: Si hay un error médico del SDK
+        alert("Alerta Error: " + (error?.message || JSON.stringify(error)));
         resolve();
       });
   });
