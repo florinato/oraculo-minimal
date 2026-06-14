@@ -13,22 +13,25 @@ export function initializePiSdk(): Promise<void> {
 
     const globalWindow = window as any;
 
-    // Si Pi ya está cargado, resuelve inmediatamente
-    if (globalWindow.Pi) {
-      console.log("[v0] Pi SDK ya está cargado");
+    // Si Pi ya está completamente inicializado, resuelve
+    if (globalWindow.Pi && globalWindow.piInitialized) {
+      console.log("[v0] Pi SDK ya está inicializado");
       resolve();
       return;
     }
 
-    // Si el script se está cargando, espera un poco
+    // Si ya se está cargando, espera
     if (globalWindow.piLoading) {
       const checkInterval = setInterval(() => {
-        if (globalWindow.Pi) {
+        if (globalWindow.piInitialized) {
           clearInterval(checkInterval);
           resolve();
         }
       }, 100);
-      setTimeout(() => clearInterval(checkInterval), 5000);
+      setTimeout(() => {
+        clearInterval(checkInterval);
+        resolve();
+      }, 10000);
       return;
     }
 
@@ -39,14 +42,53 @@ export function initializePiSdk(): Promise<void> {
     script.async = true;
 
     script.onload = () => {
-      console.log("[v0] Script de Pi cargado. Inicializando...");
-      globalWindow.Pi?.init?.({
-        version: "2.0",
-        sandbox: false,
-        appId: PI_APP_ID,
-      });
-      globalWindow.piLoading = false;
-      resolve();
+      console.log("[v0] Script de Pi cargado.");
+      
+      // Esperar a que Pi esté disponible
+      const waitForPi = setInterval(() => {
+        if (globalWindow.Pi) {
+          clearInterval(waitForPi);
+          console.log("[v0] Pi disponible. Inicializando...");
+          
+          // Inicializar Pi
+          globalWindow.Pi.init({
+            version: "2.0",
+            sandbox: false,
+            appId: PI_APP_ID,
+          });
+
+          // Esperar a que ready se resuelva
+          if (globalWindow.Pi.ready) {
+            globalWindow.Pi.ready
+              .then(() => {
+                console.log("[v0] Pi.ready completado");
+                globalWindow.piInitialized = true;
+                globalWindow.piLoading = false;
+                resolve();
+              })
+              .catch((err: any) => {
+                console.error("[v0] Error en Pi.ready:", err);
+                globalWindow.piInitialized = true;
+                globalWindow.piLoading = false;
+                resolve();
+              });
+          } else {
+            globalWindow.piInitialized = true;
+            globalWindow.piLoading = false;
+            resolve();
+          }
+        }
+      }, 100);
+
+      // Timeout si Pi no se carga en 5 segundos
+      setTimeout(() => {
+        clearInterval(waitForPi);
+        globalWindow.piLoading = false;
+        if (!globalWindow.piInitialized) {
+          globalWindow.piInitialized = true;
+        }
+        resolve();
+      }, 5000);
     };
 
     script.onerror = () => {
@@ -63,22 +105,28 @@ export function initializePiSdk(): Promise<void> {
  * Muestra un anuncio intersticial de Pi Network
  */
 export async function showInterstitialAd(): Promise<void> {
-  // Primero asegurarse de que Pi está cargado
+  // Primero asegurarse de que Pi está cargado e inicializado
   await initializePiSdk();
 
   return new Promise((resolve) => {
     const globalWindow = window as any;
 
-    // Verificar que Pi está disponible
-    if (!globalWindow.Pi?.Ads?.showAd) {
-      console.warn("[v0] Pi.Ads.showAd no disponible");
-      alert("Pi SDK no está completamente cargado");
+    // Verificar que Pi.Ads está disponible
+    if (!globalWindow.Pi) {
+      console.warn("[v0] Pi no está disponible");
+      alert("Pi SDK no se ha cargado correctamente");
+      resolve();
+      return;
+    }
+
+    if (!globalWindow.Pi.Ads) {
+      console.warn("[v0] Pi.Ads no disponible");
+      alert("Pi.Ads no está disponible. SDK no completamente inicializado");
       resolve();
       return;
     }
 
     console.log("[v0] Mostrando anuncio intersticial...");
-    alert("Mostrando anuncio de Pi Network...");
 
     globalWindow.Pi.Ads.showAd({ adType: "interstitial" })
       .then((adResult: any) => {
