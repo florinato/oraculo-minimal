@@ -6,13 +6,20 @@ export const PI_APP_ID = "v0lst1mewqaxecp72qzp2iu1pugi33cdszf8oh87adnpcxf0euzlhd
  */
 export function showInterstitialAd(): Promise<void> {
   return new Promise((resolve) => {
-    if (typeof window === "undefined" || !window.Pi) {
+    if (typeof window === "undefined") {
       console.warn("[Pi Network] SDK no disponible");
       resolve();
       return;
     }
 
-    window.Pi.showAd({
+    const pi = (window as any).Pi;
+    if (!pi) {
+      console.warn("[Pi Network] SDK no disponible");
+      resolve();
+      return;
+    }
+
+    pi.showAd({
       adType: "interstitial",
       onClose: () => {
         console.log("[Pi Network] Anuncio cerrado");
