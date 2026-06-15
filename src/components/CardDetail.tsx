@@ -1,5 +1,6 @@
 "use client"
 import { getCardImageUrl } from "@/app/lib/tarot-api";
+import Image from "next/image";
 import { X } from "lucide-react";
 
 interface CardDetailProps {
@@ -37,10 +38,11 @@ export default function CardDetail({ card, onClose, info }: CardDetailProps) {
 
         {/* 2. CONTENEDOR DE IMAGEN: Ocupa 1/2 de la tarjeta */}
         <div className="relative w-full h-1/2 rounded-xl overflow-hidden border border-amber-900/30 bg-neutral-900">
-          <img 
+          <Image 
             src={getCardImageUrl(card.imageId)} 
-            className="w-full h-full object-contain"
             alt={card.name}
+            fill
+            className="w-full h-full object-contain"
           />
         </div>
 

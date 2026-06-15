@@ -1,6 +1,7 @@
 "use client"
 import { getI18n, LANGUAGE_CONFIG } from "@/app/lib/i18n";
 import { TarotFormatSelector } from "@/components/TarotFormatSelector";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -45,7 +46,13 @@ export default function Selector() {
       
       {/* FONDO SIN BLUR */}
       <div className="absolute inset-0 z-0">
-        <img src="/portada_PI_ARC.png" className="w-full h-full object-cover opacity-90" alt="Portada" />
+        <Image 
+          src="/portada_PI_ARC.png" 
+          alt="Portada"
+          fill
+          className="w-full h-full object-cover opacity-90"
+          priority
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
       </div>
 
@@ -128,15 +135,15 @@ export default function Selector() {
                 return;
               }
 
-              const globalWindow = window as any;
-              if (!globalWindow.Pi) {
+              const globalWindow = window as unknown;
+              if (!(globalWindow as any).Pi) {
                 alert("Para realizar una donación, debes abrir esta aplicación desde el Pi Browser.");
                 return;
               }
 
               // Iniciar pago con el SDK de Pi
               try {
-                globalWindow.Pi.createPayment(
+                (globalWindow as any).Pi.createPayment(
                   {
                     amount: 0.1,
                     memo: "Donación voluntaria Arcana Tarot Pi 🔮",
@@ -153,7 +160,7 @@ export default function Selector() {
                     onCancel: () => {
                       console.log("[v0] Pago cancelado por el usuario");
                     },
-                    onError: (error: any) => {
+                    onError: (error: unknown) => {
                       console.error("[v0] Error en pago:", error);
                     },
                   }
