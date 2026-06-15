@@ -1,6 +1,7 @@
 "use client"
 import { getI18n, LANGUAGE_CONFIG } from "@/app/lib/i18n";
 import { TarotFormatSelector } from "@/components/TarotFormatSelector";
+import PiNetworkInitializer from "@/components/PiNetworkInitializer";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -32,6 +33,7 @@ export default function Selector() {
 
   return (
     <main className="relative min-h-screen flex flex-col justify-between bg-[#0a0a0a] text-white font-sans overflow-hidden px-4 py-2">
+      <PiNetworkInitializer />
       
       {/* BOTÓN VOLVER */}
       <button
