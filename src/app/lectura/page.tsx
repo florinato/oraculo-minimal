@@ -385,11 +385,11 @@ function ExpandedDeck({ selectedIndices, onCardClick, cardsToSelect }: ExpandedD
                   }
                 }}
               >
-                <img
+                <Image
                   src="/dorso_PI.jpg"
-                  crossOrigin="anonymous"
-                  className="w-full h-full object-cover"
                   alt="Dorso de carta"
+                  fill
+                  className="w-full h-full object-cover"
                   style={{ WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
                 />
               </motion.div>
@@ -454,17 +454,19 @@ function CardImgFaceDown({ card, index, isRevealed, canReveal, onReveal, onRevie
     >
       <div className={`h-[19.2vh] aspect-[2/3.2] rounded-sm border-2 shadow-2xl transition-all duration-500 ${isRevealed ? 'card-flip card-glow border-amber-500 cursor-pointer hover:scale-105 hover:shadow-lg' : 'border-amber-700 cursor-pointer group-hover:scale-110 group-active:scale-95 hover:border-amber-500 animate-pulse'}`} style={{ overflow: 'hidden', backfaceVisibility: 'hidden', willChange: 'transform', boxShadow: canReveal && !isRevealed ? '0 0 20px rgba(217, 119, 6, 0.4), 0 0 40px rgba(217, 119, 6, 0.2)' : 'none' }}>
         {!isRevealed && (
-          <img
+          <Image
             src="/dorso_PI.jpg"
-            crossOrigin="anonymous"
-            className="w-full h-full object-cover"
             alt="Dorso"
+            fill
+            className="w-full h-full object-cover"
             style={{ WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
           />
         )}
         {isRevealed && (
-          <img
+          <Image
             src={getCardImageUrl(card.imageId)}
+            alt={card.name}
+            fill
             className="w-full h-full object-contain bg-gradient-to-br from-amber-900 to-amber-950"
             alt={card.name}
             style={{ WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
@@ -476,7 +478,7 @@ function CardImgFaceDown({ card, index, isRevealed, canReveal, onReveal, onRevie
 }
 
 /**
- * Componente Auxiliar CardImg 
+ * Componente Auxiliar CardImgFaceDown
  * (Se define fuera para que el código sea más limpio)
  */
 interface CardImgProps {
