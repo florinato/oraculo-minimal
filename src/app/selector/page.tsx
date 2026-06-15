@@ -118,8 +118,16 @@ export default function Selector() {
           </button>
         )}
 
-        <div className="flex justify-between px-3 pt-1 text-[9px] text-white/30 uppercase tracking-[0.3em]">
+        <div className="flex justify-between items-center px-3 pt-1 text-[9px] text-white/30 uppercase tracking-[0.3em]">
           <span>{t.home.footer_left}</span>
+          <button
+            onClick={() => {
+              alert("Funcionalidad de donación Pi próximamente");
+            }}
+            className="px-3 py-1 text-[8px] bg-[#E5C158]/10 border border-[#E5C158]/50 rounded hover:bg-[#E5C158]/20 transition-colors text-[#E5C158]/70 hover:text-[#E5C158] font-bold"
+          >
+            {t.home.footer_center}
+          </button>
           <span>{t.home.footer_right}</span>
         </div>
       </div>
