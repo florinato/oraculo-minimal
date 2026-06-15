@@ -1,8 +1,6 @@
 "use client"
 import { getI18n, LANGUAGE_CONFIG } from "@/app/lib/i18n";
 import { TarotFormatSelector } from "@/components/TarotFormatSelector";
-import PiNetworkInitializer from "@/components/PiNetworkInitializer";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -33,7 +31,6 @@ export default function Selector() {
 
   return (
     <main className="relative min-h-screen flex flex-col justify-between bg-[#0a0a0a] text-white font-sans overflow-hidden px-4 py-2">
-      <PiNetworkInitializer />
       
       {/* BOTÓN VOLVER */}
       <button
@@ -48,13 +45,7 @@ export default function Selector() {
       
       {/* FONDO SIN BLUR */}
       <div className="absolute inset-0 z-0">
-        <Image 
-          src="/portada_PI_ARC.png" 
-          alt="Portada"
-          fill
-          className="w-full h-full object-cover opacity-90"
-          priority
-        />
+        <img src="/portada_PI_ARC.png" className="w-full h-full object-cover opacity-90" alt="Portada" />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
       </div>
 
@@ -130,47 +121,8 @@ export default function Selector() {
         <div className="flex justify-between items-center px-3 pt-1 text-[9px] text-white/30 uppercase tracking-[0.3em]">
           <span>{t.home.footer_left}</span>
           <button
-            onClick={async () => {
-              // Verificar si Pi está disponible
-              if (typeof window === "undefined") {
-                alert("Para realizar una donación, debes abrir esta aplicación desde el Pi Browser.");
-                return;
-              }
-
-              const globalWindow = window as unknown;
-              if (!(globalWindow as any).Pi) {
-                alert("Para realizar una donación, debes abrir esta aplicación desde el Pi Browser.");
-                return;
-              }
-
-              // Iniciar pago con el SDK de Pi
-              try {
-                (globalWindow as any).Pi.createPayment(
-                  {
-                    amount: 0.1,
-                    memo: "Donación voluntaria Arcana Tarot Pi 🔮",
-                    metadata: { tipo: "donacion" },
-                  },
-                  {
-                    onReadyForServerApproval: (paymentId: string) => {
-                      console.log("[v0] Pago aprobado por el cliente:", paymentId);
-                    },
-                    onReadyForServerCompletion: (txid: string) => {
-                      console.log("[v0] Transacción completada:", txid);
-                      alert("¡Muchas gracias por tu donación!");
-                    },
-                    onCancel: () => {
-                      console.log("[v0] Pago cancelado por el usuario");
-                    },
-                    onError: (error: unknown) => {
-                      console.error("[v0] Error en pago:", error);
-                    },
-                  }
-                );
-              } catch (error) {
-                console.error("[v0] Error al crear pago:", error);
-                alert("Error al procesar la donación. Intenta de nuevo.");
-              }
+            onClick={() => {
+              alert("Funcionalidad de donación Pi próximamente");
             }}
             className="px-3 py-1 text-[8px] bg-[#E5C158]/10 border border-[#E5C158]/50 rounded hover:bg-[#E5C158]/20 transition-colors text-[#E5C158]/70 hover:text-[#E5C158] font-bold"
           >

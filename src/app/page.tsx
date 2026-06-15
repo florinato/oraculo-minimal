@@ -1,6 +1,5 @@
 "use client"
 import { getI18n, LANGUAGE_CONFIG } from "@/app/lib/i18n";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -20,13 +19,7 @@ export default function Home() {
       
       {/* FONDO */}
       <div className="absolute inset-0 z-0">
-        <Image 
-          src="/portada_PI_ARC.png" 
-          alt="Portada"
-          fill
-          className="w-full h-full object-cover"
-          priority
-        />
+        <img src="/portada_PI_ARC.png" className="w-full h-full object-cover" alt="Portada" />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
       </div>
 

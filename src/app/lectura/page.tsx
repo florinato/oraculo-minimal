@@ -4,7 +4,6 @@ import { drawFiveCards, getCardImageUrl } from "@/app/lib/tarot-api";
 import { showInterstitialAd } from "@/app/lib/pi-network";
 import CardDetail from "@/components/CardDetail";
 import NarrativeResponse from "@/components/NarrativeResponse";
-import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -154,7 +153,7 @@ function ReadingContent() {
         timers.forEach(timer => clearTimeout(timer));
       };
     }
-  }, [selectionPhase, cards.length, revealedCards]);
+  }, [selectionPhase, cards.length]);
 
   if (cards.length === 0) return <div className="min-h-screen bg-black flex items-center justify-center text-amber-500 italic">Invocando el umbral...</div>;
 
@@ -174,13 +173,7 @@ function ReadingContent() {
 
       {/* CAPA 1: FONDO FIJO (La foto de portada con blur suave) */}
       <div className="fixed inset-0 h-screen w-full overflow-hidden z-0 pointer-events-none flex justify-center items-center">
-        <Image 
-          src="/portada_PI_ARC.png" 
-          alt="Portada"
-          fill
-          className="w-full h-full object-cover blur-sm"
-          priority
-        />
+        <img src="/portada_PI_ARC.png" className="w-full h-full object-cover blur-sm" alt="Portada" />
       </div>
 
       {/* CAPA 2: MAZO EXTENDIDO (Selección de cartas) */}
@@ -385,11 +378,11 @@ function ExpandedDeck({ selectedIndices, onCardClick, cardsToSelect }: ExpandedD
                   }
                 }}
               >
-                <Image
+                <img
                   src="/dorso_PI.jpg"
-                  alt="Dorso de carta"
-                  fill
+                  crossOrigin="anonymous"
                   className="w-full h-full object-cover"
+                  alt="Dorso de carta"
                   style={{ WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
                 />
               </motion.div>
@@ -454,19 +447,17 @@ function CardImgFaceDown({ card, index, isRevealed, canReveal, onReveal, onRevie
     >
       <div className={`h-[19.2vh] aspect-[2/3.2] rounded-sm border-2 shadow-2xl transition-all duration-500 ${isRevealed ? 'card-flip card-glow border-amber-500 cursor-pointer hover:scale-105 hover:shadow-lg' : 'border-amber-700 cursor-pointer group-hover:scale-110 group-active:scale-95 hover:border-amber-500 animate-pulse'}`} style={{ overflow: 'hidden', backfaceVisibility: 'hidden', willChange: 'transform', boxShadow: canReveal && !isRevealed ? '0 0 20px rgba(217, 119, 6, 0.4), 0 0 40px rgba(217, 119, 6, 0.2)' : 'none' }}>
         {!isRevealed && (
-          <Image
+          <img
             src="/dorso_PI.jpg"
-            alt="Dorso"
-            fill
+            crossOrigin="anonymous"
             className="w-full h-full object-cover"
+            alt="Dorso"
             style={{ WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
           />
         )}
         {isRevealed && (
-          <Image
+          <img
             src={getCardImageUrl(card.imageId)}
-            alt={card.name}
-            fill
             className="w-full h-full object-contain bg-gradient-to-br from-amber-900 to-amber-950"
             alt={card.name}
             style={{ WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
@@ -478,9 +469,38 @@ function CardImgFaceDown({ card, index, isRevealed, canReveal, onReveal, onRevie
 }
 
 /**
- * Componente Auxiliar CardImgFaceDown
+ * Componente Auxiliar CardImg 
  * (Se define fuera para que el código sea más limpio)
  */
+interface CardImgProps {
+  card: TarotCard;
+  label: string;
+  onClick: () => void;
+}
+
+function CardImg({ card, label, onClick }: CardImgProps) {
+  return (
+    <div
+      className="flex flex-col items-center cursor-pointer group pointer-events-auto"
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick();
+      }}
+    >
+      <span className="text-[1vh] text-amber-700 uppercase tracking-widest mb-1 font-bold bg-black/50 px-2 rounded-sm backdrop-blur-sm">
+        {label}
+      </span>
+      <div className="h-[12vh] aspect-[2/3.2] shadow-2xl rounded-sm border border-white/10 bg-amber-900/10 transition-all duration-300 group-hover:scale-110 group-active:scale-95 animate-pulse" style={{ backfaceVisibility: 'hidden', willChange: 'transform', boxShadow: '0 0 20px rgba(217, 119, 6, 0.4), 0 0 40px rgba(217, 119, 6, 0.2)' }}>
+        <img
+          src={getCardImageUrl(card.imageId)}
+          className="w-full h-full object-contain"
+          alt={card.name}
+          style={{ backfaceVisibility: 'hidden', WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
+        />
+      </div>
+    </div>
+  );
+}
 
 export default function ReadingPage() {
   return (
