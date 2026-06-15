@@ -121,8 +121,47 @@ export default function Selector() {
         <div className="flex justify-between items-center px-3 pt-1 text-[9px] text-white/30 uppercase tracking-[0.3em]">
           <span>{t.home.footer_left}</span>
           <button
-            onClick={() => {
-              alert("Funcionalidad de donación Pi próximamente");
+            onClick={async () => {
+              // Verificar si Pi está disponible
+              if (typeof window === "undefined") {
+                alert("Para realizar una donación, debes abrir esta aplicación desde el Pi Browser.");
+                return;
+              }
+
+              const globalWindow = window as any;
+              if (!globalWindow.Pi) {
+                alert("Para realizar una donación, debes abrir esta aplicación desde el Pi Browser.");
+                return;
+              }
+
+              // Iniciar pago con el SDK de Pi
+              try {
+                globalWindow.Pi.createPayment(
+                  {
+                    amount: 0.1,
+                    memo: "Donación voluntaria Arcana Tarot Pi 🔮",
+                    metadata: { tipo: "donacion" },
+                  },
+                  {
+                    onReadyForServerApproval: (paymentId: string) => {
+                      console.log("[v0] Pago aprobado por el cliente:", paymentId);
+                    },
+                    onReadyForServerCompletion: (txid: string) => {
+                      console.log("[v0] Transacción completada:", txid);
+                      alert("¡Muchas gracias por tu donación!");
+                    },
+                    onCancel: () => {
+                      console.log("[v0] Pago cancelado por el usuario");
+                    },
+                    onError: (error: any) => {
+                      console.error("[v0] Error en pago:", error);
+                    },
+                  }
+                );
+              } catch (error) {
+                console.error("[v0] Error al crear pago:", error);
+                alert("Error al procesar la donación. Intenta de nuevo.");
+              }
             }}
             className="px-3 py-1 text-[8px] bg-[#E5C158]/10 border border-[#E5C158]/50 rounded hover:bg-[#E5C158]/20 transition-colors text-[#E5C158]/70 hover:text-[#E5C158] font-bold"
           >
