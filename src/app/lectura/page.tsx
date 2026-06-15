@@ -1,12 +1,12 @@
 "use client"
 import { getI18n } from "@/app/lib/i18n";
-import { drawFiveCards, getCardImageUrl } from "@/app/lib/tarot-api";
 import { showInterstitialAd } from "@/app/lib/pi-network";
+import { drawFiveCards, getCardImageUrl } from "@/app/lib/tarot-api";
 import CardDetail from "@/components/CardDetail";
 import NarrativeResponse from "@/components/NarrativeResponse";
+import { AnimatePresence, motion } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 
 // 1. Tipado para evitar errores de Vercel
 interface TarotCard {
@@ -458,7 +458,7 @@ function CardImgFaceDown({ card, index, isRevealed, canReveal, onReveal, onRevie
         {isRevealed && (
           <img
             src={getCardImageUrl(card.imageId)}
-            className="w-full h-full object-contain bg-gradient-to-br from-amber-900 to-amber-950"
+            className="w-full h-full object-contain bg-linear-to-br from-amber-900 to-amber-950"
             alt={card.name}
             style={{ WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
           />

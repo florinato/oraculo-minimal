@@ -8,7 +8,8 @@
     "placeholder": "What do you wish to ask?...",
     "button": "Consult Destiny",
     "footer_left": "◆ Private",
-    "footer_right": "Free ◆"
+    "footer_right": "Free ◆",
+    "donate_button": "Donate {amount} Pi"
   },
   "formats": {
     "pi_simple_5": {
