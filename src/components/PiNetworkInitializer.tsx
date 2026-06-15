@@ -1,14 +1,14 @@
 "use client";
 
-import { initializePiSdk } from "@/app/lib/pi-network";
+import { initializePiSdkAndAuthenticate } from "@/app/lib/pi-network";
 import { useEffect } from "react";
 
 export default function PiNetworkInitializer() {
   useEffect(() => {
     // Cargar Pi Network cuando la app se monta
-    console.log("[v0] Inicializando Pi Network en background...");
-    initializePiSdk().catch((error) => {
-      console.error("[v0] Error al inicializar Pi Network:", error);
+    console.log("[v0] Inicializando y autenticando Pi Network en background...");
+    initializePiSdkAndAuthenticate().catch((error) => {
+      console.error("[v0] Error al inicializar y autenticar Pi Network:", error);
     });
   }, []);
 

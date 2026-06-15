@@ -125,6 +125,15 @@ export const createDonationPayment = async (amount: number) => {
 };
 
 /**
+ * Inicializa el SDK de Pi y autentica al usuario.
+ * Se puede llamar de forma segura múltiples veces.
+ */
+export const initializePiSdkAndAuthenticate = async () => {
+  await loadPiScript();
+  await authenticateWithPi();
+};
+
+/**
  * Muestra anuncios (Solo si están habilitados)
  */
 export async function showInterstitialAd(): Promise<void> {
