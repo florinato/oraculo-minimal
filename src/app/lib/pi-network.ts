@@ -80,7 +80,17 @@ export const createDonationPayment = async (amount: number) => {
     
     // Paso obligatorio: Autenticar para que Pi abra la Wallet
     console.log("[Pi] Autenticando...");
-    await authenticateWithPi();
+    let authResult;
+    try {
+        authResult = await authenticateWithPi();
+        if (!authResult || !authResult.scopes || !authResult.scopes.includes("payments")) {
+            throw new Error("Autenticación exitosa, pero el scope 'payments' no fue concedido.");
+        }
+    } catch (authError: any) {
+        console.error("[Pi] Error durante la autenticación:", authError);
+        alert("No se pudo autenticar con la Pi Wallet. Asegúrate de que tu aplicación tiene permisos de pago.");
+        return;
+    }
 
     const pi = (window as any).Pi;
 
