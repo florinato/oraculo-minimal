@@ -6,8 +6,6 @@ const ENABLE_ADS = false; // true = Activar anuncios | false = Desactivar
 
 // 🔄 Estado global para evitar cargas duplicadas
 let piScriptLoading: Promise<void> | null = null;
-let piAuthenticated = false;
-let cachedAuthResult: { scopes: string[] } | null = null;
 
 // Tipo para el objeto Pi global
 interface PiType {
@@ -96,19 +94,12 @@ const loadPiScript = (): Promise<void> => {
 };
 
 /**
- * Inicialización y Autenticación (El "Logueo" interno de Pi)
+ * Inicialización del SDK Pi (sin autenticación forzada)
  */
-async function authenticateWithPi(): Promise<{ scopes: string[] }> {
-  // Si ya está autenticado, reutiliza el resultado cacheado
-  if (piAuthenticated && cachedAuthResult) {
-    console.log("[Pi] Ya está autenticado");
-    return cachedAuthResult;
-  }
-
+const initializePiSdk = async (): Promise<void> => {
   const pi = window.Pi;
   if (!pi) throw new Error("SDK no disponible");
 
-  // 1. Inicializar (Aquí se decide la RED)
   try {
     await pi.init({ version: "2.0", sandbox: IS_SANDBOX });
     console.log(`[Pi SDK] Red: ${IS_SANDBOX ? "TESTNET" : "MAINNET"}`);
@@ -116,22 +107,33 @@ async function authenticateWithPi(): Promise<{ scopes: string[] }> {
     // Ya estaba inicializado
     console.log("[Pi SDK] Ya estaba inicializado");
   }
+};
 
-  // 2. Autenticar (Pide permiso de lectura de usuario y pagos)
+/**
+ * Autenticación con Pi (se llama cuando sea necesario)
+ */
+async function authenticateWithPi(): Promise<{ scopes: string[] }> {
+  const pi = window.Pi;
+  if (!pi) throw new Error("SDK no disponible");
+
+  // Pedir permisos al usuario
   const scopes = ["payments"];
   const onIncompletePaymentFound = (payment: unknown) => {
     console.log("Pago pendiente hallado:", payment);
-    // Nota: Aquí se debería avisar al servidor para completar el pago si es necesario
   };
 
   const authResult = await pi.authenticate(scopes, onIncompletePaymentFound);
-  piAuthenticated = true;
-  cachedAuthResult = authResult;
+  
+  if (!authResult?.scopes?.includes("payments")) {
+    throw new Error("El usuario no otorgó permisos de pago.");
+  }
+
   return authResult;
 }
 
 /**
  * Función principal para crear el pago (Donación)
+ * IMPORTANTE: Siempre solicita autenticación fresca para evitar problemas de caché
  */
 export const createDonationPayment = async (amount: number) => {
   // Comprobación de seguridad inicial
@@ -143,37 +145,34 @@ export const createDonationPayment = async (amount: number) => {
   }
 
   try {
-    // Cargar SDK (reutiliza si ya está cargado)
+    // 1. Cargar SDK
     await loadPiScript();
+    console.log("[Pi] SDK cargado");
 
-    // Paso obligatorio: Autenticar para que Pi abra la Wallet
-    console.log("[Pi] Autenticando...");
+    // 2. Inicializar SDK
+    await initializePiSdk();
+    console.log("[Pi] SDK inicializado");
+
+    // 3. Autenticar (SIN CACHÉ - solicita cada vez)
+    console.log("[Pi] Solicitando autenticación al usuario...");
     let authResult;
     try {
       authResult = await authenticateWithPi();
-      if (
-        !authResult ||
-        !authResult.scopes ||
-        !authResult.scopes.includes("payments")
-      ) {
-        throw new Error(
-          "Autenticación exitosa, pero el scope 'payments' no fue concedido."
-        );
-      }
+      console.log("[Pi] Autenticación exitosa. Scopes:", authResult.scopes);
     } catch (authError) {
       const errorMessage =
-        authError instanceof Error ? authError.message : "Error desconocido";
+        authError instanceof Error ? authError.message : "Error de autenticación";
       console.error("[Pi] Error durante la autenticación:", authError);
       alert(
-        "No se pudo autenticar con la Pi Wallet. Asegúrate de que tu aplicación tiene permisos de pago."
+        "No se pudo autenticar con la Pi Wallet. Asegúrate de que otorgaste permisos de pago."
       );
       return;
     }
 
+    // 4. Crear pago
     const pi = window.Pi;
-
-    // Lanzar el pago
     console.log("[Pi] Abriendo Wallet para:", amount);
+    
     pi.createPayment(
       {
         amount: amount,
@@ -183,7 +182,6 @@ export const createDonationPayment = async (amount: number) => {
       {
         onReadyForServerApproval: (paymentId: string) => {
           console.log("[Pi] Pago creado. ID de transacción:", paymentId);
-          // En Testnet la wallet se abre aquí aunque no tengas backend de aprobación.
         },
         onReadyForServerCompletion: (paymentId: string, txid: string) => {
           console.log("[Pi] Éxito. TXID:", txid);
@@ -207,16 +205,16 @@ export const createDonationPayment = async (amount: number) => {
 };
 
 /**
- * Inicializa el SDK de Pi y autentica al usuario.
- * Se puede llamar de forma segura múltiples veces (usa caché interno).
+ * Inicializa el SDK de Pi en background (SIN autenticación)
+ * Esto permite que el SDK esté listo sin molestar al usuario
  */
-export const initializePiSdkAndAuthenticate = async () => {
+export const initializePiSdkOnly = async () => {
   try {
     await loadPiScript();
-    await authenticateWithPi();
-    console.log("[Pi] Inicialización completada");
+    await initializePiSdk();
+    console.log("[Pi] SDK inicializado en background");
   } catch (error) {
-    console.error("[Pi] Error en inicialización:", error);
+    console.error("[Pi] Error al inicializar SDK:", error);
   }
 };
 
