@@ -6,6 +6,10 @@ export const PI_APP_ID = "v0lst1mewqaxecp72qzp2iu1pugi33cdszf8oh87adnpcxf0euzlhd
 const IS_SANDBOX = true; // true = Testnet (Pi de prueba) | false = Mainnet (Pi Real)
 const ENABLE_ADS = false; // true = Activar anuncios | false = Desactivar
 
+// 🔄 Estado global para evitar cargas duplicadas
+let piScriptLoading: Promise<void> | null = null;
+let piAuthenticated = false;
+
 /**
  * Detección fiable del Pi Browser
  */
@@ -23,27 +27,55 @@ export const isPiBrowser = (): boolean => {
 };
 
 /**
- * Carga el script oficial del SDK
+ * Carga el script oficial del SDK (con cache para evitar duplicados)
  */
 const loadPiScript = (): Promise<void> => {
-  return new Promise((resolve) => {
-    if (typeof window === "undefined" || (window as any).Pi) return resolve();
+  // Si ya se está cargando, reutiliza la promesa
+  if (piScriptLoading) {
+    return piScriptLoading;
+  }
+
+  piScriptLoading = new Promise((resolve) => {
+    if (typeof window === "undefined") {
+      resolve();
+      return;
+    }
+
+    // Si el SDK ya existe, no hacer nada
+    if ((window as any).Pi) {
+      console.log("[Pi SDK] Ya está cargado");
+      resolve();
+      return;
+    }
+
     const script = document.createElement("script");
     script.src = "https://sdk.minepi.com/pi-sdk.js";
     script.async = true;
-    script.onload = () => resolve();
+    script.onload = () => {
+      console.log("[Pi SDK] Script cargado exitosamente");
+      resolve();
+    };
     script.onerror = () => {
       console.error("No se pudo cargar el SDK de Pi");
+      piScriptLoading = null; // Reintentar en próxima llamada
       resolve();
     };
     document.head.appendChild(script);
   });
+
+  return piScriptLoading;
 };
 
 /**
  * Inicialización y Autenticación (El "Logueo" interno de Pi)
  */
 async function authenticateWithPi(): Promise<any> {
+  // Si ya está autenticado, reutiliza el resultado
+  if (piAuthenticated) {
+    console.log("[Pi] Ya está autenticado");
+    return (window as any).Pi;
+  }
+
   const pi = (window as any).Pi;
   if (!pi) throw new Error("SDK no disponible");
 
@@ -53,6 +85,7 @@ async function authenticateWithPi(): Promise<any> {
     console.log(`[Pi SDK] Red: ${IS_SANDBOX ? "TESTNET" : "MAINNET"}`);
   } catch (e) {
     // Ya estaba inicializado
+    console.log("[Pi SDK] Ya estaba inicializado");
   }
 
   // 2. Autenticar (Pide permiso de lectura de usuario y pagos)
@@ -62,7 +95,9 @@ async function authenticateWithPi(): Promise<any> {
     // Nota: Aquí se debería avisar al servidor para completar el pago si es necesario
   };
 
-  return await pi.authenticate(scopes, onIncompletePaymentFound);
+  const authResult = await pi.authenticate(scopes, onIncompletePaymentFound);
+  piAuthenticated = true;
+  return authResult;
 }
 
 /**
@@ -76,6 +111,7 @@ export const createDonationPayment = async (amount: number) => {
   }
 
   try {
+    // Cargar SDK (reutiliza si ya está cargado)
     await loadPiScript();
     
     // Paso obligatorio: Autenticar para que Pi abra la Wallet
@@ -126,11 +162,16 @@ export const createDonationPayment = async (amount: number) => {
 
 /**
  * Inicializa el SDK de Pi y autentica al usuario.
- * Se puede llamar de forma segura múltiples veces.
+ * Se puede llamar de forma segura múltiples veces (usa caché interno).
  */
 export const initializePiSdkAndAuthenticate = async () => {
-  await loadPiScript();
-  await authenticateWithPi();
+  try {
+    await loadPiScript();
+    await authenticateWithPi();
+    console.log("[Pi] Inicialización completada");
+  } catch (error) {
+    console.error("[Pi] Error en inicialización:", error);
+  }
 };
 
 /**
