@@ -44,13 +44,16 @@ declare global {
 export const isPiBrowser = (): boolean => {
   if (typeof window === "undefined") return false;
   const ua = navigator.userAgent || "";
+  const isUserAgentPiBrowser = /PiBrowser/i.test(ua);
+  const isPiObjectInjected = !!window.Pi;
+  const isPiNetHost = window.location.host.includes("pinet.com");
+
+  console.log("[Pi Browser Detection] User-Agent check:", isUserAgentPiBrowser);
+  console.log("[Pi Browser Detection] window.Pi check:", isPiObjectInjected);
+  console.log("[Pi Browser Detection] PiNet host check:", isPiNetHost);
 
   // Verificamos UserAgent, el objeto Pi inyectado o si estamos en PiNet
-  return (
-    /PiBrowser/i.test(ua) ||
-    !!window.Pi ||
-    window.location.host.includes("pinet.com")
-  );
+  return isUserAgentPiBrowser || isPiObjectInjected || isPiNetHost;
 };
 
 /**
@@ -136,8 +139,14 @@ async function authenticateWithPi(): Promise<{ scopes: string[] }> {
  * IMPORTANTE: Siempre solicita autenticación fresca para evitar problemas de caché
  */
 export const createDonationPayment = async (amount: number) => {
+  // Pequeño retardo para asegurar que el objeto Pi esté inyectado si hay un retraso en el navegador.
+  await new Promise(resolve => setTimeout(resolve, 300)); 
+
+  const browserDetected = isPiBrowser();
+  console.log("[createDonationPayment] Pi Browser detectado:", browserDetected);
+
   // Comprobación de seguridad inicial
-  if (!isPiBrowser()) {
+  if (!browserDetected) {
     alert(
       "⚠️ Para operar con $Pi, abre la App desde el navegador de Pi Network."
     );
