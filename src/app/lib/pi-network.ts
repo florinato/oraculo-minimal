@@ -7,6 +7,7 @@ const ENABLE_ADS = false; // true = Activar anuncios | false = Desactivar
 // 🔄 Estado global para evitar cargas duplicadas
 let piScriptLoading: Promise<void> | null = null;
 let piAuthenticated = false;
+let cachedAuthResult: { scopes: string[] } | null = null;
 
 // Tipo para el objeto Pi global
 interface PiType {
@@ -98,10 +99,10 @@ const loadPiScript = (): Promise<void> => {
  * Inicialización y Autenticación (El "Logueo" interno de Pi)
  */
 async function authenticateWithPi(): Promise<{ scopes: string[] }> {
-  // Si ya está autenticado, reutiliza el resultado
-  if (piAuthenticated) {
+  // Si ya está autenticado, reutiliza el resultado cacheado
+  if (piAuthenticated && cachedAuthResult) {
     console.log("[Pi] Ya está autenticado");
-    return window.Pi;
+    return cachedAuthResult;
   }
 
   const pi = window.Pi;
@@ -125,6 +126,7 @@ async function authenticateWithPi(): Promise<{ scopes: string[] }> {
 
   const authResult = await pi.authenticate(scopes, onIncompletePaymentFound);
   piAuthenticated = true;
+  cachedAuthResult = authResult;
   return authResult;
 }
 
