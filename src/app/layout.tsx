@@ -1,9 +1,6 @@
-"use client";
-
 import type { Metadata } from "next";
-import { useEffect } from "react";
+import PiSDKProvider from "../components/PiSDKProvider";
 import "./globals.css";
-import { initializePiSdkOnly } from "./lib/pi-network";
 
 export const metadata: Metadata = {
   title: "ARCANA TAROT",
@@ -27,14 +24,12 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  useEffect(() => {
-    initializePiSdkOnly();
-  }, []);
-
   return (
     <html lang="es">
       <body>
-        {children}
+        <PiSDKProvider>
+          {children}
+        </PiSDKProvider>
       </body>
     </html>
   );
