@@ -1,7 +1,7 @@
 "use client";
 
+import { createDonationPayment } from '@/app/lib/pi-network';
 import React, { useState } from 'react';
-import { createDonationPayment } from '../app/lib/pi-network';
 
 interface DonateButtonProps {
   amount: number;
@@ -18,8 +18,8 @@ const DonateButton: React.FC<DonateButtonProps> = ({ amount, buttonText }) => {
     
     try {
       await createDonationPayment(amount);
-    } catch (err: any) {
-      const errorMessage = err?.message || 'Error al procesar el pago';
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Error al procesar el pago';
       setError(errorMessage);
       console.error('Error en DonateButton:', err);
     } finally {
