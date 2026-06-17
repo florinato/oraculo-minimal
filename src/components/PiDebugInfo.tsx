@@ -14,12 +14,18 @@ interface PiDebugInfoType {
   paymentError?: string;
 }
 
+declare global {
+  interface Window {
+    piDebugInfo?: PiDebugInfoType;
+  }
+}
+
 const PiDebugInfo: React.FC = () => {
   const [debugInfo, setDebugInfo] = useState<PiDebugInfoType | null>(null);
 
   useEffect(() => {
     const updateDebugInfo = () => {
-      if (typeof window !== "undefined" && window.piDebugInfo) {
+      if (typeof window !== "undefined" && (window as any).piDebugInfo) {
         setDebugInfo({ ...window.piDebugInfo });
       }
     };

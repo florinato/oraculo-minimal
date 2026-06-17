@@ -1,384 +1,143 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 export const PI_APP_ID = "v0lst1mewqaxecp72qzp2iu1pugi33cdszf8oh87adnpcxf0euzlhdxlnv9sfkj3";
 
-// 🚦 CONFIGURACIÓN DE RED Y UTILIDADES
-const IS_SANDBOX = true; // true = Testnet (Pi de prueba) | false = Mainnet (Pi Real)
-const ENABLE_ADS = false; // true = Activar anuncios | false = Desactivar
-
-// 🔄 Estado global para evitar cargas duplicadas
-let piScriptLoading: Promise<void> | null = null;
-
-// Tipo para el objeto Pi global
-interface PiType {
-  init: (config: { version: string; sandbox: boolean }) => Promise<void>;
-  authenticate: (
-    scopes: string[],
-    onIncompletePaymentFound: (payment: unknown) => void
-  ) => Promise<{ scopes: string[] }>;
-  createPayment: (
-    paymentConfig: {
-      amount: number;
-      memo: string;
-      metadata: { type: string };
-    },
-    callbacks: {
-      onReadyForServerApproval: (paymentId: string) => void;
-      onReadyForServerCompletion: (paymentId: string, txid: string) => void;
-      onCancel: (paymentId: string) => void;
-      onError: (error: Error, payment: unknown) => void;
-    }
-  ) => void;
-  Ads?: {
-    showAd: (type: string) => Promise<void>;
-  };
-}
-
-interface PiDebugInfoType {
-  isUserAgentPiBrowser?: boolean;
-  isPiObjectInjected?: boolean;
-  isPiNetHost?: boolean;
-  piBrowserDetected?: boolean;
-  sdkInitialized?: boolean;
-  sdkError?: string;
-  paymentAttempted?: boolean;
-  paymentStatus?: string;
-  paymentError?: string;
-}
-
-declare global {
-  interface Window {
-    Pi: PiType;
-    piDebugInfo: PiDebugInfoType;
-  }
-}
-
-// Inicializar piDebugInfo si no existe
-if (typeof window !== "undefined") {
-  window.piDebugInfo = window.piDebugInfo || {};
-}
+// 🚦 CONFIGURACIÓN
+const IS_SANDBOX = true; 
+const ENABLE_ADS = false; // Cambiar a true en Mainnet
 
 /**
- * Detección fiable del Pi Browser
+ * 1. DEPURACIÓN (Mantenemos los logs para el cliente)
+ */
+interface PiDebugInfo {
+  browserDetected?: boolean;
+  uaDetected?: boolean;
+  piObjectInjected?: boolean;
+  sdkInitialized?: boolean;
+  paymentAttempted?: boolean;
+}
+
+const updateDebug = (info: Partial<PiDebugInfo>) => {
+  if (typeof window !== "undefined") {
+    window.piDebugInfo = { ...(window.piDebugInfo || {}), ...info };
+  }
+};
+
+/**
+ * 2. DETECCIÓN
  */
 export const isPiBrowser = (): boolean => {
   if (typeof window === "undefined") return false;
   const ua = navigator.userAgent || "";
-  const isUserAgentPiBrowser = /PiBrowser/i.test(ua);
-  const isPiObjectInjected = !!window.Pi;
-  const isPiNetHost = window.location.host.includes("pinet.com");
-
-  // Guardar información de depuración
-  if (typeof window !== "undefined" && window.piDebugInfo) {
-    window.piDebugInfo.isUserAgentPiBrowser = isUserAgentPiBrowser;
-    window.piDebugInfo.isPiObjectInjected = isPiObjectInjected;
-    window.piDebugInfo.isPiNetHost = isPiNetHost;
-    window.piDebugInfo.piBrowserDetected = isUserAgentPiBrowser || isPiObjectInjected || isPiNetHost;
-  }
-
-  console.log("[Pi Browser Detection] User-Agent check:", isUserAgentPiBrowser);
-  console.log("[Pi Browser Detection] window.Pi check:", isPiObjectInjected);
-  console.log("[Pi Browser Detection] PiNet host check:", isPiNetHost);
-
-  // Verificamos UserAgent, el objeto Pi inyectado o si estamos en PiNet
-  return isUserAgentPiBrowser || isPiObjectInjected || isPiNetHost;
+  const isUA = /PiBrowser/i.test(ua);
+  const isObj = !!(window as any).Pi;
+  
+  updateDebug({ 
+    browserDetected: isUA || isObj, 
+    uaDetected: isUA, 
+    piObjectInjected: isObj 
+  });
+  
+  return isUA || isObj || window.location.host.includes('pinet.com');
 };
 
 /**
- * Carga el script oficial del SDK (con cache para evitar duplicados)
+ * 3. CARGA Y AUTENTICACIÓN
  */
 const loadPiScript = (): Promise<void> => {
-  // Si ya se está cargando, reutiliza la promesa
-  if (piScriptLoading) {
-    return piScriptLoading;
-  }
-
-  piScriptLoading = new Promise((resolve) => {
-    if (typeof window === "undefined") {
-      resolve();
-      return;
-    }
-
-    // Si el SDK ya existe, no hacer nada
-    if (window.Pi) {
-      console.log("[Pi SDK] Ya está cargado");
-      resolve();
-      return;
-    }
-
+  return new Promise((resolve) => {
+    if (typeof window === "undefined" || (window as any).Pi) return resolve();
     const script = document.createElement("script");
     script.src = "https://sdk.minepi.com/pi-sdk.js";
     script.async = true;
-    script.onload = () => {
-      console.log("[Pi SDK] Script cargado exitosamente");
-      resolve();
-    };
-    script.onerror = () => {
-      console.error("No se pudo cargar el SDK de Pi");
-      piScriptLoading = null; // Reintentar en próxima llamada
-      resolve();
-    };
+    script.onload = () => resolve();
+    script.onerror = () => resolve();
     document.head.appendChild(script);
   });
-
-  return piScriptLoading;
 };
 
-/**
- * Inicialización del SDK Pi (sin autenticación forzada)
- */
-const initializePiSdk = async (): Promise<void> => {
-  const pi = window.Pi;
-  if (!pi) throw new Error("SDK no disponible");
-
+const onIncompletePaymentFound = async (payment: any) => {
+  console.log("[Pi SDK] Cerrando pago pendiente...", payment.identifier);
   try {
-    await pi.init({ version: "2.0", sandbox: IS_SANDBOX });
-    console.log(`[Pi SDK] Red: ${IS_SANDBOX ? "TESTNET" : "MAINNET"}`);
-    if (typeof window !== "undefined" && window.piDebugInfo) {
-      window.piDebugInfo.sdkInitialized = true;
-    }
-  } catch (e) {
-    // Ya estaba inicializado
-    console.log("[Pi SDK] Ya estaba inicializado");
-    if (typeof window !== "undefined" && window.piDebugInfo) {
-      window.piDebugInfo.sdkInitialized = false;
-      window.piDebugInfo.sdkError = e instanceof Error ? e.message : String(e);
-    }
-  }
+    await fetch("/api/pi-payment/complete", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ paymentId: payment.identifier, txid: payment.transaction.txid }),
+    });
+  } catch (e) { console.error(e); }
 };
 
 /**
- * Autenticación con Pi (se llama cuando sea necesario)
+ * 4. FUNCIONES EXPORTADAS (Las que usas en tus componentes)
  */
-async function authenticateWithPi(): Promise<{ scopes: string[] }> {
-  const pi = window.Pi;
-  if (!pi) throw new Error("SDK no disponible");
 
-  // Pedir permisos al usuario
-  const scopes = ["payments"];
-  const onIncompletePaymentFound = (payment: unknown) => {
-    console.log("Pago pendiente hallado:", payment);
-  };
-
-  const authResult = await pi.authenticate(scopes, onIncompletePaymentFound);
-  
-  if (!authResult?.scopes?.includes("payments")) {
-    throw new Error("El usuario no otorgó permisos de pago.");
-  }
-
-  return authResult;
-}
-
-/**
- * Función principal para crear el pago (Donación)
- * IMPORTANTE: Siempre solicita autenticación fresca para evitar problemas de caché
- */
-export const createDonationPayment = async (amount: number) => {
-  if (typeof window !== "undefined" && window.piDebugInfo) {
-    window.piDebugInfo.paymentAttempted = true;
-    window.piDebugInfo.paymentStatus = "Iniciando...";
-    window.piDebugInfo.paymentError = undefined;
-  }
-
-  // Pequeño retardo para asegurar que el objeto Pi esté inyectado si hay un retraso en el navegador.
-  await new Promise(resolve => setTimeout(resolve, 300)); 
-
-  const browserDetected = isPiBrowser();
-  console.log("[createDonationPayment] Pi Browser detectado:", browserDetected);
-
-  // Comprobación de seguridad inicial
-  if (!browserDetected) {
-    const msg = "⚠️ Para operar con $Pi, abre la App desde el navegador de Pi Network.";
-    alert(msg);
-    if (typeof window !== "undefined" && window.piDebugInfo) {
-      window.piDebugInfo.paymentStatus = "Fallo: No en Pi Browser";
-      window.piDebugInfo.paymentError = msg;
-    }
-    return;
-  }
-
-  try {
-    // 1. Cargar SDK
-    await loadPiScript();
-    console.log("[Pi] SDK cargado");
-
-    // 2. Inicializar SDK
-    await initializePiSdk();
-    console.log("[Pi] SDK inicializado");
-
-    // 3. Autenticar (SIN CACHÉ - solicita cada vez)
-    console.log("[Pi] Solicitando autenticación al usuario...");
-    if (typeof window !== "undefined" && window.piDebugInfo) {
-      window.piDebugInfo.paymentStatus = "Solicitando autenticación...";
-    }
-    let authResult;
-    try {
-      authResult = await authenticateWithPi();
-      console.log("[Pi] Autenticación exitosa. Scopes:", authResult.scopes);
-      if (typeof window !== "undefined" && window.piDebugInfo) {
-        window.piDebugInfo.paymentStatus = "Autenticación exitosa";
-      }
-    } catch (authError) {
-      const errorMessage =
-        authError instanceof Error ? authError.message : "Error de autenticación";
-      console.error("[Pi] Error durante la autenticación:", authError);
-      alert(
-        "No se pudo autenticar con la Pi Wallet. Asegúrate de que otorgaste permisos de pago." + " (Detalles: " + errorMessage + ")"
-      );
-      if (typeof window !== "undefined" && window.piDebugInfo) {
-        window.piDebugInfo.paymentStatus = "Fallo: Autenticación";
-        window.piDebugInfo.paymentError = errorMessage;
-      }
-      return;
-    }
-
-    // 4. Crear pago
-    const pi = window.Pi;
-    console.log("[Pi] Abriendo Wallet para:", amount);
-    if (typeof window !== "undefined" && window.piDebugInfo) {
-      window.piDebugInfo.paymentStatus = "Abriendo Pi Wallet...";
-    }
-    
-    pi.createPayment(
-      {
-        amount: amount,
-        memo: "Donación Pi Arcana",
-        metadata: { type: "donation" },
-      },
-      {
-        onReadyForServerApproval: async (paymentId: string) => {
-          console.log("[Pi] Pago creado. Listo para aprobación del servidor:", paymentId);
-          if (typeof window !== "undefined" && window.piDebugInfo) {
-            window.piDebugInfo.paymentStatus = `Pago creado: ${paymentId} (Esperando aprobación backend)`;
-          }
-          try {
-            const response = await fetch("/api/pi-payment/approve", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ paymentId }),
-            });
-            const data = await response.json();
-
-            if (response.ok) {
-              console.log("[Pi] Aprobación backend exitosa:", data);
-              if (typeof window !== "undefined" && window.piDebugInfo) {
-                window.piDebugInfo.paymentStatus = `Aprobación backend exitosa para ${paymentId}`;
-              }
-              // Informar al SDK de Pi que el servidor aprobó el pago
-              // Asumiendo que pi.payments.approve existe y espera el paymentId como argumento
-              // (La documentación del SDK de Pi puede variar, ajusta si es necesario)
-              // pi.payments.approve(paymentId);
-
-            } else {
-              console.error("[Pi] Fallo en la aprobación backend:", data);
-              if (typeof window !== "undefined" && window.piDebugInfo) {
-                window.piDebugInfo.paymentStatus = `Fallo aprobación backend para ${paymentId}`;
-                window.piDebugInfo.paymentError = data.message || "Error desconocido del backend";
-              }
-              alert("Fallo en la aprobación del pago. Por favor, inténtalo de nuevo. (Detalles: " + (data.message || "Error desconocido") + ")");
-            }
-          } catch (error: unknown) {
-            console.error("[Pi] Error al llamar al endpoint de aprobación backend:", error);
-            if (typeof window !== "undefined" && window.piDebugInfo) {
-              window.piDebugInfo.paymentStatus = `Error en llamada backend de aprobación para ${paymentId}`;
-              window.piDebugInfo.paymentError = (error instanceof Error ? error.message : String(error));
-            }
-            alert("Error crítico al procesar la aprobación del pago. Por favor, inténtalo de nuevo.");
-          }
-        },
-        onReadyForServerCompletion: async (paymentId: string, txid: string) => {
-          console.log("[Pi] Pago completado. Listo para confirmación del servidor. TXID:", txid);
-          if (typeof window !== "undefined" && window.piDebugInfo) {
-            window.piDebugInfo.paymentStatus = `Pago completado: ${txid} (Esperando confirmación backend)`;
-          }
-          try {
-            const response = await fetch("/api/pi-payment/complete", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ paymentId, txid }),
-            });
-            const data = await response.json();
-
-            if (response.ok) {
-              console.log("[Pi] Confirmación backend exitosa:", data);
-              if (typeof window !== "undefined" && window.piDebugInfo) {
-                window.piDebugInfo.paymentStatus = `Confirmación backend exitosa para ${txid}`;
-              }
-              alert("✨ ¡Gracias por tu ofrenda! El destino te favorece.");
-            } else {
-              console.error("[Pi] Fallo en la confirmación backend:", data);
-              if (typeof window !== "undefined" && window.piDebugInfo) {
-                window.piDebugInfo.paymentStatus = `Fallo confirmación backend para ${txid}`;
-                window.piDebugInfo.paymentError = data.message || "Error desconocido del backend";
-              }
-              alert("Fallo en la confirmación del pago. Por favor, contacta con soporte. (Detalles: " + (data.message || "Error desconocido") + ")");
-            }
-          } catch (error: unknown) {
-            console.error("[Pi] Error al llamar al endpoint de confirmación backend:", error);
-            if (typeof window !== "undefined" && window.piDebugInfo) {
-              window.piDebugInfo.paymentStatus = `Error en llamada backend de confirmación para ${txid}`;
-              window.piDebugInfo.paymentError = (error instanceof Error ? error.message : String(error));
-            }
-            alert("Error crítico al procesar la confirmación del pago. Por favor, contacta con soporte.");
-          }
-        },
-        onCancel: (paymentId: string) => {
-          console.log("[Pi] Usuario canceló el pago:", paymentId);
-          if (typeof window !== "undefined" && window.piDebugInfo) {
-            window.piDebugInfo.paymentStatus = `Cancelado por usuario: ${paymentId}`;
-            window.piDebugInfo.paymentError = "Usuario canceló el pago";
-          }
-        },
-        onError: (error: Error, payment: unknown) => {
-          console.error("[Pi] Error en la Wallet:", error.message);
-          if (payment) console.log("Datos del fallo:", payment);
-          if (typeof window !== "undefined" && window.piDebugInfo) {
-            window.piDebugInfo.paymentStatus = "Fallo en Pi Wallet";
-            window.piDebugInfo.paymentError = error.message;
-          }
-        },
-      }
-    );
-  } catch (err) {
-    const errorMessage =
-      err instanceof Error ? err.message : "Error desconocido";
-    console.error("[Pi] Error crítico:", err);
-    alert("Reintenta pulsar el botón para conectar con tu Pi Wallet." + " (Detalles: " + errorMessage + ")");
-    if (typeof window !== "undefined" && window.piDebugInfo) {
-      window.piDebugInfo.paymentStatus = "Fallo crítico general";
-      window.piDebugInfo.paymentError = errorMessage;
-    }
-  }
-};
-
-/**
- * Inicializa el SDK de Pi en background (sin autenticación forzada)
- * Esto permite que el SDK esté listo sin molestar al usuario
- */
+// Inicialización silenciosa (para el layout o inicio)
 export const initializePiSdkOnly = async () => {
+  if (!isPiBrowser()) return;
+  await loadPiScript();
   try {
-    await loadPiScript();
-    await initializePiSdk();
-    console.log("[Pi] SDK inicializado en background");
-  } catch (error) {
-    console.error("[Pi] Error al inicializar SDK:", error);
-    if (typeof window !== "undefined" && window.piDebugInfo) {
-      window.piDebugInfo.sdkInitialized = false;
-      window.piDebugInfo.sdkError = error instanceof Error ? error.message : String(error);
-    }
-  }
+    await (window as any).Pi.init({ version: "2.0", sandbox: IS_SANDBOX });
+    updateDebug({ sdkInitialized: true });
+  } catch (e) { updateDebug({ sdkInitialized: true }); }
 };
 
-/**
- * Muestra anuncios (Solo si están habilitados)
- */
+// Lógica de Anuncios
 export async function showInterstitialAd(): Promise<void> {
   if (!ENABLE_ADS || !isPiBrowser()) return;
   await loadPiScript();
-  const pi = window.Pi;
+  const pi = (window as any).Pi;
   if (!pi?.Ads) return;
-
   try {
     await pi.Ads.showAd("interstitial");
-  } catch (e) {
-    console.error("Error al mostrar anuncio:", e);
-  }
+  } catch (e) { console.error("Error Ad:", e); }
 }
+
+// Función Maestra de Pagos (Donación)
+export const createDonationPayment = async (amount: number) => {
+  if (!isPiBrowser()) {
+    alert("⚠️ Abre desde el Pi Browser oficial.");
+    return;
+  }
+
+  updateDebug({ paymentAttempted: true });
+
+  try {
+    await loadPiScript();
+    const pi = (window as any).Pi;
+
+    // Aseguramos init y login
+    await pi.init({ version: "2.0", sandbox: IS_SANDBOX });
+    await pi.authenticate(["payments", "username", "wallet_address"], onIncompletePaymentFound);
+
+    pi.createPayment({
+      amount: amount,
+      memo: "Donación para Pi Arcana",
+      metadata: { type: "donation" },
+    }, {
+      onReadyForServerApproval: async (paymentId: string) => {
+        const res = await fetch("/api/pi-payment/approve", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ paymentId }),
+        });
+        if (res.ok) pi.payments.approve(paymentId); // DESBLOQUEA LA WALLET
+      },
+      onReadyForServerCompletion: async (paymentId: string, txid: string) => {
+        const res = await fetch("/api/pi-payment/complete", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ paymentId, txid }),
+        });
+        if (res.ok) {
+          pi.payments.complete(paymentId, txid);
+          alert("✨ ¡Gracias por tu ofrenda!");
+        }
+      },
+      onCancel: (paymentId: string) => console.log("Cancelado:", paymentId),
+      onError: (error: Error) => alert("Error Wallet: " + error.message),
+    });
+
+  } catch (err) {
+    console.error("Error flujo Pi:", err);
+  }
+};
