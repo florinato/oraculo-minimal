@@ -3,7 +3,7 @@
 export const PI_APP_ID = "v0lst1mewqaxecp72qzp2iu1pugi33cdszf8oh87adnpcxf0euzlhdxlnv9sfkj3";
 
 // 🚦 CONFIGURACIÓN
-const IS_SANDBOX = true; 
+const IS_SANDBOX = process.env.NEXT_PUBLIC_IS_SANDBOX === "true";
 const ENABLE_ADS = false; 
 
 /**
@@ -124,7 +124,7 @@ export const createDonationPayment = async (amount: number) => {
         });
         if (res.ok) {
           updateDebug({ paymentStatus: "Aprobado. Abre Wallet." });
-          pi.payments.approve(paymentId); // DESBLOQUEA LA WALLET EN EL MÓVIL
+          await pi.openPayment(paymentId); // DESBLOQUEA LA WALLET EN EL MÓVIL
         }
       },
       onReadyForServerCompletion: async (paymentId: string, txid: string) => {

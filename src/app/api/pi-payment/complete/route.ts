@@ -14,9 +14,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ status: 'error', message: 'Server configuration error' }, { status: 500 });
     }
 
-    const piApiUrl = process.env.IS_SANDBOX === 'true' 
-      ? `https://api.minepi.com/v2/payments/${paymentId}/complete`
-      : `https://api.minepi.com/v2/payments/${paymentId}/complete`; // Same URL for Mainnet for now, adjust if needed
+    const isSandbox = process.env.NEXT_PUBLIC_IS_SANDBOX === "true";
+    const baseUrl = isSandbox ? "https://api.minepi.com/v2/sandbox" : "https://api.minepi.com/v2";
+    const piApiUrl = `${baseUrl}/payments/${paymentId}/complete`;
 
     const piResponse = await fetch(piApiUrl, {
       method: 'POST',
