@@ -25,7 +25,7 @@ const PiDebugInfo: React.FC = () => {
 
   useEffect(() => {
     const updateDebugInfo = () => {
-      if (typeof window !== "undefined" && (window as any).piDebugInfo) {
+      if (typeof window !== "undefined" && window.piDebugInfo) {
         setDebugInfo({ ...window.piDebugInfo });
       }
     };
