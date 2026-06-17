@@ -244,17 +244,80 @@ export const createDonationPayment = async (amount: number) => {
         metadata: { type: "donation" },
       },
       {
-        onReadyForServerApproval: (paymentId: string) => {
-          console.log("[Pi] Pago creado. ID de transacción:", paymentId);
+        onReadyForServerApproval: async (paymentId: string) => {
+          console.log("[Pi] Pago creado. Listo para aprobación del servidor:", paymentId);
           if (typeof window !== "undefined" && window.piDebugInfo) {
-            window.piDebugInfo.paymentStatus = `Pago creado: ${paymentId}`;
+            window.piDebugInfo.paymentStatus = `Pago creado: ${paymentId} (Esperando aprobación backend)`;
+          }
+          try {
+            const response = await fetch("/api/pi-payment/approve", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ paymentId }),
+            });
+            const data = await response.json();
+
+            if (response.ok) {
+              console.log("[Pi] Aprobación backend exitosa:", data);
+              if (typeof window !== "undefined" && window.piDebugInfo) {
+                window.piDebugInfo.paymentStatus = `Aprobación backend exitosa para ${paymentId}`;
+              }
+              // Informar al SDK de Pi que el servidor aprobó el pago
+              // Asumiendo que pi.payments.approve existe y espera el paymentId como argumento
+              // (La documentación del SDK de Pi puede variar, ajusta si es necesario)
+              // pi.payments.approve(paymentId);
+
+            } else {
+              console.error("[Pi] Fallo en la aprobación backend:", data);
+              if (typeof window !== "undefined" && window.piDebugInfo) {
+                window.piDebugInfo.paymentStatus = `Fallo aprobación backend para ${paymentId}`;
+                window.piDebugInfo.paymentError = data.message || "Error desconocido del backend";
+              }
+              alert("Fallo en la aprobación del pago. Por favor, inténtalo de nuevo. (Detalles: " + (data.message || "Error desconocido") + ")");
+            }
+          } catch (error: unknown) {
+            console.error("[Pi] Error al llamar al endpoint de aprobación backend:", error);
+            if (typeof window !== "undefined" && window.piDebugInfo) {
+              window.piDebugInfo.paymentStatus = `Error en llamada backend de aprobación para ${paymentId}`;
+              window.piDebugInfo.paymentError = (error instanceof Error ? error.message : String(error));
+            }
+            alert("Error crítico al procesar la aprobación del pago. Por favor, inténtalo de nuevo.");
           }
         },
-        onReadyForServerCompletion: (paymentId: string, txid: string) => {
-          console.log("[Pi] Éxito. TXID:", txid);
-          alert("✨ ¡Gracias por tu ofrenda! El destino te favorece.");
+        onReadyForServerCompletion: async (paymentId: string, txid: string) => {
+          console.log("[Pi] Pago completado. Listo para confirmación del servidor. TXID:", txid);
           if (typeof window !== "undefined" && window.piDebugInfo) {
-            window.piDebugInfo.paymentStatus = `Completado: ${txid}`;
+            window.piDebugInfo.paymentStatus = `Pago completado: ${txid} (Esperando confirmación backend)`;
+          }
+          try {
+            const response = await fetch("/api/pi-payment/complete", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ paymentId, txid }),
+            });
+            const data = await response.json();
+
+            if (response.ok) {
+              console.log("[Pi] Confirmación backend exitosa:", data);
+              if (typeof window !== "undefined" && window.piDebugInfo) {
+                window.piDebugInfo.paymentStatus = `Confirmación backend exitosa para ${txid}`;
+              }
+              alert("✨ ¡Gracias por tu ofrenda! El destino te favorece.");
+            } else {
+              console.error("[Pi] Fallo en la confirmación backend:", data);
+              if (typeof window !== "undefined" && window.piDebugInfo) {
+                window.piDebugInfo.paymentStatus = `Fallo confirmación backend para ${txid}`;
+                window.piDebugInfo.paymentError = data.message || "Error desconocido del backend";
+              }
+              alert("Fallo en la confirmación del pago. Por favor, contacta con soporte. (Detalles: " + (data.message || "Error desconocido") + ")");
+            }
+          } catch (error: unknown) {
+            console.error("[Pi] Error al llamar al endpoint de confirmación backend:", error);
+            if (typeof window !== "undefined" && window.piDebugInfo) {
+              window.piDebugInfo.paymentStatus = `Error en llamada backend de confirmación para ${txid}`;
+              window.piDebugInfo.paymentError = (error instanceof Error ? error.message : String(error));
+            }
+            alert("Error crítico al procesar la confirmación del pago. Por favor, contacta con soporte.");
           }
         },
         onCancel: (paymentId: string) => {
