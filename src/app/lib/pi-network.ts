@@ -56,6 +56,26 @@ if (typeof window !== "undefined") {
   window.piDebugInfo = window.piDebugInfo || {};
 }
 
+// Función para enviar logs al servidor
+const sendClientDebugLog = async (logData: PiDebugInfoType | { message: string, detail?: any }) => {
+  if (typeof window === "undefined") return; // Solo ejecutar en el cliente
+
+  try {
+    const response = await fetch("/api/debug-log", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(logData),
+    });
+    if (!response.ok) {
+      console.error("Failed to send debug log to server:", response.statusText);
+    }
+  } catch (error) {
+    console.error("Error sending debug log:", error);
+  }
+};
+
 /**
  * Detección fiable del Pi Browser
  */
@@ -72,6 +92,7 @@ export const isPiBrowser = (): boolean => {
     window.piDebugInfo.isPiObjectInjected = isPiObjectInjected;
     window.piDebugInfo.isPiNetHost = isPiNetHost;
     window.piDebugInfo.piBrowserDetected = isUserAgentPiBrowser || isPiObjectInjected || isPiNetHost;
+    sendClientDebugLog({ message: "Pi Browser Detection Status", detail: window.piDebugInfo });
   }
 
   console.log("[Pi Browser Detection] User-Agent check:", isUserAgentPiBrowser);
@@ -100,6 +121,7 @@ const loadPiScript = (): Promise<void> => {
     // Si el SDK ya existe, no hacer nada
     if (window.Pi) {
       console.log("[Pi SDK] Ya está cargado");
+      sendClientDebugLog({ message: "Pi SDK already loaded" });
       resolve();
       return;
     }
@@ -109,10 +131,12 @@ const loadPiScript = (): Promise<void> => {
     script.async = true;
     script.onload = () => {
       console.log("[Pi SDK] Script cargado exitosamente");
+      sendClientDebugLog({ message: "Pi SDK script loaded successfully" });
       resolve();
     };
     script.onerror = () => {
       console.error("No se pudo cargar el SDK de Pi");
+      sendClientDebugLog({ message: "Failed to load Pi SDK script" });
       piScriptLoading = null; // Reintentar en próxima llamada
       resolve();
     };
@@ -127,7 +151,11 @@ const loadPiScript = (): Promise<void> => {
  */
 const initializePiSdk = async (): Promise<void> => {
   const pi = window.Pi;
-  if (!pi) throw new Error("SDK no disponible");
+  if (!pi) {
+    const errorMsg = "SDK no disponible durante la inicialización.";
+    sendClientDebugLog({ message: "SDK Initialization Error", detail: errorMsg });
+    throw new Error(errorMsg);
+  }
 
   try {
     await pi.init({ version: "2.0", sandbox: IS_SANDBOX });
@@ -135,13 +163,14 @@ const initializePiSdk = async (): Promise<void> => {
     if (typeof window !== "undefined" && window.piDebugInfo) {
       window.piDebugInfo.sdkInitialized = true;
     }
+    sendClientDebugLog({ message: `Pi SDK Initialized: ${IS_SANDBOX ? "TESTNET" : "MAINNET"}`, detail: window.piDebugInfo });
   } catch (e) {
-    // Ya estaba inicializado o hubo un error
     console.log("[Pi SDK] Ya estaba inicializado o error:", e);
     if (typeof window !== "undefined" && window.piDebugInfo) {
       window.piDebugInfo.sdkInitialized = false;
       window.piDebugInfo.sdkError = e instanceof Error ? e.message : String(e);
     }
+    sendClientDebugLog({ message: "Pi SDK Initialization Error/Already Initialized", detail: window.piDebugInfo });
   }
 };
 
@@ -150,21 +179,33 @@ const initializePiSdk = async (): Promise<void> => {
  */
 async function authenticateWithPi(): Promise<{ scopes: string[] }> {
   const pi = window.Pi;
-  if (!pi) throw new Error("SDK no disponible");
+  if (!pi) {
+    const errorMsg = "SDK no disponible durante la autenticación.";
+    sendClientDebugLog({ message: "Authentication Error", detail: errorMsg });
+    throw new Error(errorMsg);
+  }
 
   // Pedir permisos al usuario
   const scopes = ["payments"];
   const onIncompletePaymentFound = (payment: unknown) => {
     console.log("Pago pendiente hallado:", payment);
+    sendClientDebugLog({ message: "Incomplete Payment Found", detail: payment });
   };
 
-  const authResult = await pi.authenticate(scopes, onIncompletePaymentFound);
-  
-  if (!authResult?.scopes?.includes("payments")) {
-    throw new Error("El usuario no otorgó permisos de pago.");
+  try {
+    const authResult = await pi.authenticate(scopes, onIncompletePaymentFound);
+    if (!authResult?.scopes?.includes("payments")) {
+      const errorMsg = "El usuario no otorgó permisos de pago.";
+      sendClientDebugLog({ message: "Authentication Error", detail: errorMsg });
+      throw new Error(errorMsg);
+    }
+    sendClientDebugLog({ message: "Authentication Successful", detail: authResult.scopes });
+    return authResult;
+  } catch (e) {
+    const errorMsg = e instanceof Error ? e.message : "Error de autenticación desconocido.";
+    sendClientDebugLog({ message: "Authentication Failed", detail: errorMsg });
+    throw e; // Re-throw for handling in createDonationPayment
   }
-
-  return authResult;
 }
 
 /**
@@ -176,6 +217,7 @@ export const createDonationPayment = async (amount: number) => {
     window.piDebugInfo.paymentAttempted = true;
     window.piDebugInfo.paymentStatus = "Iniciando...";
     window.piDebugInfo.paymentError = undefined;
+    sendClientDebugLog({ message: "Payment Attempt Initiated", detail: window.piDebugInfo });
   }
 
   // Pequeño retardo para asegurar que el objeto Pi esté inyectado si hay un retraso en el navegador.
@@ -183,6 +225,7 @@ export const createDonationPayment = async (amount: number) => {
 
   const browserDetected = isPiBrowser();
   console.log("[createDonationPayment] Pi Browser detectado:", browserDetected);
+  sendClientDebugLog({ message: "Pi Browser Detection before Payment", detail: { detected: browserDetected } });
 
   // Comprobación de seguridad inicial
   if (!browserDetected) {
@@ -191,6 +234,7 @@ export const createDonationPayment = async (amount: number) => {
     if (typeof window !== "undefined" && window.piDebugInfo) {
       window.piDebugInfo.paymentStatus = "Fallo: No en Pi Browser";
       window.piDebugInfo.paymentError = msg;
+      sendClientDebugLog({ message: "Payment Failed: Not in Pi Browser", detail: window.piDebugInfo });
     }
     return;
   }
@@ -199,15 +243,18 @@ export const createDonationPayment = async (amount: number) => {
     // 1. Cargar SDK
     await loadPiScript();
     console.log("[Pi] SDK cargado");
+    sendClientDebugLog({ message: "Pi SDK Loaded (Payment Flow)" });
 
     // 2. Inicializar SDK
     await initializePiSdk();
     console.log("[Pi] SDK inicializado");
+    sendClientDebugLog({ message: "Pi SDK Initialized (Payment Flow)" });
 
     // 3. Autenticar (SIN CACHÉ - solicita cada vez)
     console.log("[Pi] Solicitando autenticación al usuario...");
     if (typeof window !== "undefined" && window.piDebugInfo) {
       window.piDebugInfo.paymentStatus = "Solicitando autenticación...";
+      sendClientDebugLog({ message: "Requesting Authentication", detail: window.piDebugInfo });
     }
     let authResult;
     try {
@@ -215,6 +262,7 @@ export const createDonationPayment = async (amount: number) => {
       console.log("[Pi] Autenticación exitosa. Scopes:", authResult.scopes);
       if (typeof window !== "undefined" && window.piDebugInfo) {
         window.piDebugInfo.paymentStatus = "Autenticación exitosa";
+        sendClientDebugLog({ message: "Authentication Successful (Payment Flow)", detail: window.piDebugInfo });
       }
     } catch (authError) {
       const errorMessage =
@@ -226,6 +274,7 @@ export const createDonationPayment = async (amount: number) => {
       if (typeof window !== "undefined" && window.piDebugInfo) {
         window.piDebugInfo.paymentStatus = "Fallo: Autenticación";
         window.piDebugInfo.paymentError = errorMessage;
+        sendClientDebugLog({ message: "Authentication Failed (Payment Flow)", detail: window.piDebugInfo });
       }
       return;
     }
@@ -235,6 +284,7 @@ export const createDonationPayment = async (amount: number) => {
     console.log("[Pi] Abriendo Wallet para:", amount);
     if (typeof window !== "undefined" && window.piDebugInfo) {
       window.piDebugInfo.paymentStatus = "Abriendo Pi Wallet...";
+      sendClientDebugLog({ message: "Opening Pi Wallet", detail: window.piDebugInfo });
     }
     
     pi.createPayment(
@@ -248,6 +298,7 @@ export const createDonationPayment = async (amount: number) => {
           console.log("[Pi] Pago creado. ID de transacción:", paymentId);
           if (typeof window !== "undefined" && window.piDebugInfo) {
             window.piDebugInfo.paymentStatus = `Pago creado: ${paymentId}`;
+            sendClientDebugLog({ message: "Payment Ready for Server Approval", detail: window.piDebugInfo });
           }
         },
         onReadyForServerCompletion: (paymentId: string, txid: string) => {
@@ -255,6 +306,7 @@ export const createDonationPayment = async (amount: number) => {
           alert("✨ ¡Gracias por tu ofrenda! El destino te favorece.");
           if (typeof window !== "undefined" && window.piDebugInfo) {
             window.piDebugInfo.paymentStatus = `Completado: ${txid}`;
+            sendClientDebugLog({ message: "Payment Completed", detail: window.piDebugInfo });
           }
         },
         onCancel: (paymentId: string) => {
@@ -262,6 +314,7 @@ export const createDonationPayment = async (amount: number) => {
           if (typeof window !== "undefined" && window.piDebugInfo) {
             window.piDebugInfo.paymentStatus = `Cancelado por usuario: ${paymentId}`;
             window.piDebugInfo.paymentError = "Usuario canceló el pago";
+            sendClientDebugLog({ message: "Payment Cancelled by User", detail: window.piDebugInfo });
           }
         },
         onError: (error: Error, payment: unknown) => {
@@ -270,6 +323,7 @@ export const createDonationPayment = async (amount: number) => {
           if (typeof window !== "undefined" && window.piDebugInfo) {
             window.piDebugInfo.paymentStatus = "Fallo en Pi Wallet";
             window.piDebugInfo.paymentError = error.message;
+            sendClientDebugLog({ message: "Payment Error in Pi Wallet", detail: { error: error.message, paymentDetails: payment } });
           }
         },
       }
@@ -282,12 +336,13 @@ export const createDonationPayment = async (amount: number) => {
     if (typeof window !== "undefined" && window.piDebugInfo) {
       window.piDebugInfo.paymentStatus = "Fallo crítico general";
       window.piDebugInfo.paymentError = errorMessage;
+      sendClientDebugLog({ message: "Critical Payment Error", detail: window.piDebugInfo });
     }
   }
 };
 
 /**
- * Inicializa el SDK de Pi en background (SIN autenticación)
+ * Inicializa el SDK de Pi en background (sin autenticación forzada)
  * Esto permite que el SDK esté listo sin molestar al usuario
  */
 export const initializePiSdkOnly = async () => {
@@ -295,12 +350,14 @@ export const initializePiSdkOnly = async () => {
     await loadPiScript();
     await initializePiSdk();
     console.log("[Pi] SDK inicializado en background");
+    sendClientDebugLog({ message: "Pi SDK Initialized in Background" });
   } catch (error) {
     console.error("[Pi] Error al inicializar SDK:", error);
     if (typeof window !== "undefined" && window.piDebugInfo) {
       window.piDebugInfo.sdkInitialized = false;
       window.piDebugInfo.sdkError = error instanceof Error ? error.message : String(error);
     }
+    sendClientDebugLog({ message: "Pi SDK Initialization Error (Background)", detail: window.piDebugInfo });
   }
 };
 
@@ -315,7 +372,9 @@ export async function showInterstitialAd(): Promise<void> {
 
   try {
     await pi.Ads.showAd("interstitial");
+    sendClientDebugLog({ message: "Ad Shown Successfully" });
   } catch (e) {
     console.error("Error al mostrar anuncio:", e);
+    sendClientDebugLog({ message: "Error Showing Ad", detail: e instanceof Error ? e.message : String(e) });
   }
 }
