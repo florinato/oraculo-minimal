@@ -10,11 +10,7 @@ interface PiSDKProviderProps {
 
 const PiSDKProvider: React.FC<PiSDKProviderProps> = ({ children }) => {
   useEffect(() => {
-    // Esperamos un tick para asegurar que window.Pi exista si fue inyectado por el navegador
-    const timer = setTimeout(() => {
-      initializePiSdkOnly();
-    }, 100);
-    return () => clearTimeout(timer);
+    initializePiSdkOnly();
   }, []);
 
   return (
