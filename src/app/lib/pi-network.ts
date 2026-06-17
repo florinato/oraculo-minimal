@@ -32,19 +32,33 @@ const updateDebug = (info: Partial<PiDebugInfo>) => {
  */
 export const isPiBrowser = (): boolean => {
   if (typeof window === "undefined") return false;
+  
+  // 1. Comprobación del objeto global (la más fiable)
+  const hasPiObject = !!(window as any).Pi || !!(window as any).PiNetwork;
+  
+  // 2. Comprobación de User Agent (patrones actualizados)
   const ua = navigator.userAgent || "";
-  const isUA = /PiBrowser/i.test(ua);
-  const isObj = !!(window as any).Pi;
-  const isNet = window.location.host.includes('pinet.com');
+  const uaPatterns = [
+    /PiBrowser/i, 
+    /Pi Network/i, 
+    /Android.*Pi/i, 
+    /iPhone.*Pi/i
+  ];
+  const isUAMatch = uaPatterns.some(pattern => pattern.test(ua));
+  
+  // 3. Comprobación de dominio (fallback)
+  const isPinetDomain = window.location.hostname.endsWith(".pinet.com");
 
+  // Actualizamos debug con los detalles específicos
   updateDebug({ 
-    isUserAgentPiBrowser: isUA,
-    isPiObjectInjected: isObj,
-    isPiNetHost: isNet,
-    piBrowserDetected: isUA || isObj || isNet 
+    isUserAgentPiBrowser: isUAMatch,
+    isPiObjectInjected: hasPiObject,
+    isPiNetHost: isPinetDomain,
+    piBrowserDetected: hasPiObject || isUAMatch || isPinetDomain 
   });
   
-  return isUA || isObj || isNet;
+  // Si tenemos el objeto Pi o estamos en pinet.com, asumimos que es válido
+  return hasPiObject || isPinetDomain;
 };
 
 /**
