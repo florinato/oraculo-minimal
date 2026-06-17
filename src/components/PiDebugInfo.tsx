@@ -24,7 +24,6 @@ const PiDebugInfo: React.FC = () => {
       }
     };
 
-    // Update immediately and then every second
     updateDebugInfo();
     const interval = setInterval(updateDebugInfo, 1000);
 
@@ -35,7 +34,6 @@ const PiDebugInfo: React.FC = () => {
     return null;
   }
 
-  // Basic styling for a small debug overlay
   const style: React.CSSProperties = {
     position: "fixed",
     bottom: "10px",
@@ -49,7 +47,7 @@ const PiDebugInfo: React.FC = () => {
     maxHeight: "150px",
     overflowY: "auto",
     width: "200px",
-    pointerEvents: "none", // Allow clicks to pass through
+    pointerEvents: "none",
   };
 
   return (

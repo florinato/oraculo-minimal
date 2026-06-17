@@ -2,6 +2,7 @@
 
 import React, { useEffect } from "react";
 import { initializePiSdkOnly } from "../app/lib/pi-network";
+import PiDebugInfo from "./PiDebugInfo";
 
 interface PiSDKProviderProps {
   children: React.ReactNode;
@@ -15,6 +16,7 @@ const PiSDKProvider: React.FC<PiSDKProviderProps> = ({ children }) => {
   return (
     <>
       {children}
+      <PiDebugInfo />
     </>
   );
 };
