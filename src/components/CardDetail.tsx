@@ -37,6 +37,7 @@ export default function CardDetail({ card, onClose, info }: CardDetailProps) {
 
         {/* 2. CONTENEDOR DE IMAGEN: Ocupa 1/2 de la tarjeta */}
         <div className="w-full h-1/2 rounded-xl overflow-hidden border border-amber-900/30 bg-neutral-900 flex items-center justify-center">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img 
             src={getCardImageUrl(card.imageId)} 
             alt={card.name}
