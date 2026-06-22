@@ -4,7 +4,6 @@ import { drawFiveCards, getCardImageUrl } from "@/app/lib/tarot-api";
 import { createDonation } from "@/app/lib/pi-payments";
 import CardDetail from "@/components/CardDetail";
 import NarrativeResponse from "@/components/NarrativeResponse";
-import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -174,12 +173,10 @@ function ReadingContent() {
 
       {/* CAPA 1: FONDO FIJO (La foto de portada con blur suave) */}
       <div className="fixed inset-0 h-screen w-full overflow-hidden z-0 pointer-events-none flex justify-center items-center">
-        <Image 
+        <img 
           src="/portada_PI_ARC.png" 
           alt="Portada"
-          fill
           className="w-full h-full object-cover blur-sm"
-          priority
         />
       </div>
 
