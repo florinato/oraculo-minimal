@@ -1,6 +1,7 @@
 "use client"
 import { getI18n, LANGUAGE_CONFIG } from "@/app/lib/i18n";
 import { TarotFormatSelector } from "@/components/TarotFormatSelector";
+import { initializePiSdk, createDonation } from "@/app/lib/pi-payments";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -8,11 +9,14 @@ export default function Selector() {
   const router = useRouter()
   const [selectedFormat, setSelectedFormat] = useState<string>("pi_simple_5")
   const [question, setQuestion] = useState("")
-  const [lang, setLang] = useState<string>("es") 
+  const [lang, setLang] = useState<string>("es")
+  const [isDonating, setIsDonating] = useState(false)
 
   useEffect(() => {
     const { currentLang } = getI18n();
     setLang(currentLang);
+    // Pre-inicializar el SDK de Pi en background
+    initializePiSdk().catch((e) => console.error("[Selector] Error pre-inicializando Pi:", e));
   }, []);
 
   const { t } = getI18n(lang);
@@ -121,12 +125,29 @@ export default function Selector() {
         <div className="flex justify-between items-center px-3 pt-1 text-[9px] text-white/30 uppercase tracking-[0.3em]">
           <span>{t.home.footer_left}</span>
           <button
-            onClick={() => {
-              alert("Funcionalidad de donación Pi próximamente");
+            onClick={async () => {
+              setIsDonating(true);
+              try {
+                await createDonation(0.1, "Donación voluntaria Arcana Tarot Pi 🔮", {
+                  onApprovalRequested: () => console.log("[Selector] Aprobación solicitada"),
+                  onApprovalSuccess: () => console.log("[Selector] Aprobación exitosa"),
+                  onApprovalError: (err) => alert(`Error en aprobación: ${err}`),
+                  onCompletionStart: () => console.log("[Selector] Completación iniciada"),
+                  onCompletionSuccess: () => alert("¡Muchas gracias por tu donación!"),
+                  onCompletionError: (err) => alert(`Error en completación: ${err}`),
+                  onCancelled: () => console.log("[Selector] Pago cancelado"),
+                  onError: (err) => alert(`Error: ${err}`)
+                });
+              } catch (error: any) {
+                console.error("[Selector] Error en donación:", error);
+              } finally {
+                setIsDonating(false);
+              }
             }}
-            className="px-3 py-1 text-[8px] bg-[#E5C158]/10 border border-[#E5C158]/50 rounded hover:bg-[#E5C158]/20 transition-colors text-[#E5C158]/70 hover:text-[#E5C158] font-bold"
+            disabled={isDonating}
+            className="px-3 py-1 text-[8px] bg-[#E5C158]/10 border border-[#E5C158]/50 rounded hover:bg-[#E5C158]/20 disabled:opacity-50 transition-colors text-[#E5C158]/70 hover:text-[#E5C158] font-bold"
           >
-            {t.home.footer_center}
+            {isDonating ? "Procesando..." : t.home.footer_center}
           </button>
           <span>{t.home.footer_right}</span>
         </div>
