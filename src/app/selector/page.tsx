@@ -138,7 +138,7 @@ export default function Selector() {
                   onCancelled: () => console.log("[Selector] Pago cancelado"),
                   onError: (err) => alert(`Error: ${err}`)
                 });
-              } catch (error: any) {
+              } catch (error: unknown) {
                 console.error("[Selector] Error en donación:", error);
               } finally {
                 setIsDonating(false);
