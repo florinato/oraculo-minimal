@@ -174,7 +174,13 @@ function ReadingContent() {
 
       {/* CAPA 1: FONDO FIJO (La foto de portada con blur suave) */}
       <div className="fixed inset-0 h-screen w-full overflow-hidden z-0 pointer-events-none flex justify-center items-center">
-        <img src="/portada_PI_ARC.png" className="w-full h-full object-cover blur-sm" alt="Portada" />
+        <Image 
+          src="/portada_PI_ARC.png" 
+          alt="Portada"
+          fill
+          className="w-full h-full object-cover blur-sm"
+          priority
+        />
       </div>
 
       {/* CAPA 2: MAZO EXTENDIDO (Selección de cartas) */}
@@ -313,7 +319,7 @@ function ReadingContent() {
                       onCancelled: () => console.log("[Lectura] Pago cancelado"),
                       onError: (err) => alert(`Error: ${err}`)
                     });
-                  } catch (error: any) {
+                  } catch (error: unknown) {
                     console.error("[Lectura] Error en donación:", error);
                   } finally {
                     setIsDonating(false);
@@ -391,11 +397,11 @@ function ExpandedDeck({ selectedIndices, onCardClick, cardsToSelect }: ExpandedD
                   }
                 }}
               >
-                <img
+                <Image
                   src="/dorso_PI.jpg"
-                  crossOrigin="anonymous"
+                  alt="Dorso"
+                  fill
                   className="w-full h-full object-cover"
-                  alt="Dorso de carta"
                   style={{ WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
                 />
               </motion.div>
@@ -460,19 +466,20 @@ function CardImgFaceDown({ card, index, isRevealed, canReveal, onReveal, onRevie
     >
       <div className={`h-[19.2vh] aspect-[2/3.2] rounded-sm border-2 shadow-2xl transition-all duration-500 ${isRevealed ? 'card-flip card-glow border-amber-500 cursor-pointer hover:scale-105 hover:shadow-lg' : 'border-amber-700 cursor-pointer group-hover:scale-110 group-active:scale-95 hover:border-amber-500 animate-pulse'}`} style={{ overflow: 'hidden', backfaceVisibility: 'hidden', willChange: 'transform', boxShadow: canReveal && !isRevealed ? '0 0 20px rgba(217, 119, 6, 0.4), 0 0 40px rgba(217, 119, 6, 0.2)' : 'none' }}>
         {!isRevealed && (
-          <img
+          <Image
             src="/dorso_PI.jpg"
-            crossOrigin="anonymous"
-            className="w-full h-full object-cover"
             alt="Dorso"
+            fill
+            className="w-full h-full object-cover"
             style={{ WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
           />
         )}
         {isRevealed && (
-          <img
+          <Image
             src={getCardImageUrl(card.imageId)}
-            className="w-full h-full object-contain bg-gradient-to-br from-amber-900 to-amber-950"
             alt={card.name}
+            fill
+            className="w-full h-full object-contain bg-gradient-to-br from-amber-900 to-amber-950"
             style={{ WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
           />
         )}
