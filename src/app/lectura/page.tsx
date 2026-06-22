@@ -1,8 +1,10 @@
 "use client"
 import { getI18n } from "@/app/lib/i18n";
 import { drawFiveCards, getCardImageUrl } from "@/app/lib/tarot-api";
+import { createDonation } from "@/app/lib/pi-payments";
 import CardDetail from "@/components/CardDetail";
 import NarrativeResponse from "@/components/NarrativeResponse";
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -29,6 +31,7 @@ function ReadingContent() {
   const [revealedCards, setRevealedCards] = useState<Set<number>>(new Set());
   const [selectionPhase, setSelectionPhase] = useState(true);
   const [selectedDeckIndices, setSelectedDeckIndices] = useState<Set<number>>(new Set());
+  const [isDonating, setIsDonating] = useState(false);
   const hasStarted = useRef(false);
 
   const { t, currentLang, aiInstruction } = getI18n(langParam);
@@ -292,9 +295,34 @@ function ReadingContent() {
           </div>
 
           {!loading && text.length > 50 && !selectionPhase && (
-            <div className="pb-10 flex justify-center">
+            <div className="pb-10 flex flex-col items-center gap-4">
               <button onClick={() => window.location.href = '/selector'} className="px-10 py-4 bg-amber-900/40 border border-amber-600/50 text-amber-500 rounded-full italic font-serif hover:bg-amber-800/40 transition-all active:scale-95 shadow-xl">
                 {t.reading.new_reading}
+              </button>
+              <button
+                onClick={async () => {
+                  setIsDonating(true);
+                  try {
+                    await createDonation(0.1, "Donación voluntaria Arcana Tarot Pi 🔮", {
+                      onApprovalRequested: () => console.log("[Lectura] Aprobación solicitada"),
+                      onApprovalSuccess: () => console.log("[Lectura] Aprobación exitosa"),
+                      onApprovalError: (err) => alert(`Error en aprobación: ${err}`),
+                      onCompletionStart: () => console.log("[Lectura] Completación iniciada"),
+                      onCompletionSuccess: () => alert("¡Muchas gracias por tu donación!"),
+                      onCompletionError: (err) => alert(`Error en completación: ${err}`),
+                      onCancelled: () => console.log("[Lectura] Pago cancelado"),
+                      onError: (err) => alert(`Error: ${err}`)
+                    });
+                  } catch (error: any) {
+                    console.error("[Lectura] Error en donación:", error);
+                  } finally {
+                    setIsDonating(false);
+                  }
+                }}
+                disabled={isDonating}
+                className="px-8 py-3 text-sm bg-amber-900/40 border border-amber-600/50 text-amber-500 rounded-full italic font-serif hover:bg-amber-800/40 disabled:opacity-50 transition-all active:scale-95 shadow-xl"
+              >
+                {isDonating ? "Procesando..." : t.home.footer_center}
               </button>
             </div>
           )}
