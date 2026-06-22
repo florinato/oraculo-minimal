@@ -179,10 +179,7 @@ function ReadingContent() {
         <ExpandedDeck
           selectedIndices={selectedDeckIndices}
           cardsToSelect={cards.length}
-          onCardClick={async (index) => {
-            // No permitir más clics si ya se está cargando el anuncio
-            if (adLoading) return;
-
+          onCardClick={(index) => {
             const newSelected = new Set(selectedDeckIndices);
             newSelected.add(index);
             setSelectedDeckIndices(newSelected);
