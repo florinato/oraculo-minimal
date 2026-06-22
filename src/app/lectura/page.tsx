@@ -1,7 +1,6 @@
 "use client"
 import { getI18n } from "@/app/lib/i18n";
 import { drawFiveCards, getCardImageUrl } from "@/app/lib/tarot-api";
-import { showInterstitialAd } from "@/app/lib/pi-network";
 import CardDetail from "@/components/CardDetail";
 import NarrativeResponse from "@/components/NarrativeResponse";
 import { useSearchParams } from "next/navigation";
@@ -30,7 +29,6 @@ function ReadingContent() {
   const [revealedCards, setRevealedCards] = useState<Set<number>>(new Set());
   const [selectionPhase, setSelectionPhase] = useState(true);
   const [selectedDeckIndices, setSelectedDeckIndices] = useState<Set<number>>(new Set());
-  const [adLoading, setAdLoading] = useState(false);
   const hasStarted = useRef(false);
 
   const { t, currentLang, aiInstruction } = getI18n(langParam);
@@ -189,20 +187,10 @@ function ReadingContent() {
             newSelected.add(index);
             setSelectedDeckIndices(newSelected);
 
-            // Cuando se seleccionan todas, mostramos anuncio y pasamos a la mesa
+            // Cuando se seleccionan todas, pasamos a la mesa
             if (newSelected.size === cards.length) {
-              console.log("[v0] Todas las cartas seleccionadas. Iniciando anuncio de Pi...");
-              setAdLoading(true);
-              
-              try {
-                await showInterstitialAd();
-                console.log("[v0] Anuncio completado. Ocultando mazo...");
-              } catch (error) {
-                console.error("[v0] Error en anuncio:", error);
-              } finally {
-                setSelectionPhase(false);
-                setAdLoading(false);
-              }
+              console.log("[v0] Todas las cartas seleccionadas. Ocultando mazo...");
+              setSelectionPhase(false);
             }
           }}
         />
