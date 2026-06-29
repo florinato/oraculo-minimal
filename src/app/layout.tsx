@@ -26,11 +26,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
-      <body>
-        <PiSDKProvider>
-          {children}
-        </PiSDKProvider>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

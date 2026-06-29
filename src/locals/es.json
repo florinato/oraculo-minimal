@@ -8,8 +8,8 @@
     "placeholder": "¿Qué deseas consultar?...",
     "button": "Consultar Destino",
     "footer_left": "◆ Privado",
-    "footer_right": "Gratuito ◆",
-    "donate_button": "Donar {amount} Pi"
+    "footer_center": "Donar Pi",
+    "footer_right": "Gratuito ◆"
   },
   "formats": {
     "pi_simple_5": {

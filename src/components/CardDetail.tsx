@@ -36,11 +36,16 @@ export default function CardDetail({ card, onClose, info }: CardDetailProps) {
         </h3>
 
         {/* 2. CONTENEDOR DE IMAGEN: Ocupa 1/2 de la tarjeta */}
-        <div className="relative w-full h-1/2 rounded-xl overflow-hidden border border-amber-900/30 bg-neutral-900">
+        <div className="w-full h-1/2 rounded-xl overflow-hidden border border-amber-900/30 bg-neutral-900 flex items-center justify-center">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img 
             src={getCardImageUrl(card.imageId)} 
-            className="w-full h-full object-contain"
             alt={card.name}
+            className="w-full h-full object-contain"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = '/dorso_PI.jpg';
+            }}
           />
         </div>
 

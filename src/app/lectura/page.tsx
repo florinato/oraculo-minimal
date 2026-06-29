@@ -1,7 +1,7 @@
 "use client"
 import { getI18n } from "@/app/lib/i18n";
-import { showInterstitialAd } from "@/app/lib/pi-network";
 import { drawFiveCards, getCardImageUrl } from "@/app/lib/tarot-api";
+import { createDonation } from "@/app/lib/pi-payments";
 import CardDetail from "@/components/CardDetail";
 import NarrativeResponse from "@/components/NarrativeResponse";
 import { AnimatePresence, motion } from "framer-motion";
@@ -30,7 +30,7 @@ function ReadingContent() {
   const [revealedCards, setRevealedCards] = useState<Set<number>>(new Set());
   const [selectionPhase, setSelectionPhase] = useState(true);
   const [selectedDeckIndices, setSelectedDeckIndices] = useState<Set<number>>(new Set());
-  const [adLoading, setAdLoading] = useState(false);
+  const [isDonating, setIsDonating] = useState(false);
   const hasStarted = useRef(false);
 
   const { t, currentLang, aiInstruction } = getI18n(langParam);
@@ -173,7 +173,11 @@ function ReadingContent() {
 
       {/* CAPA 1: FONDO FIJO (La foto de portada con blur suave) */}
       <div className="fixed inset-0 h-screen w-full overflow-hidden z-0 pointer-events-none flex justify-center items-center">
-        <img src="/portada_PI_ARC.png" className="w-full h-full object-cover blur-sm" alt="Portada" />
+        <img 
+          src="/portada_PI_ARC.png" 
+          alt="Portada"
+          className="w-full h-full object-cover blur-sm"
+        />
       </div>
 
       {/* CAPA 2: MAZO EXTENDIDO (Selección de cartas) */}
@@ -181,28 +185,15 @@ function ReadingContent() {
         <ExpandedDeck
           selectedIndices={selectedDeckIndices}
           cardsToSelect={cards.length}
-          onCardClick={async (index) => {
-            // No permitir más clics si ya se está cargando el anuncio
-            if (adLoading) return;
-
+          onCardClick={(index) => {
             const newSelected = new Set(selectedDeckIndices);
             newSelected.add(index);
             setSelectedDeckIndices(newSelected);
 
-            // Cuando se seleccionan todas, mostramos anuncio y pasamos a la mesa
+            // Cuando se seleccionan todas, pasamos a la mesa
             if (newSelected.size === cards.length) {
-              console.log("[v0] Todas las cartas seleccionadas. Iniciando anuncio de Pi...");
-              setAdLoading(true);
-              
-              try {
-                await showInterstitialAd();
-                console.log("[v0] Anuncio completado. Ocultando mazo...");
-              } catch (error) {
-                console.error("[v0] Error en anuncio:", error);
-              } finally {
-                setSelectionPhase(false);
-                setAdLoading(false);
-              }
+              console.log("[v0] Todas las cartas seleccionadas. Ocultando mazo...");
+              setSelectionPhase(false);
             }
           }}
         />
@@ -307,9 +298,34 @@ function ReadingContent() {
           </div>
 
           {!loading && text.length > 50 && !selectionPhase && (
-            <div className="pb-10 flex justify-center">
+            <div className="pb-10 flex flex-col items-center gap-4">
               <button onClick={() => window.location.href = '/selector'} className="px-10 py-4 bg-amber-900/40 border border-amber-600/50 text-amber-500 rounded-full italic font-serif hover:bg-amber-800/40 transition-all active:scale-95 shadow-xl">
                 {t.reading.new_reading}
+              </button>
+              <button
+                onClick={async () => {
+                  setIsDonating(true);
+                  try {
+                    await createDonation(0.1, "Donación voluntaria Arcana Tarot Pi 🔮", {
+                      onApprovalRequested: () => console.log("[Lectura] Aprobación solicitada"),
+                      onApprovalSuccess: () => console.log("[Lectura] Aprobación exitosa"),
+                      onApprovalError: (err) => alert(`Error en aprobación: ${err}`),
+                      onCompletionStart: () => console.log("[Lectura] Completación iniciada"),
+                      onCompletionSuccess: () => alert("¡Muchas gracias por tu donación!"),
+                      onCompletionError: (err) => alert(`Error en completación: ${err}`),
+                      onCancelled: () => console.log("[Lectura] Pago cancelado"),
+                      onError: (err) => alert(`Error: ${err}`)
+                    });
+                  } catch (error: unknown) {
+                    console.error("[Lectura] Error en donación:", error);
+                  } finally {
+                    setIsDonating(false);
+                  }
+                }}
+                disabled={isDonating}
+                className="px-8 py-3 text-sm bg-amber-900/40 border border-amber-600/50 text-amber-500 rounded-full italic font-serif hover:bg-amber-800/40 disabled:opacity-50 transition-all active:scale-95 shadow-xl"
+              >
+                {isDonating ? "Procesando..." : t.home.footer_center}
               </button>
             </div>
           )}
@@ -380,9 +396,8 @@ function ExpandedDeck({ selectedIndices, onCardClick, cardsToSelect }: ExpandedD
               >
                 <img
                   src="/dorso_PI.jpg"
-                  crossOrigin="anonymous"
+                  alt="Dorso"
                   className="w-full h-full object-cover"
-                  alt="Dorso de carta"
                   style={{ WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
                 />
               </motion.div>
@@ -449,17 +464,20 @@ function CardImgFaceDown({ card, index, isRevealed, canReveal, onReveal, onRevie
         {!isRevealed && (
           <img
             src="/dorso_PI.jpg"
-            crossOrigin="anonymous"
-            className="w-full h-full object-cover"
             alt="Dorso"
+            className="w-full h-full object-cover"
             style={{ WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
           />
         )}
         {isRevealed && (
           <img
             src={getCardImageUrl(card.imageId)}
+<<<<<<< HEAD
+=======
             className="w-full h-full object-contain bg-linear-to-br from-amber-900 to-amber-950"
+>>>>>>> origin/main
             alt={card.name}
+            className="w-full h-full object-contain bg-gradient-to-br from-amber-900 to-amber-950"
             style={{ WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
           />
         )}
