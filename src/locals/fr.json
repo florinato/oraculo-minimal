@@ -8,7 +8,8 @@
     "placeholder": "Que souhaitez-vous consulter ?...",
     "button": "Consulter le Destin",
     "footer_left": "◆ Privé",
-    "footer_right": "Gratuit ◆"
+    "footer_right": "Gratuit ◆",
+    "donate_button": "Faire un don de {amount} Pi"
   },
   "formats": {
     "pi_simple_5": {

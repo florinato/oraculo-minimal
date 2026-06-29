@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import PiSDKProvider from "../components/PiSDKProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {

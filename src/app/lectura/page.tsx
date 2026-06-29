@@ -4,9 +4,9 @@ import { drawFiveCards, getCardImageUrl } from "@/app/lib/tarot-api";
 import { createDonation } from "@/app/lib/pi-payments";
 import CardDetail from "@/components/CardDetail";
 import NarrativeResponse from "@/components/NarrativeResponse";
+import { AnimatePresence, motion } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 
 // 1. Tipado para evitar errores de Vercel
 interface TarotCard {
@@ -472,6 +472,10 @@ function CardImgFaceDown({ card, index, isRevealed, canReveal, onReveal, onRevie
         {isRevealed && (
           <img
             src={getCardImageUrl(card.imageId)}
+<<<<<<< HEAD
+=======
+            className="w-full h-full object-contain bg-linear-to-br from-amber-900 to-amber-950"
+>>>>>>> origin/main
             alt={card.name}
             className="w-full h-full object-contain bg-gradient-to-br from-amber-900 to-amber-950"
             style={{ WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}

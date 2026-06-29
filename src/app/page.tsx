@@ -20,7 +20,7 @@ export default function Home() {
       {/* FONDO */}
       <div className="absolute inset-0 z-0">
         <img src="/portada_PI_ARC.png" className="w-full h-full object-cover" alt="Portada" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-black via-black/40 to-transparent" />
       </div>
 
       {/* SELECTOR IDIOMAS */}
@@ -31,7 +31,7 @@ export default function Home() {
             onChange={(e) => setLang(e.target.value)}
             className="appearance-none bg-transparent text-[#E5C158] font-bold text-sm outline-none cursor-pointer pl-2 pr-6"
             style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'%3E%3Cpath fill='%23E5C158' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
+              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'10\' height=\'10\' viewBox=\'0 0 12 12\'%3E%3Cpath fill=\'%23E5C158\' d=\'M6 9L1 4h10z\'/\%3E%3C/svg%3E")`,
               backgroundRepeat: 'no-repeat',
               backgroundPosition: 'right 4px center'
             }}
@@ -75,4 +75,3 @@ export default function Home() {
     </main>
   )
 }
-

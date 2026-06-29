@@ -1,5 +1,6 @@
 "use client"
 import { getI18n, LANGUAGE_CONFIG } from "@/app/lib/i18n";
+import DonateButton from "@/components/DonateButton";
 import { TarotFormatSelector } from "@/components/TarotFormatSelector";
 import { initializePiSdk, createDonation } from "@/app/lib/pi-payments";
 import { useRouter } from "next/navigation";
@@ -38,7 +39,9 @@ export default function Selector() {
       
       {/* BOTÓN VOLVER */}
       <button
-        onClick={() => router.push('/')}
+        onClick={() => router.push(
+          '/'
+        )}
         className="absolute top-4 left-4 z-50 w-10 h-10 rounded-full border border-[#E5C158]/50 bg-[#100C1A]/80 flex items-center justify-center hover:border-[#E5C158] hover:bg-[#100C1A] transition-all backdrop-blur-md"
         title="Volver a inicio"
       >
@@ -50,7 +53,7 @@ export default function Selector() {
       {/* FONDO SIN BLUR */}
       <div className="absolute inset-0 z-0">
         <img src="/portada_PI_ARC.png" className="w-full h-full object-cover opacity-90" alt="Portada" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-black via-black/40 to-transparent" />
       </div>
 
       {/* SELECTOR IDIOMAS */}
@@ -61,9 +64,9 @@ export default function Selector() {
             onChange={(e) => setLang(e.target.value)}
             className="appearance-none bg-transparent text-[#E5C158] font-bold text-sm outline-none cursor-pointer pl-2 pr-6"
             style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'%3E%3Cpath fill='%23E5C158' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'right 4px center'
+              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'10\' height=\'10\' viewBox=\'0 0 12 12\'%3E%3Cpath fill=\'%23E5C158\' d=\'M6 9L1 4h10z\'/\%3E%3C/svg%3E")`,
+              backgroundRepeat: "no-repeat",
+              backgroundPosition: "right 4px center"
             }}
           >
             {Object.values(LANGUAGE_CONFIG).map((l) => (
@@ -86,7 +89,7 @@ export default function Selector() {
       </div>
 
       {/* CONTROLES (Empujados hacia abajo para ocupar el espacio central hasta el pie) */}
-      <div className="relative z-10 w-full max-w-lg mx-auto space-y-3 flex-grow flex flex-col justify-end pb-2">
+      <div className="relative z-10 w-full max-w-lg mx-auto space-y-3 grow flex flex-col justify-end pb-2">
         <TarotFormatSelector
           selectedFormat={selectedFormat}
           onFormatChange={setSelectedFormat}
@@ -116,7 +119,7 @@ export default function Selector() {
               handleStart();
             }}
             disabled={question.trim().length <= 5}
-            className="w-full py-4 bg-gradient-to-b from-[#E5C158] to-[#B38F1B] hover:from-[#f5d576] hover:to-[#c4a12f] disabled:opacity-30 disabled:grayscale text-[#100C1A] font-bold uppercase tracking-widest rounded-xl text-sm border-b-4 border-[#7A600D] active:border-b-0 active:translate-y-1 transition-all animate-in fade-in duration-300 shadow-xl"
+            className="w-full py-4 bg-linear-to-b from-[#E5C158] to-[#B38F1B] hover:from-[#f5d576] hover:to-[#c4a12f] disabled:opacity-30 disabled:grayscale text-[#100C1A] font-bold uppercase tracking-widest rounded-xl text-sm border-b-4 border-[#7A600D] active:border-b-0 active:translate-y-1 transition-all animate-in fade-in duration-300 shadow-xl"
           >
             {t.home.button}
           </button>
@@ -124,6 +127,7 @@ export default function Selector() {
 
         <div className="flex justify-between items-center px-3 pt-1 text-[9px] text-white/30 uppercase tracking-[0.3em]">
           <span>{t.home.footer_left}</span>
+<<<<<<< HEAD
           <button
             onClick={async () => {
               setIsDonating(true);
@@ -149,6 +153,9 @@ export default function Selector() {
           >
             {isDonating ? "Procesando..." : t.home.footer_center}
           </button>
+=======
+          <DonateButton amount={1} buttonText={t.home.donate_button.replace("{amount}", "1")} />
+>>>>>>> origin/main
           <span>{t.home.footer_right}</span>
         </div>
       </div>
