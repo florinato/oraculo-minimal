@@ -472,10 +472,6 @@ function CardImgFaceDown({ card, index, isRevealed, canReveal, onReveal, onRevie
         {isRevealed && (
           <img
             src={getCardImageUrl(card.imageId)}
-<<<<<<< HEAD
-=======
-            className="w-full h-full object-contain bg-linear-to-br from-amber-900 to-amber-950"
->>>>>>> origin/main
             alt={card.name}
             className="w-full h-full object-contain bg-gradient-to-br from-amber-900 to-amber-950"
             style={{ WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
