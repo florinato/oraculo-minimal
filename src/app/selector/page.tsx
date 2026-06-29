@@ -127,7 +127,6 @@ export default function Selector() {
 
         <div className="flex justify-between items-center px-3 pt-1 text-[9px] text-white/30 uppercase tracking-[0.3em]">
           <span>{t.home.footer_left}</span>
-<<<<<<< HEAD
           <button
             onClick={async () => {
               setIsDonating(true);
@@ -153,9 +152,6 @@ export default function Selector() {
           >
             {isDonating ? "Procesando..." : t.home.footer_center}
           </button>
-=======
-          <DonateButton amount={1} buttonText={t.home.donate_button.replace("{amount}", "1")} />
->>>>>>> origin/main
           <span>{t.home.footer_right}</span>
         </div>
       </div>
