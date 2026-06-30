@@ -2,7 +2,7 @@
 
 import Script from "next/script";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { checkIsPiBrowser, initializePiSdkOnly } from "../app/lib/pi-network";
+import { checkIsPiBrowser, initializePiSdk } from "../app/lib/pi-network";
 import PiDebugInfo from "./PiDebugInfo";
 
 interface PiBrowserContextType {
@@ -27,7 +27,12 @@ const PiSDKProvider: React.FC<PiSDKProviderProps> = ({ children }) => {
   const [isPiEnv, setIsPiEnv] = useState<boolean>(false);
 
   useEffect(() => {
-    initializePiSdkOnly();
+    initializePiSdk(
+      () => {},
+      (error: any) => {
+        console.error("Error during Pi SDK initialization in provider:", error);
+      }
+    );
 
     const handlePiDebugUpdate = () => {
       setIsPiEnv(checkIsPiBrowser());

@@ -27,22 +27,25 @@ const updateDebug = (info: Partial<PiDebugInfo>) => {
 };
 
 // ✅ DETECCIÓN ESTÁNDAR SEGÚN DOCS
-export const checkIsPiBrowser = (): boolean => {
+export function checkIsPiBrowser(): boolean {
   if (typeof window === "undefined") return false;
 
   const userAgent = window.navigator.userAgent.toLowerCase();
-  // 1. Detección tradicional por cadena de agente de usuario
+  
+  // Nivel 1: Verificación de User-Agent oficial
   const hasPiUserAgent = userAgent.includes("pibrowser") || userAgent.includes("pi-browser");
-
-  // 2. Detección por puente nativo de Android
+  
+  // Nivel 2: Puente nativo de Android
   const hasAndroidBridge = !!(window as any).PiAndroid || !!(window as any).PiJSBridge;
+  
+  // Nivel 3: Puente nativo de iOS (WKWebKit Message Handlers)
+  const hasIosBridge = !!(window as any).webkit?.messageHandlers?.pi || !!(window as any).webkit?.messageHandlers?.piSDK;
+  
+  // Nivel 4: Existencia del objeto global Pi
+  const hasPiGlobal = !!(window as any).Pi;
 
-  // 3. Detección por puente nativo de iOS (WebKit)
-  const hasIosBridge = !!(window as any).webkit?.messageHandlers?.pi || 
-                        !!(window as any).webkit?.messageHandlers?.piSDK;
-
-  return hasPiUserAgent || hasAndroidBridge || hasIosBridge;
-};
+  return hasPiUserAgent || hasAndroidBridge || hasIosBridge || hasPiGlobal;
+}
 
 export const isPiBrowser = (): boolean => {
   return checkIsPiBrowser();
@@ -64,29 +67,27 @@ const onIncompletePaymentFound = async (payment: any) => {
  */
 
 // ✅ INICIALIZACIÓN ESTÁNDAR
-export const initializePiSdkOnly = async () => {
-  let checks = 0;
-  const maxChecks = 10; // 500ms en total (10 checks * 50ms)
+export function initializePiSdk(onSuccess: () => void, onError: (err: any) => void) {
+  const isPi = checkIsPiBrowser();
+  const useSandbox = !isPi; // Si no es Pi Browser, usamos sandbox
 
-  const initInterval = setInterval(() => {
-    checks++;
-    const isPi = checkIsPiBrowser();
-
-    if ((window as any).Pi || isPi || checks >= maxChecks) {
-      clearInterval(initInterval);
-      
-      if ((window as any).Pi) {
-        const sandboxMode = !isPi;
-        (window as any).Pi.init({ version: "2.0", sandbox: sandboxMode });
-        updateDebug({ sdkInitialized: true, piBrowserDetected: isPi });
-        console.log(`[Pi SDK] Inicializado con sandbox = ${sandboxMode}. Detectado Pi Browser: ${isPi}`);
-      } else {
-        updateDebug({ sdkInitialized: false, piBrowserDetected: isPi });
-        console.warn("[Pi SDK] No se pudo inicializar el SDK. Pi object no disponible.");
-      }
+  if ((window as any).Pi) {
+    try {
+      (window as any).Pi.init({ version: "2.0", sandbox: useSandbox });
+      console.log(`Pi SDK inicializado correctamente (Modo Sandbox: ${useSandbox})`);
+      updateDebug({ sdkInitialized: true, piBrowserDetected: isPi });
+      onSuccess();
+    } catch (error) {
+      console.error("Error al inicializar el SDK de Pi:", error);
+      updateDebug({ sdkInitialized: false, piBrowserDetected: isPi, paymentError: (error as any).message });
+      onError(error);
     }
-  }, 50);
-};
+  } else {
+    console.warn("Objeto window.Pi no disponible.");
+    updateDebug({ sdkInitialized: false, piBrowserDetected: isPi, paymentError: "Pi SDK no inyectado" });
+    onError(new Error("Pi SDK no inyectado"));
+  }
+}
 
 // ✅ FLUJO DE PAGO ESTÁNDAR (Docs v2)
 export const createDonationPayment = async (amount: number) => {
