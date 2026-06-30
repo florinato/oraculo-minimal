@@ -1,6 +1,5 @@
 "use client"
 import { getI18n, LANGUAGE_CONFIG } from "@/app/lib/i18n";
-import DonateButton from "@/components/DonateButton";
 import { TarotFormatSelector } from "@/components/TarotFormatSelector";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -123,7 +122,6 @@ export default function Selector() {
 
         <div className="flex justify-between px-3 pt-1 text-[9px] text-white/30 uppercase tracking-[0.3em]">
           <span>{t.home.footer_left}</span>
-          <DonateButton amount={1} buttonText={t.home.donate_button.replace("{amount}", "1")} />
           <span>{t.home.footer_right}</span>
         </div>
       </div>

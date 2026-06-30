@@ -7,9 +7,10 @@ import { usePiBrowser } from "../components/PiSDKProvider";
 interface DonateButtonProps {
   amount: number;
   buttonText: string;
+  className?: string; // Add className prop
 }
 
-const DonateButton: React.FC<DonateButtonProps> = ({ amount, buttonText }) => {
+const DonateButton: React.FC<DonateButtonProps> = ({ amount, buttonText, className }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { isPiEnv } = usePiBrowser();
@@ -30,7 +31,7 @@ const DonateButton: React.FC<DonateButtonProps> = ({ amount, buttonText }) => {
   };
 
   return (
-    <div>
+    <div className={className}> {/* Apply className here */}
       {!isPiEnv && (
         <div style={{ backgroundColor: "#282828", color: "#E5C158", padding: "8px", marginBottom: "10px", textAlign: "center", fontSize: "12px", borderRadius: "5px" }}>
           ⚠️ Para realizar pagos reales con Pi, por favor abre esta aplicación dentro del <strong>Pi Browser</strong>.

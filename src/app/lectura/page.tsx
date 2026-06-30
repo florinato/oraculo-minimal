@@ -3,6 +3,7 @@ import { getI18n } from "@/app/lib/i18n";
 import { showInterstitialAd } from "@/app/lib/pi-network";
 import { drawFiveCards, getCardImageUrl } from "@/app/lib/tarot-api";
 import CardDetail from "@/components/CardDetail";
+import DonateButton from "@/components/DonateButton";
 import NarrativeResponse from "@/components/NarrativeResponse";
 import { AnimatePresence, motion } from "framer-motion";
 import { useSearchParams } from "next/navigation";
@@ -64,9 +65,9 @@ function ReadingContent() {
           cardsCount: selectedCards.length
         });
 
-        const response = await fetch('/api/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+        const response = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             personality_prompt: "aura",
             format_id: formatParam,
@@ -108,7 +109,7 @@ function ReadingContent() {
 
           for (const line of lines) {
             const cleanLine = line.trim();
-            if (cleanLine.startsWith('data: ')) {
+            if (cleanLine.startsWith("data: ")) {
               try {
                 const data = JSON.parse(cleanLine.slice(6));
                 if (data.text) {
@@ -211,7 +212,7 @@ function ReadingContent() {
       {/* CAPA 3: LAS CARTAS (Lienzo 3D independiente) */}
       {/* Grid visible: durante selección si son 3+ cartas, siempre después de seleccionar */}
       {(!selectionPhase || cards.length > 1) && (
-      <div className={`fixed inset-0 h-screen w-full flex justify-center items-start z-10 pointer-events-none ${cards.length === 5 ? 'pt-12' : 'pt-40'}`} style={{ perspective: '120vh' }}>
+      <div className={`fixed inset-0 h-screen w-full flex justify-center items-start z-10 pointer-events-none ${cards.length === 5 ? "pt-12" : "pt-40"}`} style={{ perspective: "120vh" }}>
         <>
           {cards.length === 1 ? (
               <div className="grid grid-cols-1 place-items-center pointer-events-auto">
@@ -231,7 +232,7 @@ function ReadingContent() {
                 </div>
               </div>
             ) : cards.length === 3 ? (
-              <div className="grid grid-cols-3 pointer-events-auto" style={{ gap: '3vh' }}>
+              <div className="grid grid-cols-3 pointer-events-auto" style={{ gap: "3vh" }}>
                 {[0, 1, 2].map(i => (
                   <div key={i} className="transition-all duration-500">
                     {selectionPhase ? (
@@ -254,7 +255,7 @@ function ReadingContent() {
                 ))}
               </div>
             ) : (
-              <div className="grid grid-cols-3 grid-rows-3 pointer-events-auto" style={{ gap: '2.5vh' }}>
+              <div className="grid grid-cols-3 grid-rows-3 pointer-events-auto" style={{ gap: "2.5vh" }}>
                 <div className="col-start-2 row-start-1 transition-all duration-500">
                   {selectionPhase ? <CardPlaceholder index={2} /> : <CardImgFaceDown card={cards[2]} index={2} isRevealed={revealedCards.has(2)} canReveal={true} onReveal={() => { const n = new Set(revealedCards); n.add(2); setRevealedCards(n); }} onReviewCard={() => setSelectedCard(cards[2])} />}
                 </div>
@@ -307,8 +308,13 @@ function ReadingContent() {
           </div>
 
           {!loading && text.length > 50 && !selectionPhase && (
-            <div className="pb-10 flex justify-center">
-              <button onClick={() => window.location.href = '/selector'} className="px-10 py-4 bg-amber-900/40 border border-amber-600/50 text-amber-500 rounded-full italic font-serif hover:bg-amber-800/40 transition-all active:scale-95 shadow-xl">
+            <div className="pb-10 flex flex-col items-center space-y-4">
+              <DonateButton
+                amount={1}
+                buttonText={t.home.donate_button.replace("{amount}", "1")}
+                className="px-10 py-4 bg-amber-900/40 border border-amber-600/50 text-amber-500 rounded-full italic font-serif hover:bg-amber-800/40 transition-all active:scale-95 shadow-xl"
+              />
+              <button onClick={() => window.location.href = "/selector"} className="px-10 py-4 bg-amber-900/40 border border-amber-600/50 text-amber-500 rounded-full italic font-serif hover:bg-amber-800/40 transition-all active:scale-95 shadow-xl">
                 {t.reading.new_reading}
               </button>
             </div>
@@ -357,15 +363,15 @@ function ExpandedDeck({ selectedIndices, onCardClick, cardsToSelect }: ExpandedD
                 key={index}
                 layoutId={isSelected ? layoutId : undefined}
                 className={`absolute h-[19.2vh] aspect-[2/3.2] rounded-sm border-2 transition-all duration-500 cursor-pointer overflow-hidden ${isSelected
-                  ? 'opacity-0 scale-0 pointer-events-none'
+                  ? "opacity-0 scale-0 pointer-events-none"
                   : canSelect
-                    ? 'border-amber-700 hover:scale-125 hover:border-amber-500 hover:shadow-2xl hover:shadow-amber-900/50'
-                    : 'border-amber-700/50 opacity-60 cursor-not-allowed'
+                    ? "border-amber-700 hover:scale-125 hover:border-amber-500 hover:shadow-2xl hover:shadow-amber-900/50"
+                    : "border-amber-700/50 opacity-60 cursor-not-allowed"
                   }`}
                 style={{
                   left: `${index * (cardWidth - overlap)}px`,
-                  top: '0',
-                  transform: isSelected ? 'scale(0)' : 'scale(1)'
+                  top: "0",
+                  transform: isSelected ? "scale(0)" : "scale(1)"
                 }}
                 animate={{
                   opacity: isSelected ? 0 : 1,
@@ -383,14 +389,14 @@ function ExpandedDeck({ selectedIndices, onCardClick, cardsToSelect }: ExpandedD
                   crossOrigin="anonymous"
                   className="w-full h-full object-cover"
                   alt="Dorso de carta"
-                  style={{ WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
+                  style={{ WebkitFontSmoothing: "antialiased", imageRendering: "crisp-edges" }}
                 />
               </motion.div>
             );
           })}
         </div>
         <p className="text-center text-amber-300 text-sm font-serif italic mt-6">
-          Selecciona {cardsToSelect - selectedIndices.size} {cardsToSelect - selectedIndices.size === 1 ? 'carta' : 'cartas'}
+          Selecciona {cardsToSelect - selectedIndices.size} {cardsToSelect - selectedIndices.size === 1 ? "carta" : "cartas"}
         </p>
       </div>
     </AnimatePresence>
@@ -409,7 +415,7 @@ function CardPlaceholder({ index }: { index: number }) {
       layoutId={layoutId}
       className="flex flex-col items-center pointer-events-none"
     >
-      <div className="h-[19.2vh] aspect-[2/3.2] rounded-sm border-2 border-transparent" style={{ overflow: 'hidden', backfaceVisibility: 'hidden' }}>
+      <div className="h-[19.2vh] aspect-[2/3.2] rounded-sm border-2 border-transparent" style={{ overflow: "hidden", backfaceVisibility: "hidden" }}>
         {/* Hueco invisible para la animación */}
       </div>
     </motion.div>
@@ -445,14 +451,14 @@ function CardImgFaceDown({ card, index, isRevealed, canReveal, onReveal, onRevie
         }
       }}
     >
-      <div className={`h-[19.2vh] aspect-[2/3.2] rounded-sm border-2 shadow-2xl transition-all duration-500 ${isRevealed ? 'card-flip card-glow border-amber-500 cursor-pointer hover:scale-105 hover:shadow-lg' : 'border-amber-700 cursor-pointer group-hover:scale-110 group-active:scale-95 hover:border-amber-500 animate-pulse'}`} style={{ overflow: 'hidden', backfaceVisibility: 'hidden', willChange: 'transform', boxShadow: canReveal && !isRevealed ? '0 0 20px rgba(217, 119, 6, 0.4), 0 0 40px rgba(217, 119, 6, 0.2)' : 'none' }}>
+      <div className={`h-[19.2vh] aspect-[2/3.2] rounded-sm border-2 shadow-2xl transition-all duration-500 ${isRevealed ? "card-flip card-glow border-amber-500 cursor-pointer hover:scale-105 hover:shadow-lg" : "border-amber-700 cursor-pointer group-hover:scale-110 group-active:scale-95 hover:border-amber-500 animate-pulse"}`} style={{ overflow: "hidden", backfaceVisibility: "hidden", willChange: "transform", boxShadow: canReveal && !isRevealed ? "0 0 20px rgba(217, 119, 6, 0.4), 0 0 40px rgba(217, 119, 6, 0.2)" : "none" }}>
         {!isRevealed && (
           <img
             src="/dorso_PI.jpg"
             crossOrigin="anonymous"
             className="w-full h-full object-cover"
             alt="Dorso"
-            style={{ WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
+            style={{ WebkitFontSmoothing: "antialiased", imageRendering: "crisp-edges" }}
           />
         )}
         {isRevealed && (
@@ -460,7 +466,7 @@ function CardImgFaceDown({ card, index, isRevealed, canReveal, onReveal, onRevie
             src={getCardImageUrl(card.imageId)}
             className="w-full h-full object-contain bg-linear-to-br from-amber-900 to-amber-950"
             alt={card.name}
-            style={{ WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
+            style={{ WebkitFontSmoothing: "antialiased", imageRendering: "crisp-edges" }}
           />
         )}
       </div>
@@ -490,12 +496,12 @@ function CardImg({ card, label, onClick }: CardImgProps) {
       <span className="text-[1vh] text-amber-700 uppercase tracking-widest mb-1 font-bold bg-black/50 px-2 rounded-sm backdrop-blur-sm">
         {label}
       </span>
-      <div className="h-[12vh] aspect-[2/3.2] shadow-2xl rounded-sm border border-white/10 bg-amber-900/10 transition-all duration-300 group-hover:scale-110 group-active:scale-95 animate-pulse" style={{ backfaceVisibility: 'hidden', willChange: 'transform', boxShadow: '0 0 20px rgba(217, 119, 6, 0.4), 0 0 40px rgba(217, 119, 6, 0.2)' }}>
+      <div className="h-[12vh] aspect-[2/3.2] shadow-2xl rounded-sm border border-white/10 bg-amber-900/10 transition-all duration-300 group-hover:scale-110 group-active:scale-95 animate-pulse" style={{ backfaceVisibility: "hidden", willChange: "transform", boxShadow: "0 0 20px rgba(217, 119, 6, 0.4), 0 0 40px rgba(217, 119, 6, 0.2)" }}>
         <img
           src={getCardImageUrl(card.imageId)}
           className="w-full h-full object-contain"
           alt={card.name}
-          style={{ backfaceVisibility: 'hidden', WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
+          style={{ WebkitFontSmoothing: "antialiased", imageRendering: "crisp-edges" }}
         />
       </div>
     </div>
