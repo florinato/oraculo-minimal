@@ -10,38 +10,6 @@ export default function Home() {
   useEffect(() => {
     const { currentLang } = getI18n();
     setLang(currentLang);
-
-    // Global error handler for uncaught errors
-    const handleError = (event: ErrorEvent | Event) => {
-      if (event instanceof ErrorEvent && event.error) {
-        if (event.error instanceof Error) {
-          console.error("[v0] Uncaught error:", event.error.message);
-        } else {
-          console.error("[v0] Uncaught error:", event.error);
-        }
-      } else if ('message' in event) {
-        console.error("[v0] Error event:", (event as any).message);
-      }
-    };
-
-    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
-      const reason = event.reason;
-      if (reason instanceof Error) {
-        console.error("[v0] Unhandled promise rejection:", reason.message);
-      } else if (typeof reason === 'string') {
-        console.error("[v0] Unhandled promise rejection:", reason);
-      } else {
-        console.error("[v0] Unhandled promise rejection: unknown error");
-      }
-    };
-
-    window.addEventListener('error', handleError);
-    window.addEventListener('unhandledrejection', handleUnhandledRejection);
-
-    return () => {
-      window.removeEventListener('error', handleError);
-      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
-    };
   }, []);
 
   const { t } = getI18n(lang);
@@ -102,10 +70,7 @@ export default function Home() {
             TAROT
           </p>
           <button
-            onClick={() => {
-              console.log("[v0] Button clicked!");
-              router.push('/selector');
-            }}
+            onClick={() => router.push('/selector')}
             className="mt-8 px-12 py-4 text-[#E5C158] font-serif font-bold rounded-xl text-lg uppercase tracking-widest transition-all shadow-2xl
               border-[1.5px] border-[#E5C158] bg-[#130E24]/60 hover:bg-[#130E24]/90 hover:border-[#E5C158] hover:shadow-[0_0_25px_rgba(229,193,88,0.3)]
               active:scale-95 active:shadow-[0_0_10px_rgba(229,193,88,0.2)]"
