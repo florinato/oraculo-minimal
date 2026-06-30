@@ -44,7 +44,7 @@ export function checkIsPiBrowser(): boolean {
   // Nivel 4: Existencia del objeto global Pi
   const hasPiGlobal = !!(window as any).Pi;
 
-  return hasPiUserAgent || hasAndroidBridge || hasIosBridge || hasPiGlobal;
+  return hasPiUserAgent || hasAndroidBridge || hasIosBridge;
 }
 
 export const isPiBrowser = (): boolean => {
