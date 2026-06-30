@@ -10,6 +10,23 @@ export default function Home() {
   useEffect(() => {
     const { currentLang } = getI18n();
     setLang(currentLang);
+
+    // Global error handler for uncaught errors
+    const handleError = (event: ErrorEvent) => {
+      console.error("[v0] Uncaught error:", event.error?.message || event.message);
+    };
+
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      console.error("[v0] Unhandled promise rejection:", event.reason);
+    };
+
+    window.addEventListener('error', handleError);
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+
+    return () => {
+      window.removeEventListener('error', handleError);
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+    };
   }, []);
 
   const { t } = getI18n(lang);
@@ -19,7 +36,17 @@ export default function Home() {
       
       {/* FONDO */}
       <div className="absolute inset-0 z-0">
-        <img src="/portada_PI_ARC.png" className="w-full h-full object-cover" alt="Portada" />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img 
+          src="/portada_PI_ARC.png" 
+          className="w-full h-full object-cover" 
+          alt="Portada"
+          onError={(e) => {
+            console.log("[v0] Background image failed to load, using fallback color");
+            const target = e.target as HTMLImageElement;
+            target.style.display = 'none';
+          }}
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
       </div>
 
