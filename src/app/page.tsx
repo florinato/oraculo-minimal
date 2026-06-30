@@ -12,12 +12,27 @@ export default function Home() {
     setLang(currentLang);
 
     // Global error handler for uncaught errors
-    const handleError = (event: ErrorEvent) => {
-      console.error("[v0] Uncaught error:", event.error?.message || event.message);
+    const handleError = (event: ErrorEvent | Event) => {
+      if (event instanceof ErrorEvent && event.error) {
+        if (event.error instanceof Error) {
+          console.error("[v0] Uncaught error:", event.error.message);
+        } else {
+          console.error("[v0] Uncaught error:", event.error);
+        }
+      } else if ('message' in event) {
+        console.error("[v0] Error event:", (event as any).message);
+      }
     };
 
     const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
-      console.error("[v0] Unhandled promise rejection:", event.reason);
+      const reason = event.reason;
+      if (reason instanceof Error) {
+        console.error("[v0] Unhandled promise rejection:", reason.message);
+      } else if (typeof reason === 'string') {
+        console.error("[v0] Unhandled promise rejection:", reason);
+      } else {
+        console.error("[v0] Unhandled promise rejection: unknown error");
+      }
     };
 
     window.addEventListener('error', handleError);
