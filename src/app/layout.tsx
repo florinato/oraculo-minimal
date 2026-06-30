@@ -26,6 +26,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es">
+      <head>
+        <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+      </head>
       <body>
         <PiSDKProvider>
           {children}

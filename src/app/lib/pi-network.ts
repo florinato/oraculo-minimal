@@ -28,10 +28,25 @@ const updateDebug = (info: Partial<PiDebugInfo>) => {
 };
 
 // ✅ DETECCIÓN ESTÁNDAR SEGÚN DOCS
-export const isPiBrowser = (): boolean => {
+export const checkIsPiBrowser = (): boolean => {
   if (typeof window === "undefined") return false;
-  // En pinet.com, window.Pi siempre existe si la app está bien configurada en Developer Portal
-  return !!(window as any).Pi; 
+
+  const userAgent = window.navigator.userAgent.toLowerCase();
+  // 1. Detección tradicional por cadena de agente de usuario
+  const hasPiUserAgent = userAgent.includes("pibrowser") || userAgent.includes("pi-browser");
+
+  // 2. Detección por puente nativo de Android
+  const hasAndroidBridge = !!(window as any).PiAndroid || !!(window as any).PiJSBridge;
+
+  // 3. Detección por puente nativo de iOS (WebKit)
+  const hasIosBridge = !!(window as any).webkit?.messageHandlers?.pi || 
+                        !!(window as any).webkit?.messageHandlers?.piSDK;
+
+  return hasPiUserAgent || hasAndroidBridge || hasIosBridge;
+};
+
+export const isPiBrowser = (): boolean => {
+  return checkIsPiBrowser();
 };
 
 const onIncompletePaymentFound = async (payment: any) => {
@@ -51,25 +66,33 @@ const onIncompletePaymentFound = async (payment: any) => {
 
 // ✅ INICIALIZACIÓN ESTÁNDAR
 export const initializePiSdkOnly = async () => {
-  if (!isPiBrowser()) return;
-  
-  const pi = (window as any).Pi;
-  
-  // Solo init si no está ya inicializado (evita errores de doble init)
-  try {
-    await pi.init({ version: "2.0", sandbox: IS_SANDBOX });
-    updateDebug({ sdkInitialized: true });
-  } catch (e) {
-    console.warn("[Pi SDK] Ya inicializado o error:", e);
-    updateDebug({ sdkInitialized: true }); // Asumimos ok si falla por ya-init
-  }
+  let checks = 0;
+  const maxChecks = 10; // 500ms en total (10 checks * 50ms)
+
+  const initInterval = setInterval(() => {
+    checks++;
+    const isPi = checkIsPiBrowser();
+
+    if ((window as any).Pi || isPi || checks >= maxChecks) {
+      clearInterval(initInterval);
+      
+      if ((window as any).Pi) {
+        const sandboxMode = !isPi;
+        (window as any).Pi.init({ version: "2.0", sandbox: sandboxMode });
+        updateDebug({ sdkInitialized: true, piBrowserDetected: isPi });
+        console.log(`[Pi SDK] Inicializado con sandbox = ${sandboxMode}. Detectado Pi Browser: ${isPi}`);
+      } else {
+        updateDebug({ sdkInitialized: false, piBrowserDetected: isPi });
+        console.warn("[Pi SDK] No se pudo inicializar el SDK. Pi object no disponible.");
+      }
+    }
+  }, 50);
 };
 
 // ✅ FLUJO DE PAGO ESTÁNDAR (Docs v2)
 export const createDonationPayment = async (amount: number) => {
   if (!isPiBrowser()) {
-    alert("⚠️ Abre desde el Pi Browser oficial para realizar pagos.");
-    return;
+    throw new Error("⚠️ Abre desde el Pi Browser oficial para realizar pagos.");
   }
 
   const pi = (window as any).Pi;
