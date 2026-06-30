@@ -153,7 +153,7 @@ function ReadingContent() {
         timers.forEach(timer => clearTimeout(timer));
       };
     }
-  }, [selectionPhase, cards.length]);
+  }, [selectionPhase, cards.length, revealedCards.size]);
 
   if (cards.length === 0) return <div className="min-h-screen bg-black flex items-center justify-center text-amber-500 italic">Invocando el umbral...</div>;
 
@@ -479,40 +479,6 @@ function CardImgFaceDown({ card, index, isRevealed, canReveal, onReveal, onRevie
         )}
       </div>
     </motion.div>
-  );
-}
-
-/**
- * Componente Auxiliar CardImg 
- * (Se define fuera para que el código sea más limpio)
- */
-interface CardImgProps {
-  card: TarotCard;
-  label: string;
-  onClick: () => void;
-}
-
-function CardImg({ card, label, onClick }: CardImgProps) {
-  return (
-    <div
-      className="flex flex-col items-center cursor-pointer group pointer-events-auto"
-      onClick={(e) => {
-        e.stopPropagation();
-        onClick();
-      }}
-    >
-      <span className="text-[1vh] text-amber-700 uppercase tracking-widest mb-1 font-bold bg-black/50 px-2 rounded-sm backdrop-blur-sm">
-        {label}
-      </span>
-      <div className="h-[12vh] aspect-[2/3.2] shadow-2xl rounded-sm border border-white/10 bg-amber-900/10 transition-all duration-300 group-hover:scale-110 group-active:scale-95 animate-pulse" style={{ backfaceVisibility: 'hidden', willChange: 'transform', boxShadow: '0 0 20px rgba(217, 119, 6, 0.4), 0 0 40px rgba(217, 119, 6, 0.2)' }}>
-        <img
-          src={getCardImageUrl(card.imageId)}
-          className="w-full h-full object-contain"
-          alt={card.name}
-          style={{ backfaceVisibility: 'hidden', WebkitFontSmoothing: 'antialiased', imageRendering: 'crisp-edges' }}
-        />
-      </div>
-    </div>
   );
 }
 

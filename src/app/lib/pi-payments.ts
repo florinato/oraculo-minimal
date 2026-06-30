@@ -291,7 +291,7 @@ export async function createDonation(
           callbacks?.onCancelled?.(paymentId);
         },
 
-        onError: (error: any, payment: any) => {
+        onError: (error: any) => {
           console.error("[Pi Payments] Error en pago:", error);
           callbacks?.onError?.(error?.message || "Error desconocido");
         }

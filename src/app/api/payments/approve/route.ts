@@ -4,7 +4,7 @@ const PI_API_KEY = process.env.PI_API_KEY || "";
 
 export async function POST(request: NextRequest) {
   try {
-    const { paymentId, username, amount, memo, isSimulated } = await request.json();
+    const { paymentId, isSimulated } = await request.json();
 
     if (!paymentId) {
       return NextResponse.json(
