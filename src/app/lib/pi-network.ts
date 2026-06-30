@@ -3,7 +3,6 @@
 export const PI_APP_ID = "v0lst1mewqaxecp72qzp2iu1pugi33cdszf8oh87adnpcxf0euzlhdxlnv9sfkj3";
 
 // 🚦 CONFIGURACIÓN
-const IS_SANDBOX = process.env.NEXT_PUBLIC_IS_SANDBOX === "true";
 const ENABLE_ADS = false; 
 
 /**
@@ -136,15 +135,14 @@ export const createDonationPayment = async (amount: number) => {
         if (res.ok) {
           await pi.completePayment(paymentId, txid);
           updateDebug({ paymentStatus: "Éxito ✅" });
-          alert("✨ ¡Gracias por tu ofrenda!");
         }
       },
-      onCancel: (paymentId: string) => {
+      onCancel: (_paymentId: string) => {
         updateDebug({ paymentStatus: "Cancelado por usuario" });
       },
-      onError: (error: Error, paymentId?: string) => {
+      onError: (error: Error, _paymentId?: string) => {
         updateDebug({ paymentStatus: "Error", paymentError: error.message });
-        console.error("[Pi SDK Error]", error, paymentId);
+        console.error("[Pi SDK Error]", error, _paymentId);
       },
     });
   } catch (err: any) {
