@@ -26,28 +26,24 @@ const PiSDKProvider: React.FC<PiSDKProviderProps> = ({ children }) => {
   const [isPiEnv, setIsPiEnv] = useState<boolean>(false);
 
   useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://sdk.minepi.com/pi-sdk.js";
-    script.async = true;
-    script.onload = () => {
-      initializePiSdk(
-        () => {},
-        (error: unknown) => {
-          console.error("Error during Pi SDK initialization in provider:", (error as Error).message);
-        }
-      );
-    };
-    document.head.appendChild(script);
+    // The Pi SDK script is now loaded synchronously in layout.tsx
 
     const handlePiDebugUpdate = () => {
       setIsPiEnv(checkIsPiBrowser());
     };
 
-    window.addEventListener("piDebugUpdate", handlePiDebugUpdate);
-    setIsPiEnv(checkIsPiBrowser()); // Initial check
+    // Initial check and SDK initialization
+    setIsPiEnv(checkIsPiBrowser());
+    initializePiSdk(
+      () => {},
+      (error: unknown) => {
+        console.error("Error during Pi SDK initialization in provider:", (error as Error).message);
+      }
+    );
 
+    window.addEventListener("piDebugUpdate", handlePiDebugUpdate);
+    
     return () => {
-      document.head.removeChild(script);
       window.removeEventListener("piDebugUpdate", handlePiDebugUpdate);
     };
   }, []);
