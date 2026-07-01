@@ -68,25 +68,35 @@ const onIncompletePaymentFound = async (payment: any) => {
 
 // ✅ INICIALIZACIÓN ESTÁNDAR
 export function initializePiSdk(onSuccess: () => void, onError: (err: unknown) => void) {
-  const isPi = checkIsPiBrowser();
-  const useSandbox = !isPi; // Si no es Pi Browser, usamos sandbox
+  let checks = 0;
+  const maxChecks = 20; // 1000ms en total (20 checks * 50ms), extendido para mayor robustez
 
-  if ((window as any).Pi) {
-    try {
-      (window as any).Pi.init({ version: "2.0", sandbox: useSandbox });
-      console.log(`Pi SDK inicializado correctamente (Modo Sandbox: ${useSandbox})`);
-      updateDebug({ sdkInitialized: true, piBrowserDetected: isPi });
-      onSuccess();
-    } catch (error) {
-      console.error("Error al inicializar el SDK de Pi:", error);
-      updateDebug({ sdkInitialized: false, piBrowserDetected: isPi, paymentError: (error as Error).message });
-      onError(error);
+  const initInterval = setInterval(() => {
+    checks++;
+    const isPi = checkIsPiBrowser();
+
+    if ((window as any).Pi || checks >= maxChecks) {
+      clearInterval(initInterval);
+      
+      if ((window as any).Pi) {
+        const sandboxMode = !isPi;
+        try {
+          (window as any).Pi.init({ version: "2.0", sandbox: sandboxMode });
+          console.log(`[Pi SDK] Inicializado con sandbox = ${sandboxMode}. Detectado Pi Browser: ${isPi}`);
+          updateDebug({ sdkInitialized: true, piBrowserDetected: isPi });
+          onSuccess();
+        } catch (error) {
+          console.error("Error al inicializar el SDK de Pi:", error);
+          updateDebug({ sdkInitialized: false, piBrowserDetected: isPi, paymentError: (error as Error).message });
+          onError(error);
+        }
+      } else {
+        console.warn("[Pi SDK] No se pudo inicializar el SDK. Objeto Pi no disponible después de intentos.");
+        updateDebug({ sdkInitialized: false, piBrowserDetected: isPi, paymentError: "Pi SDK no inyectado o no disponible" });
+        onError(new Error("Pi SDK no inyectado o no disponible"));
+      }
     }
-  } else {
-    console.warn("Objeto window.Pi no disponible.");
-    updateDebug({ sdkInitialized: false, piBrowserDetected: isPi, paymentError: "Pi SDK no inyectado" });
-    onError(new Error("Pi SDK no inyectado"));
-  }
+  }, 50);
 }
 
 // ✅ FLUJO DE PAGO ESTÁNDAR (Docs v2)

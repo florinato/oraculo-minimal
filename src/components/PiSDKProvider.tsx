@@ -1,5 +1,6 @@
 "use client";
 
+import Script from "next/script";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { checkIsPiBrowser, initializePiSdk } from "../app/lib/pi-network";
 import PiDebugInfo from "./PiDebugInfo";
@@ -26,18 +27,20 @@ const PiSDKProvider: React.FC<PiSDKProviderProps> = ({ children }) => {
   const [isPiEnv, setIsPiEnv] = useState<boolean>(false);
 
   useEffect(() => {
-    // The Pi SDK script is now loaded synchronously in layout.tsx
+    // The Pi SDK script is loaded via next/script and initializePiSdk handles polling
 
     const handlePiDebugUpdate = () => {
       setIsPiEnv(checkIsPiBrowser());
     };
 
-    // Initial check and SDK initialization
-    setIsPiEnv(checkIsPiBrowser());
     initializePiSdk(
-      () => {},
+      () => {
+        // Success callback, ensure isPiEnv is updated
+        setIsPiEnv(checkIsPiBrowser());
+      },
       (error: unknown) => {
         console.error("Error during Pi SDK initialization in provider:", (error as Error).message);
+        setIsPiEnv(checkIsPiBrowser()); // Ensure state is updated even on error
       }
     );
 
@@ -50,6 +53,7 @@ const PiSDKProvider: React.FC<PiSDKProviderProps> = ({ children }) => {
 
   return (
     <PiBrowserContext.Provider value={{ isPiEnv }}>
+      <Script src="https://sdk.minepi.com/pi-sdk.js" strategy="beforeInteractive" />
       {children}
       <PiDebugInfo />
     </PiBrowserContext.Provider>
