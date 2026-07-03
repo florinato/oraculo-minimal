@@ -3,11 +3,12 @@ name: Deploy to Google Cloud Run
 on:
   push:
     branches:
-      - main # Cambiar si tu rama principal es 'master' o tiene otro nombre
+      - main 
 
 env:
-  SERVICE_NAME: oraculo-minimal
-  REGION: us-central1 # Puedes cambiar esto por la región de tu preferencia (ej. europe-west1)
+  SERVICE_NAME: oraculo # Cambiado para que coincida con tu servicio actual
+  REGION: europe-west1  # CAMBIADO: Tu región real
+  GCP_PROJECT_ID: halogen-valve-360911 # Tu ID de proyecto
 
 jobs:
   deploy:
@@ -19,7 +20,6 @@ jobs:
         uses: actions/checkout@v4
 
       # 1. Autenticación con Google Cloud
-      # Opción recomendada: Service Account Key (guardado como secret GCP_SA_KEY)
       - name: Google Auth
         id: auth
         uses: google-github-actions/auth@v2
@@ -30,32 +30,30 @@ jobs:
       - name: Set up gcloud SDK
         uses: google-github-actions/setup-gcloud@v2
         with:
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          project_id: ${{ env.GCP_PROJECT_ID }}
 
-      # 3. Configurar autenticación para Docker en Artifact Registry
+      # 3. Configurar autenticación para Docker
       - name: Configure Docker Auth
         run: |
-          gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
+          gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
 
       # 4. Crear el repositorio de Artifact Registry si no existe
-      - name: Create Artifact Registry Repository (if not exists)
+      - name: Create Artifact Registry Repository
         run: |
-          gcloud artifacts repositories create ${{ env.SERVICE_NAME }}-repo \
+          gcloud artifacts repositories create cloud-run-source-deploy \
             --repository-format=docker \
             --location=${{ env.REGION }} \
-            --description="Docker repository for Oráculo Minimal" \
             --quiet || true
 
       # 5. Compilar y Subir la Imagen Docker
       - name: Build and Push Container
         run: |
-          IMAGE_TAG="us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ env.SERVICE_NAME }}-repo/${{ env.SERVICE_NAME }}:${{ github.sha }}"
+          IMAGE_TAG="${{ env.REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/cloud-run-source-deploy/${{ env.SERVICE_NAME }}:${{ github.sha }}"
           docker build -t $IMAGE_TAG .
           docker push $IMAGE_TAG
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
 
       # 6. Desplegar en Google Cloud Run
-      # Nota: Se inyecta la variable de entorno GEMINI_API_KEY desde los GitHub Secrets del repositorio
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v2
         with:
@@ -64,7 +62,8 @@ jobs:
           image: ${{ env.IMAGE_TAG }}
           flags: |
             --allow-unauthenticated
-            --port=3000
+            --port=8080
+            --service-account=rag-app@halogen-valve-360911.iam.gserviceaccount.com
           env_vars: |
             NODE_ENV=production
             FRONTEND_API_SECRET=${{ secrets.FRONTEND_API_SECRET }}
