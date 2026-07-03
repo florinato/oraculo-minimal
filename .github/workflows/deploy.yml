@@ -68,3 +68,4 @@ jobs:
           env_vars: |
             NODE_ENV=production
             GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
+            PI_NETWORK_API_KEY=${{ secrets.PI_NETWORK_API_KEY }}

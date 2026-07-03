@@ -17,10 +17,10 @@ COPY . .
 # Esto genera la carpeta .next
 RUN npm run build
 
-# Cloud Run usa el puerto 8080 por defecto
-ENV PORT 8080
-EXPOSE 8080
+# Configurado para puerto 3000 para coincidir con la configuración de Cloud Run
+ENV PORT 3000
+EXPOSE 3000
 
 # Comando para arrancar en modo producción
 # Asegúrate de que tu package.json tenga el script "start": "next start"
-CMD ["npm", "start", "--", "-p", "8080"]
+CMD ["npm", "start", "--", "-p", "3000"]
