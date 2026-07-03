@@ -14,8 +14,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ status: 'error', message: 'Server configuration error' }, { status: 500 });
     }
 
-    const isSandbox = process.env.NEXT_PUBLIC_IS_SANDBOX === "true";
-    const baseUrl = isSandbox ? "https://api.minepi.com/v2/sandbox" : "https://api.minepi.com/v2";
+    // The Pi Platform API base URL is always https://api.minepi.com/v2.
+    // The sandbox (testnet) vs mainnet environment is determined by the Server API Key used.
+    const baseUrl = "https://api.minepi.com/v2";
     const piApiUrl = `${baseUrl}/payments/${paymentId}/complete`;
 
     const piResponse = await fetch(piApiUrl, {

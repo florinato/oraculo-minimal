@@ -128,9 +128,7 @@ export const createDonationPayment = async (amount: number) => {
         });
         
         if (res.ok) {
-          // ✅ ABIERTURA DE WALLET (Método estándar v2)
-          await pi.openPayment(paymentId); 
-          updateDebug({ paymentStatus: "Wallet abierta" });
+          updateDebug({ paymentStatus: "Aprobado" });
         } else {
           throw new Error("Fallo aprobación servidor");
         }
@@ -144,8 +142,9 @@ export const createDonationPayment = async (amount: number) => {
         });
         
         if (res.ok) {
-          await pi.completePayment(paymentId, txid);
           updateDebug({ paymentStatus: "Éxito ✅" });
+        } else {
+          throw new Error("Fallo finalización servidor");
         }
       },
       onCancel: (_paymentId: string) => {
