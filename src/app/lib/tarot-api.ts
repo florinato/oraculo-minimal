@@ -31,13 +31,7 @@ export function getCardImageUrl(cardId: string | undefined): string {
     console.log("[v0] getCardImageUrl: cardId es undefined");
     return "";
   }
-  // Leer variables en RUNTIME, no en compile time
-  const ASSETS_URL = process.env.NEXT_PUBLIC_ASSETS_URL;
-  const IMG_TOKEN = process.env.NEXT_PUBLIC_IMAGE_SERVER_TOKEN;
-  
-  const url = `${ASSETS_URL}/media/card/${cardId}?token=${IMG_TOKEN}`;
-  console.log("[v0] getCardImageUrl:", { cardId, assetsUrl: ASSETS_URL, hasToken: !!IMG_TOKEN, url });
-  return url;
+  return `/api/image?cardId=${cardId}`;
 }
 
 export function drawFiveCards(lang: string = "es"): TarotCard[] {
