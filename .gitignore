@@ -45,3 +45,5 @@ certificates
 .env.local
 .next/
 node_modules/
+metadata.json
+/dist/
