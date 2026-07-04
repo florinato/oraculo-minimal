@@ -30,7 +30,7 @@ export default function Selector() {
   }
 
   return (
-    <main className="relative min-h-screen flex flex-col justify-between bg-[#0a0a0a] text-white font-sans overflow-hidden px-4 py-2">
+    <main className="relative min-h-screen flex flex-col justify-between bg-transparent text-white font-sans overflow-hidden px-4 py-2">
       
       {/* BOTÓN VOLVER */}
       <button
@@ -45,10 +45,10 @@ export default function Selector() {
         </svg>
       </button>
       
-      {/* FONDO SIN BLUR */}
-      <div className="absolute inset-0 z-0">
-        <img src="/portada_PI_ARC.png" className="w-full h-full object-cover opacity-90" alt="Portada" />
-        <div className="absolute inset-0 bg-linear-to-t from-black via-black/40 to-transparent" />
+      {/* FONDO FIJO */}
+      <div className="fixed inset-0 w-full h-full z-0 pointer-events-none">
+        <img src="/portada_PI_ARC.png" className="w-full h-full object-cover" alt="Fondo" />
+        <div className="absolute inset-0 bg-black/60" />
       </div>
 
       {/* SELECTOR IDIOMAS */}

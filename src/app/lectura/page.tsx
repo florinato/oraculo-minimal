@@ -159,7 +159,7 @@ function ReadingContent() {
   if (cards.length === 0) return <div className="min-h-screen bg-black flex items-center justify-center text-amber-500 italic">Invocando el umbral...</div>;
 
   return (
-    <div className="relative min-h-screen w-full bg-black text-amber-50 overflow-y-auto overflow-x-hidden scroll-smooth">
+    <div className="relative min-h-screen w-full bg-transparent text-amber-50 overflow-y-auto overflow-x-hidden scroll-smooth">
 
       {/* BOTÓN VOLVER */}
       <button
@@ -172,9 +172,10 @@ function ReadingContent() {
         </svg>
       </button>
 
-      {/* CAPA 1: FONDO FIJO (La foto de portada con blur suave) */}
-      <div className="fixed inset-0 h-screen w-full overflow-hidden z-0 pointer-events-none flex justify-center items-center">
-        <img src="/portada_PI_ARC.png" className="w-full h-full object-cover blur-sm" alt="Portada" />
+      {/* CAPA 1: FONDO FIJO */}
+      <div className="fixed inset-0 w-full h-full z-0 pointer-events-none">
+        <img src="/portada_PI_ARC.png" className="w-full h-full object-cover blur-[2px]" alt="Fondo" />
+        <div className="absolute inset-0 bg-black/70" />
       </div>
 
       {/* CAPA 2: MAZO EXTENDIDO (Selección de cartas) */}

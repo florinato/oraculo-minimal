@@ -15,12 +15,12 @@ export default function Home() {
   const { t } = getI18n(lang);
 
   return (
-    <main className="relative min-h-screen flex flex-col items-center bg-[#0a0a0a] text-white font-sans overflow-hidden">
+    <main className="relative min-h-screen flex flex-col items-center bg-transparent text-white font-sans overflow-hidden">
       
-      {/* FONDO */}
-      <div className="absolute inset-0 z-0">
-        <img src="/portada_PI_ARC.png" className="w-full h-full object-cover" alt="Portada" />
-        <div className="absolute inset-0 bg-linear-to-t from-black via-black/40 to-transparent" />
+      {/* FONDO FIJO */}
+      <div className="fixed inset-0 w-full h-full z-0 pointer-events-none">
+        <img src="/portada_PI_ARC.png" className="w-full h-full object-cover" alt="Fondo" />
+        <div className="absolute inset-0 bg-black/60" />
       </div>
 
       {/* SELECTOR IDIOMAS */}
