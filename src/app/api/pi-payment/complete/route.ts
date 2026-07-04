@@ -11,8 +11,10 @@ export async function POST(request: Request) {
     const piNetworkApiKey = process.env.PI_NETWORK_API_KEY;
     if (!piNetworkApiKey) {
       console.error('PI_NETWORK_API_KEY is not set in environment variables');
-      return NextResponse.json({ status: 'error', message: 'Server configuration error' }, { status: 500 });
+      return NextResponse.json({ status: 'error', message: 'Configuración de servidor incorrecta: PI_NETWORK_API_KEY no está definida.' }, { status: 500 });
     }
+
+    console.log(`[Pi API] Intentando completar el pago: ${paymentId} con txid: ${txid}. API Key prefijo: ${piNetworkApiKey.substring(0, 4)}... longitud: ${piNetworkApiKey.length}`);
 
     // The Pi Platform API base URL is always https://api.minepi.com/v2.
     // The sandbox (testnet) vs mainnet environment is determined by the Server API Key used.

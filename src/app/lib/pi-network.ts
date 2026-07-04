@@ -123,30 +123,64 @@ export const createDonationPayment = async (amount: number) => {
     }, {
       onReadyForServerApproval: async (paymentId: string) => {
         updateDebug({ paymentStatus: "Aprobando servidor..." });
-        const res = await fetch("/api/pi-payment/approve", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ paymentId }),
-        });
-        
-        if (res.ok) {
-          updateDebug({ paymentStatus: "Aprobado" });
-        } else {
-          throw new Error("Fallo aprobación servidor");
+        try {
+          const res = await fetch("/api/pi-payment/approve", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ paymentId }),
+          });
+          
+          if (res.ok) {
+            updateDebug({ paymentStatus: "Aprobado" });
+          } else {
+            let errorMsg = `Fallo aprobación servidor (Status: ${res.status})`;
+            try {
+              const errData = await res.json();
+              if (errData && errData.message) {
+                errorMsg = `${errData.message} ${errData.details ? JSON.stringify(errData.details) : ''}`;
+              }
+            } catch (e) {
+              // Si no es JSON válido
+            }
+            updateDebug({ paymentStatus: "Error Aprobación", paymentError: errorMsg });
+            throw new Error(errorMsg);
+          }
+        } catch (error: any) {
+          const msg = error instanceof Error ? error.message : String(error);
+          console.error("[onReadyForServerApproval Error]", error);
+          updateDebug({ paymentStatus: "Error Aprobación", paymentError: msg });
+          throw error;
         }
       },
       onReadyForServerCompletion: async (paymentId: string, txid: string) => {
         updateDebug({ paymentStatus: "Completando..." });
-        const res = await fetch("/api/pi-payment/complete", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ paymentId, txid }),
-        });
-        
-        if (res.ok) {
-          updateDebug({ paymentStatus: "Éxito ✅" });
-        } else {
-          throw new Error("Fallo finalización servidor");
+        try {
+          const res = await fetch("/api/pi-payment/complete", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ paymentId, txid }),
+          });
+          
+          if (res.ok) {
+            updateDebug({ paymentStatus: "Éxito ✅" });
+          } else {
+            let errorMsg = `Fallo finalización servidor (Status: ${res.status})`;
+            try {
+              const errData = await res.json();
+              if (errData && errData.message) {
+                errorMsg = `${errData.message} ${errData.details ? JSON.stringify(errData.details) : ''}`;
+              }
+            } catch (e) {
+              // Si no es JSON válido
+            }
+            updateDebug({ paymentStatus: "Error Completado", paymentError: errorMsg });
+            throw new Error(errorMsg);
+          }
+        } catch (error: any) {
+          const msg = error instanceof Error ? error.message : String(error);
+          console.error("[onReadyForServerCompletion Error]", error);
+          updateDebug({ paymentStatus: "Error Completado", paymentError: msg });
+          throw error;
         }
       },
       onCancel: (_paymentId: string) => {
