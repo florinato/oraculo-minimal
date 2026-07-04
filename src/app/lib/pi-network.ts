@@ -21,7 +21,7 @@ interface PiDebugInfo {
 
 const updateDebug = (info: Partial<PiDebugInfo>) => {
   if (typeof window !== "undefined") {
-    window.piDebugInfo = { ...(window.piDebugInfo || {}), ...info };
+    (window as any).piDebugInfo = { ...((window as any).piDebugInfo || {}), ...info };
     window.dispatchEvent(new CustomEvent('piDebugUpdate'));
   }
 };
@@ -79,7 +79,9 @@ export function initializePiSdk(onSuccess: () => void, onError: (err: unknown) =
       clearInterval(initInterval);
       
       if ((window as any).Pi) {
-        const sandboxMode = !isPi;
+        // En JavaScript/TypeScript, las variables booleanas se escriben estrictamente en minúsculas (true).
+        // Forzamos true para que use el entorno Sandbox (Testnet) tanto en navegadores de escritorio como dentro del Pi Browser.
+        const sandboxMode = true;
         try {
           (window as any).Pi.init({ version: "2.0", sandbox: sandboxMode });
           console.log(`[Pi SDK] Inicializado con sandbox = ${sandboxMode}. Detectado Pi Browser: ${isPi}`);

@@ -3,7 +3,6 @@
 import Script from "next/script";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { checkIsPiBrowser, initializePiSdk } from "../app/lib/pi-network";
-import PiDebugInfo from "./PiDebugInfo";
 
 interface PiBrowserContextType {
   isPiEnv: boolean;
@@ -56,7 +55,6 @@ const PiSDKProvider: React.FC<PiSDKProviderProps> = ({ children }) => {
     <PiBrowserContext.Provider value={{ isPiEnv }}>
       <Script src="https://sdk.minepi.com/pi-sdk.js" strategy="beforeInteractive" />
       {children}
-      <PiDebugInfo />
     </PiBrowserContext.Provider>
   );
 };

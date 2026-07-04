@@ -46,22 +46,22 @@ export default function Home() {
       </div>
 
       {/* CONTENIDO */}
-      <div className="relative z-10 w-full px-4 h-screen flex flex-col items-center">
+      <div className="relative z-10 w-full px-4 min-h-screen flex flex-col items-center pb-10">
         
         {/* ESPACIO SUPERIOR (MÁS GRANDE) */}
-        <div className="h-2/3 w-full" />
+        <div className="h-[60vh] w-full" />
         
         {/* TÍTULO COMENZANDO DESDE LA MITAD HACIA ABAJO */}
-        <div className="text-center space-y-4">
+        <div className="text-center space-y-4 mb-4">
           <h1 className="text-6xl md:text-7xl font-serif font-bold text-[#E5C158] uppercase tracking-[0.2em] drop-shadow-[0_2px_10px_rgba(229,193,88,0.5)]">
-            PI ARCANA
+            TAROT
           </h1>
           <p className="text-[#E5C158]/80 text-3xl md:text-4xl font-serif font-bold uppercase tracking-[0.3em]">
-            TAROT
+            FREE
           </p>
           <button
             onClick={() => router.push('/selector')}
-            className="mt-8 px-12 py-4 text-[#E5C158] font-serif font-bold rounded-xl text-lg uppercase tracking-widest transition-all shadow-2xl
+            className="mt-8 mb-6 px-12 py-4 text-[#E5C158] font-serif font-bold rounded-xl text-lg uppercase tracking-widest transition-all shadow-2xl
               border-[1.5px] border-[#E5C158] bg-[#130E24]/60 hover:bg-[#130E24]/90 hover:border-[#E5C158] hover:shadow-[0_0_25px_rgba(229,193,88,0.3)]
               active:scale-95 active:shadow-[0_0_10px_rgba(229,193,88,0.2)]"
           >

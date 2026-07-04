@@ -76,15 +76,15 @@ export default function Selector() {
       {/* TÍTULO ARRIBA (Ajustado para dejar espacio en móvil) */}
       <div className="relative z-10 text-center flex flex-col items-center pt-2">
         <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#E5C158] uppercase tracking-[0.2em] drop-shadow-[0_2px_10px_rgba(229,193,88,0.5)]">
-          PI ARCANA
+          TAROT
         </h1>
         <p className="text-[#E5C158]/80 text-xl md:text-2xl font-serif font-bold uppercase tracking-[0.3em] mt-1">
-          TAROT
+          FREE
         </p>
       </div>
 
-      {/* CONTROLES (Empujados hacia abajo para ocupar el espacio central hasta el pie) */}
-      <div className="relative z-10 w-full max-w-lg mx-auto space-y-3 grow flex flex-col justify-end pb-2">
+      {/* CONTROLES (Ubicados hacia abajo pero con margen inferior cómodo para que no queden muy abajo en móviles) */}
+      <div className="relative z-10 w-full max-w-lg mx-auto space-y-3 grow flex flex-col justify-end pb-12 pt-4">
         <TarotFormatSelector
           selectedFormat={selectedFormat}
           onFormatChange={setSelectedFormat}
